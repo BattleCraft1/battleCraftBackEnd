@@ -1,11 +1,10 @@
 package pl.edu.pollub.battleCraft.services;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import pl.edu.pollub.battleCraft.entities.Tournament;
-
-import javax.transaction.Transactional;
-import java.util.List;
+import pl.edu.pollub.battleCraft.exceptions.PageNotFoundException;
 
 public interface TournamentService {
-    @Transactional
-    List<Tournament> getAllTournaments();
+    Page<Tournament> getTournamentsFromPage(Pageable pageable) throws PageNotFoundException, IllegalAccessException;
 }
