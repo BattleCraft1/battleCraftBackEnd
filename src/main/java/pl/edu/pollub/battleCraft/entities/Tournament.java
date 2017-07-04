@@ -1,7 +1,12 @@
 package pl.edu.pollub.battleCraft.entities;
 
+import pl.edu.pollub.battleCraft.entities.enums.TournamentClass;
+
 import javax.persistence.*;
 import java.util.Date;
+
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 
 @Entity
 public class Tournament extends AddressOwner{
@@ -33,6 +38,14 @@ public class Tournament extends AddressOwner{
 
     @ManyToOne
     private Game game;
+
+    @Enumerated(EnumType.STRING)
+    private TournamentClass tournamentClass;
+
+    public String toString()
+    {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+    }
 
     public String getName() {
         return name;
@@ -80,5 +93,13 @@ public class Tournament extends AddressOwner{
 
     public void setGame(Game game) {
         this.game = game;
+    }
+
+    public TournamentClass getTournamentClass() {
+        return tournamentClass;
+    }
+
+    public void setTournamentClass(TournamentClass tournamentClass) {
+        this.tournamentClass = tournamentClass;
     }
 }
