@@ -2,7 +2,6 @@ package pl.edu.pollub.battleCraft.searchSpecyfications;
 
 
 import org.springframework.data.jpa.domain.Specification;
-import pl.edu.pollub.battleCraft.entities.Tournament;
 import pl.edu.pollub.battleCraft.searchSpecyfications.searchCritieria.SearchCriteria;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -21,7 +20,7 @@ public class SearchSpecification<V> implements Specification<V>{
         this.criteries = criteries;
     }
 
-    List<SearchCriteria> criteries;
+    private List<SearchCriteria> criteries;
 
     public List<SearchCriteria> getCriteries() {
         return criteries;
@@ -38,16 +37,16 @@ public class SearchSpecification<V> implements Specification<V>{
         criteries.forEach((criteria) -> {
         if (criteria.getOperation().equalsIgnoreCase(">")) {
             predicates.add(builder.greaterThanOrEqualTo(
-                    root.<String> get(criteria.getKey()), criteria.getValue().toString()));
+                    root.get(criteria.getKey()), criteria.getValue().toString()));
         }
         else if (criteria.getOperation().equalsIgnoreCase("<")) {
             predicates.add(builder.lessThanOrEqualTo(
-                    root.<String> get(criteria.getKey()), criteria.getValue().toString()));
+                    root.get(criteria.getKey()), criteria.getValue().toString()));
         }
         else if (criteria.getOperation().equalsIgnoreCase(":")) {
             if (root.get(criteria.getKey()).getJavaType() == String.class) {
                 predicates.add(builder.like(
-                        root.<String>get(criteria.getKey()), "%" + criteria.getValue() + "%"));
+                        root.get(criteria.getKey()), "%" + criteria.getValue() + "%"));
             } else {
                 predicates.add(builder.equal(root.get(criteria.getKey()), criteria.getValue()));
             }

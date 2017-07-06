@@ -6,12 +6,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.edu.pollub.battleCraft.entities.Tournament;
-import pl.edu.pollub.battleCraft.exceptions.PageNotFoundException;
 import pl.edu.pollub.battleCraft.searchSpecyfications.searchCritieria.SearchCriteria;
 import pl.edu.pollub.battleCraft.services.TournamentService;
 
-import java.util.List;
-
+import java.util.ArrayList;
 
 @RestController
 public class TournamentController {
@@ -23,7 +21,7 @@ public class TournamentController {
     }
 
     @GetMapping("/")
-    public Page<Tournament> getTournamentsFromPage(List<SearchCriteria> searchCriteria, Pageable page) throws PageNotFoundException, IllegalAccessException {
-        return tournamentService.getTournamentsFromPage(searchCriteria, page);
+    public Page<Tournament> getPageOfTournaments(Pageable page, ArrayList<SearchCriteria> searchCriteria){
+        return tournamentService.getPageOfTournaments(page,searchCriteria);
     }
 }
