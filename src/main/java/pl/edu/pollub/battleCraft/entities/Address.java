@@ -1,6 +1,7 @@
 package pl.edu.pollub.battleCraft.entities;
 
-import pl.edu.pollub.battleCraft.entities.enums.Provinces;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 
 import javax.persistence.*;
 
@@ -10,7 +11,13 @@ public class Address {
     public Address() {
     }
 
-    public Address(Provinces province, String city, String street, String zip_code, AddressOwner addressOwner) {
+    public Address( String city, String street, String zip_code) {
+        this.city = city;
+        this.street = street;
+        this.zip_code = zip_code;
+    }
+
+    public Address(Province province, String city, String street, String zip_code, AddressOwner addressOwner) {
         this.province = province;
         this.city = city;
         this.street = street;
@@ -22,8 +29,9 @@ public class Address {
     @GeneratedValue
     private Long id;
 
-    @Column(length = 30)
-    private Provinces province;
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinColumn
+    private Province province;
 
     @Column(length = 40)
     private String city;
@@ -31,12 +39,17 @@ public class Address {
     @Column(length = 40)
     private String street;
 
-    @Column(length = 5)
+    @Column(length = 6)
     private String zip_code;
 
-
-    @OneToOne(mappedBy = "address")
+    @OneToOne(mappedBy = "address", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private AddressOwner addressOwner;
+
+    @Override
+    public String toString()
+    {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+    }
 
     public Long getId() {
         return id;
@@ -46,11 +59,11 @@ public class Address {
         this.id = id;
     }
 
-    public Provinces getProvince() {
+    public Province getProvince() {
         return province;
     }
 
-    public void setProvince(Provinces province) {
+    public void setProvince(Province province) {
         this.province = province;
     }
 
@@ -85,4 +98,5 @@ public class Address {
     public void setAddressOwner(AddressOwner addressOwner) {
         this.addressOwner = addressOwner;
     }
+
 }

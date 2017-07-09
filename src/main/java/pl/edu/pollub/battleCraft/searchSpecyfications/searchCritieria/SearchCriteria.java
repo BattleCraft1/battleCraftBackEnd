@@ -1,23 +1,25 @@
 package pl.edu.pollub.battleCraft.searchSpecyfications.searchCritieria;
 
+import java.util.List;
+
 public class SearchCriteria {
 
-    public SearchCriteria(String key, String operation, Object value) {
-        this.key = key;
+    public SearchCriteria(List<String> keys, String operation, Object value) {
+        this.keys = keys;
         this.operation = operation;
         this.value = value;
     }
 
-    private String key;
+    private List<String> keys;
     private String operation;
     private Object value;
 
-    public String getKey() {
-        return key;
+    public List<String> getKeys() {
+        return keys;
     }
 
-    public void setKey(String key) {
-        this.key = key;
+    public void setKeys(List<String> keys) {
+        this.keys = keys;
     }
 
     public String getOperation() {

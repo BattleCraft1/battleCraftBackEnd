@@ -14,7 +14,16 @@ public class Tournament extends AddressOwner{
     public Tournament() {
     }
 
-    public Tournament(String name, short maxPlayers, short tablesCount, Date dateOfStart, boolean active, Game game, Address address) {
+    public Tournament(String name, TournamentClass tournamentClass, short maxPlayers, short tablesCount, Date dateOfStart, boolean active) {
+        this.name = name;
+        this.maxPlayers = maxPlayers;
+        this.tablesCount = tablesCount;
+        this.dateOfStart = dateOfStart;
+        this.active = active;
+        this.tournamentClass = tournamentClass;
+    }
+
+    public Tournament(String name, TournamentClass tournamentClass ,short maxPlayers, short tablesCount, Date dateOfStart, boolean active, Game game, Address address) {
         super(address);
         this.name = name;
         this.maxPlayers = maxPlayers;
@@ -22,6 +31,7 @@ public class Tournament extends AddressOwner{
         this.dateOfStart = dateOfStart;
         this.active = active;
         this.game = game;
+        this.tournamentClass = tournamentClass;
     }
 
     @Column(length = 100)
@@ -36,12 +46,14 @@ public class Tournament extends AddressOwner{
 
     private boolean active;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinColumn
     private Game game;
 
     @Enumerated(EnumType.STRING)
     private TournamentClass tournamentClass;
 
+    @Override
     public String toString()
     {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);

@@ -23,7 +23,6 @@ public class TournamentServiceImpl implements TournamentService {
 
     @Override
     public Page getPageOfTournaments(Pageable requestedPage, List<SearchCriteria> searchCriteria){
-
         return tournamentRepository.findAll(new SearchSpecification<>(searchCriteria),requestedPage);
     }
 }

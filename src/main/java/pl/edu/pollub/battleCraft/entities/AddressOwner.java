@@ -1,5 +1,8 @@
 package pl.edu.pollub.battleCraft.entities;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 import javax.persistence.*;
 
 /**
@@ -16,11 +19,18 @@ public abstract class AddressOwner {
         this.address = address;
     }
 
+    @Override
+    public String toString()
+    {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+    }
+
     @Id
     @GeneratedValue
     private Long id;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @JoinColumn
     private Address address;
 
     public Long getId() {
@@ -38,4 +48,5 @@ public abstract class AddressOwner {
     public void setAddress(Address address) {
         this.address = address;
     }
+
 }
