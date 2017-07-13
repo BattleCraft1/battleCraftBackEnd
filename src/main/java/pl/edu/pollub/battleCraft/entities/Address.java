@@ -1,10 +1,13 @@
 package pl.edu.pollub.battleCraft.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 import javax.persistence.*;
 
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 public class Address {
 
@@ -42,6 +45,7 @@ public class Address {
     @Column(length = 6)
     private String zip_code;
 
+    @JsonIgnore
     @OneToOne(mappedBy = "address", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private AddressOwner addressOwner;
 

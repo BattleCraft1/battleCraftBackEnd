@@ -1,13 +1,12 @@
 package pl.edu.pollub.battleCraft.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 import javax.persistence.*;
 
-/**
- * Created by Jarek on 2017-07-01.
- */
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class AddressOwner {
