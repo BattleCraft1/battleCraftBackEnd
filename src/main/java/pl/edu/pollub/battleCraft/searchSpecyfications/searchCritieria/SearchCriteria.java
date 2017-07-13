@@ -4,6 +4,10 @@ import java.util.List;
 
 public class SearchCriteria {
 
+    public SearchCriteria(){
+
+    }
+
     public SearchCriteria(List<String> keys, String operation, Object value) {
         this.keys = keys;
         this.operation = operation;

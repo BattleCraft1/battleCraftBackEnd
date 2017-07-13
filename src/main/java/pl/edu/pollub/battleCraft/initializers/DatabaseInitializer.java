@@ -1,53 +1,28 @@
-package pl.edu.pollub.battleCraft.searchTests;
+package pl.edu.pollub.battleCraft.initializers;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.stereotype.Component;
 import pl.edu.pollub.battleCraft.entities.Address;
 import pl.edu.pollub.battleCraft.entities.Game;
 import pl.edu.pollub.battleCraft.entities.Province;
 import pl.edu.pollub.battleCraft.entities.Tournament;
 import pl.edu.pollub.battleCraft.entities.enums.TournamentClass;
 import pl.edu.pollub.battleCraft.repositories.TournamentRepository;
-import pl.edu.pollub.battleCraft.searchSpecyfications.searchCritieria.SearchCriteria;
-
-import org.springframework.data.domain.Pageable;
-import pl.edu.pollub.battleCraft.services.TournamentService;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Locale;
 
-import static org.junit.Assert.assertEquals;
-import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
-
-
-@RunWith(SpringRunner.class)
-@DataJpaTest
-@SpringBootTest
-@AutoConfigureTestDatabase(replace = NONE)
-@ComponentScan("pl.edu.pollub.battleCraft.services.implementations")
-public class SearchSpecificationsTest {
-
-    public SearchSpecificationsTest() throws ParseException {
-    }
-
-    @Autowired
-    private TournamentService tournamentService;
+@Component
+public class DatabaseInitializer implements ApplicationListener<ContextRefreshedEvent> {
 
     @Autowired
     private TournamentRepository tournamentRepository;
-
 
     private Tournament testTournament1;
     private Tournament testTournament2;
@@ -91,8 +66,10 @@ public class SearchSpecificationsTest {
 
     private DateFormat format = new SimpleDateFormat("HH:mm:ss dd-MM-yyyy", Locale.ENGLISH);
 
-    @Before
-    public void createTestTournaments() throws ParseException {
+    @Override
+    public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
+        tournamentRepository.deleteAll();
+
 
         testAddress1 = new Address("Lublin","Nadbystrzycka","20-501");
         testAddress2 = new Address("Zamość","1 Maja","30-301");
@@ -137,8 +114,8 @@ public class SearchSpecificationsTest {
         testProvince10.setAddress(testAddress10);
         testAddress10.setProvince(testProvince10);
 
-        testTournament1 = new Tournament("Tournament1", TournamentClass.CHALLENGER, (short)6, (short)3, format.parse("13:05:00 08-01-2017"), true);
-        testTournament2 = new Tournament("Tournament2",TournamentClass.LOCAL, (short)8, (short)4, format.parse("14:11:00 09-02-2018"), false);
+        try {
+        testTournament1 = new Tournament("Tournament1", TournamentClass.CHALLENGER, (short)6, (short)3, format.parse("13:05:00 08-01-2017"), true);testTournament2 = new Tournament("Tournament2",TournamentClass.LOCAL, (short)8, (short)4, format.parse("14:11:00 09-02-2018"), false);
         testTournament3 = new Tournament("Tournament3",TournamentClass.MASTER, (short)6, (short)3, format.parse("15:15:00 12-03-2017"), true);
         testTournament4 = new Tournament("Tournament4",TournamentClass.CHALLENGER, (short)10, (short)5, format.parse("16:25:00 25-04-2018"), true);
         testTournament5 = new Tournament("Tournament5",TournamentClass.CHALLENGER, (short)8, (short)4, format.parse("11:24:00 13-05-2017"), true);
@@ -147,7 +124,9 @@ public class SearchSpecificationsTest {
         testTournament8 = new Tournament("Tournament8",TournamentClass.LOCAL, (short)20, (short)10, format.parse("12:12:00 02-06-2018"), false);
         testTournament9 = new Tournament("Tournament9",TournamentClass.MASTER, (short)8, (short)4, format.parse("17:17:00 13-07-2017"), true);
         testTournament10 = new Tournament("Tournament10",TournamentClass.LOCAL, (short)6, (short)3, format.parse("18:05:00 26-08-2018"), false);
-
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         testTournament1.setAddress(testAddress1);
         testAddress1.setAddressOwner(testTournament1);
@@ -206,73 +185,6 @@ public class SearchSpecificationsTest {
         tournamentRepository.save(testTournament9);
         tournamentRepository.save(testTournament10);
 
-    }
-
-    @Test
-    public void searchAllTournamentsWithGameWahammerAfterSomeDate() throws ParseException {
-        List<SearchCriteria> searchCriteria=new ArrayList<>();
-        searchCriteria.add(new SearchCriteria(Arrays.asList("game","name"),":","Warhammer"));
-        searchCriteria.add(new SearchCriteria(Collections.singletonList("dateOfStart"),">",format.parse("15:15:00 08-02-2017")));
-
-        Pageable pageable=new PageRequest(0,10);
-
-        Page results = tournamentService.getPageOfTournaments(pageable,searchCriteria);
-
-        assertEquals(1, results.getTotalElements());
-        assertEquals(Collections.singletonList(testTournament7), results.getContent());
-    }
-
-    @Test(expected = InvalidDataAccessApiUsageException.class)
-    public void searchByFieldThatNotExist()
-    {
-        List<SearchCriteria> searchCriteria=new ArrayList<>();
-        searchCriteria.add(new SearchCriteria(Collections.singletonList("testField"),":","Warhammer"));
-
-        Pageable pageable=new PageRequest(0,10);
-
-        tournamentService.getPageOfTournaments(pageable,searchCriteria);
-    }
-//I wanted to create this tests but I do not know how to use aspects in tests
-    @Test
-    public void getMoreElementsThanAllowedPageSize()
-    {
-
-    }
-
-    @Test
-    public void getEmptyPage()
-    {
-
-    }
-
-    @Test
-    public void getAllTournamentsFromProvince()
-    {
-        List<SearchCriteria> searchCriteria=new ArrayList<>();
-        searchCriteria.add(new SearchCriteria(Arrays.asList("address","province","location"),":","lubelskie"));
-
-        Pageable pageable=new PageRequest(0,10);
-
-        Page<Tournament> results = tournamentService.getPageOfTournaments(pageable,searchCriteria);
-
-        assertEquals(2, results.getTotalElements());
-        assertEquals(Arrays.asList(testTournament1,testTournament2), results.getContent());
-    }
-
-    @Test
-    public void getAllChallengerActiveTournamentsWithSomeCountOfTables()
-    {
-        List<SearchCriteria> searchCriteria=new ArrayList<>();
-        searchCriteria.add(new SearchCriteria(Collections.singletonList("active"),":",true));
-        searchCriteria.add(new SearchCriteria(Collections.singletonList("tablesCount"),">",4));
-        searchCriteria.add(new SearchCriteria(Collections.singletonList("tournamentClass"),":",TournamentClass.CHALLENGER));
-
-        Pageable pageable=new PageRequest(0,10);
-
-        Page<Tournament> results = tournamentService.getPageOfTournaments(pageable,searchCriteria);
-
-        assertEquals(2, results.getTotalElements());
-        assertEquals(Arrays.asList(testTournament4,testTournament5), results.getContent());
     }
 
 }

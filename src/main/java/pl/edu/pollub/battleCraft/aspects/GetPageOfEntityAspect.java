@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 @Component
 public class GetPageOfEntityAspect {
 
-    private int allowedPageSize = 10;
+    private int allowedPageSize = 20;
 
     private Logger logger = Logger.getLogger(getClass().getName());
 

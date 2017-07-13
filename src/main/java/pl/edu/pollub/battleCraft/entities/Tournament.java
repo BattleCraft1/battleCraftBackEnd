@@ -1,5 +1,6 @@
 package pl.edu.pollub.battleCraft.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import pl.edu.pollub.battleCraft.entities.enums.TournamentClass;
 
 import javax.persistence.*;
@@ -8,6 +9,7 @@ import java.util.Date;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 public class Tournament extends AddressOwner{
 
