@@ -1,3 +1,18 @@
 {
-  "columnsNames":["name","province","city","class","date"]
+  "columns": [{
+    "name": "name",
+    "keys": ["name"]
+  }, {
+    "name": "province",
+    "keys": ["address", "province", "location"]
+  }, {
+    "name": "city",
+    "keys": ["address", "city"]
+  }, {
+    "name": "class",
+    "keys": ["tournamentClass"]
+  }, {
+    "name": "date",
+    "keys": ["dateOfStart"]
+  }]
 }
