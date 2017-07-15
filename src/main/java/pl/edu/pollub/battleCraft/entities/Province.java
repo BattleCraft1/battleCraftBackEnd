@@ -23,6 +23,7 @@ public class Province {
 
     @Id
     @GeneratedValue
+    @JsonIgnore
     private Long id;
 
     @Column(length = 30)

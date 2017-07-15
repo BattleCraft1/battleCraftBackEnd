@@ -3,10 +3,7 @@ package pl.edu.pollub.battleCraft.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pl.edu.pollub.battleCraft.services.TournamentService;
 import pl.edu.pollub.battleCraft.wrappers.GetPageObjectsWrapper;
 
@@ -27,5 +24,23 @@ public class TournamentController {
     public Page getPageOfTournaments(@RequestBody GetPageObjectsWrapper getPageObjectsWrapper){
         return tournamentService.getPageOfTournaments(getPageObjectsWrapper.unwrapPageRequest(),
                 getPageObjectsWrapper.getSearchCriteria());
+    }
+
+    @PostMapping(value = "/ban/tournaments", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void banTournaments(@RequestBody ArrayList<String> tournamentsToBanUniqueNames){
+        System.out.println(tournamentsToBanUniqueNames);
+        tournamentService.banTournaments(tournamentsToBanUniqueNames);
+    }
+
+    @PostMapping(value = "/unlock/tournaments", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void unlockTournaments(@RequestBody ArrayList<String> tournamentsToUnlockUniqueNames){
+        System.out.println(tournamentsToUnlockUniqueNames);
+        tournamentService.unlockTournaments(tournamentsToUnlockUniqueNames);
+    }
+
+    @PostMapping(value = "/delete/tournaments", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void deleteTournaments(@RequestBody ArrayList<String> tournamentsToDeleteUniqueNames){
+        System.out.println(tournamentsToDeleteUniqueNames);
+        tournamentService.deleteTournaments(tournamentsToDeleteUniqueNames);
     }
 }

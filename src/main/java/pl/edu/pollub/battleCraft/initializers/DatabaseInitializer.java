@@ -115,15 +115,16 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
         testAddress10.setProvince(testProvince10);
 
         try {
-        testTournament1 = new Tournament("Tournament1", TournamentClass.CHALLENGER, (short)6, (short)3, format.parse("13:05:00 08-01-2017"), true);testTournament2 = new Tournament("Tournament2",TournamentClass.LOCAL, (short)8, (short)4, format.parse("14:11:00 09-02-2018"), false);
-        testTournament3 = new Tournament("Tournament3",TournamentClass.MASTER, (short)6, (short)3, format.parse("15:15:00 12-03-2017"), true);
-        testTournament4 = new Tournament("Tournament4",TournamentClass.CHALLENGER, (short)10, (short)5, format.parse("16:25:00 25-04-2018"), true);
-        testTournament5 = new Tournament("Tournament5",TournamentClass.CHALLENGER, (short)8, (short)4, format.parse("11:24:00 13-05-2017"), true);
-        testTournament6 = new Tournament("Tournament6",TournamentClass.MASTER, (short)6, (short)3, format.parse("10:13:00 11-11-2018"), false);
-        testTournament7 = new Tournament("Tournament7",TournamentClass.CHALLENGER, (short)4, (short)2, format.parse("11:06:00 01-12-2017"), true);
-        testTournament8 = new Tournament("Tournament8",TournamentClass.LOCAL, (short)20, (short)10, format.parse("12:12:00 02-06-2018"), false);
-        testTournament9 = new Tournament("Tournament9",TournamentClass.MASTER, (short)8, (short)4, format.parse("17:17:00 13-07-2017"), true);
-        testTournament10 = new Tournament("Tournament10",TournamentClass.LOCAL, (short)6, (short)3, format.parse("18:05:00 26-08-2018"), false);
+        testTournament1 = new Tournament("Tournament1", TournamentClass.CHALLENGER, (short)6, (short)3, format.parse("13:05:00 08-01-2017"), true, false);
+        testTournament2 = new Tournament("Tournament2",TournamentClass.LOCAL, (short)8, (short)4, format.parse("14:11:00 09-02-2018"), false, false);
+        testTournament3 = new Tournament("Tournament3",TournamentClass.MASTER, (short)6, (short)3, format.parse("15:15:00 12-03-2017"), true, false);
+        testTournament4 = new Tournament("Tournament4",TournamentClass.CHALLENGER, (short)10, (short)5, format.parse("16:25:00 25-04-2018"), true, false);
+        testTournament5 = new Tournament("Tournament5",TournamentClass.CHALLENGER, (short)8, (short)4, format.parse("11:24:00 13-05-2017"), true, false);
+        testTournament6 = new Tournament("Tournament6",TournamentClass.MASTER, (short)6, (short)3, format.parse("10:13:00 11-11-2018"), false, false);
+        testTournament7 = new Tournament("Tournament7",TournamentClass.CHALLENGER, (short)4, (short)2, format.parse("11:06:00 01-12-2017"), true, false);
+        testTournament8 = new Tournament("Tournament8",TournamentClass.LOCAL, (short)20, (short)10, format.parse("12:12:00 02-06-2018"), false, false);
+        testTournament9 = new Tournament("Tournament9",TournamentClass.MASTER, (short)8, (short)4, format.parse("17:17:00 13-07-2017"), true, false);
+        testTournament10 = new Tournament("Tournament10",TournamentClass.LOCAL, (short)6, (short)3, format.parse("18:05:00 26-08-2018"), false, false);
         } catch (ParseException e) {
             e.printStackTrace();
         }

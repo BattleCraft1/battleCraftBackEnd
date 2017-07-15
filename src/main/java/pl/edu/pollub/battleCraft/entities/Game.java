@@ -26,6 +26,7 @@ public class Game {
 
     @Id
     @GeneratedValue
+    @JsonIgnore
     private Long id;
 
     @Column(length = 30)

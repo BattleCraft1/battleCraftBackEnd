@@ -30,6 +30,7 @@ public class Address {
 
     @Id
     @GeneratedValue
+    @JsonIgnore
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
