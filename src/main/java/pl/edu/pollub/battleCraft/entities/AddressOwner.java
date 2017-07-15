@@ -1,5 +1,6 @@
 package pl.edu.pollub.battleCraft.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
@@ -26,6 +27,7 @@ public abstract class AddressOwner {
 
     @Id
     @GeneratedValue
+    @JsonIgnore
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)

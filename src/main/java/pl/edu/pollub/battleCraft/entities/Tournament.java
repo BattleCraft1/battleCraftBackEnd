@@ -1,5 +1,6 @@
 package pl.edu.pollub.battleCraft.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import pl.edu.pollub.battleCraft.entities.enums.TournamentClass;
 
@@ -16,27 +17,29 @@ public class Tournament extends AddressOwner{
     public Tournament() {
     }
 
-    public Tournament(String name, TournamentClass tournamentClass, short maxPlayers, short tablesCount, Date dateOfStart, boolean active) {
+    public Tournament(String name, TournamentClass tournamentClass, short maxPlayers, short tablesCount, Date dateOfStart, boolean active, boolean banned) {
         this.name = name;
         this.maxPlayers = maxPlayers;
         this.tablesCount = tablesCount;
         this.dateOfStart = dateOfStart;
         this.active = active;
         this.tournamentClass = tournamentClass;
+        this.banned = banned;
     }
 
-    public Tournament(String name, TournamentClass tournamentClass ,short maxPlayers, short tablesCount, Date dateOfStart, boolean active, Game game, Address address) {
+    public Tournament(String name, TournamentClass tournamentClass ,short maxPlayers, short tablesCount, Date dateOfStart, boolean active, boolean banned, Game game, Address address) {
         super(address);
         this.name = name;
         this.maxPlayers = maxPlayers;
         this.tablesCount = tablesCount;
         this.dateOfStart = dateOfStart;
         this.active = active;
+        this.banned = banned;
         this.game = game;
         this.tournamentClass = tournamentClass;
     }
 
-    @Column(length = 100)
+    @Column(length = 100, unique = true)
     private String name;
 
     private short maxPlayers;
@@ -44,6 +47,7 @@ public class Tournament extends AddressOwner{
     private short tablesCount;
 
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="HH:mm:ss dd-MM-yyyy")
     private Date dateOfStart;
 
     private boolean active;
@@ -54,6 +58,8 @@ public class Tournament extends AddressOwner{
 
     @Enumerated(EnumType.STRING)
     private TournamentClass tournamentClass;
+
+    private boolean banned;
 
     @Override
     public String toString()
@@ -115,5 +121,13 @@ public class Tournament extends AddressOwner{
 
     public void setTournamentClass(TournamentClass tournamentClass) {
         this.tournamentClass = tournamentClass;
+    }
+
+    public boolean isBanned() {
+        return banned;
+    }
+
+    public void setBanned(boolean banned) {
+        this.banned = banned;
     }
 }

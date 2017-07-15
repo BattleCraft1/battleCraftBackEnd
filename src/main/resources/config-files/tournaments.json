@@ -1,4 +1,5 @@
 {
+  "uniqueColumn":"name",
   "columns": [{
     "name": "name",
     "keys": ["name"]

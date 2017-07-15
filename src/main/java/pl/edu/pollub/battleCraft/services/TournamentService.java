@@ -8,4 +8,7 @@ import java.util.List;
 
 public interface TournamentService {
     Page getPageOfTournaments(Pageable pageable, List<SearchCriteria> searchCriteria);
+    void banTournaments(List<String> tournamentsToBanUniqueNames);
+    void unlockTournaments(List<String> tournamentsToBanUniqueNames);
+    void deleteTournaments(List<String> tournamentsToDeleteUniqueNames);
 }
