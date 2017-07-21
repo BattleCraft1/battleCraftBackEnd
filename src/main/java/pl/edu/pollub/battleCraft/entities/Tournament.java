@@ -2,20 +2,20 @@ package pl.edu.pollub.battleCraft.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.*;
 import pl.edu.pollub.battleCraft.entities.enums.TournamentClass;
 
 import javax.persistence.*;
 import java.util.Date;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+@ToString
 public class Tournament extends AddressOwner{
-
-    public Tournament() {
-    }
 
     public Tournament(String name, TournamentClass tournamentClass, short maxPlayers, short tablesCount, Date dateOfStart, boolean active, boolean banned) {
         this.name = name;
@@ -60,74 +60,4 @@ public class Tournament extends AddressOwner{
     private TournamentClass tournamentClass;
 
     private boolean banned;
-
-    @Override
-    public String toString()
-    {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public short getMaxPlayers() {
-        return maxPlayers;
-    }
-
-    public void setMaxPlayers(short maxPlayers) {
-        this.maxPlayers = maxPlayers;
-    }
-
-    public short getTablesCount() {
-        return tablesCount;
-    }
-
-    public void setTablesCount(short tablesCount) {
-        this.tablesCount = tablesCount;
-    }
-
-    public Date getDateOfStart() {
-        return dateOfStart;
-    }
-
-    public void setDateOfStart(Date dateOfStart) {
-        this.dateOfStart = dateOfStart;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
-
-    public Game getGame() {
-        return game;
-    }
-
-    public void setGame(Game game) {
-        this.game = game;
-    }
-
-    public TournamentClass getTournamentClass() {
-        return tournamentClass;
-    }
-
-    public void setTournamentClass(TournamentClass tournamentClass) {
-        this.tournamentClass = tournamentClass;
-    }
-
-    public boolean isBanned() {
-        return banned;
-    }
-
-    public void setBanned(boolean banned) {
-        this.banned = banned;
-    }
 }

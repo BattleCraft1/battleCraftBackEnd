@@ -2,22 +2,27 @@ package pl.edu.pollub.battleCraft.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 /*I made field location as new Entity class because I wanted to create a list of possible provinces in poland in database*/
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@EqualsAndHashCode
+@ToString
 public class Province {
-
-    public Province(){}
 
     public Province(String location) {
         this.location = location;
     }
 
-    public Province(String location,Address address) {
-        this.address = address;
+    public Province(String location,List<Address> addresses) {
+        this.addresses = addresses;
         this.location = location;
     }
 
@@ -30,28 +35,7 @@ public class Province {
     String location;
 
     @JsonIgnore
-    @OneToOne(mappedBy = "province",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
-    Address address;
-
-    @Override
-    public String toString() {
-        return location;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public Address getAddress() {
-        return address;
-    }
-
-    public void setAddress(Address address) {
-        this.address = address;
-    }
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "province", cascade = CascadeType.ALL)
+    List<Address> addresses;
 
 }

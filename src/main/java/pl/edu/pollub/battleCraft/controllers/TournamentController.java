@@ -4,19 +4,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import pl.edu.pollub.battleCraft.entities.enums.TournamentClass;
 import pl.edu.pollub.battleCraft.services.TournamentService;
 import pl.edu.pollub.battleCraft.wrappers.GetPageObjectsWrapper;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 public class TournamentController {
 
-    private final TournamentService tournamentService;
-
     @Autowired
-    public TournamentController(TournamentService tournamentService) {
-        this.tournamentService = tournamentService;
+    private TournamentService tournamentService;
+
+    @GetMapping("/get/allTournamentClasses/names")
+    public List<String> getAllTournamentClassesNames(){
+        return TournamentClass.getNames();
     }
 
     @PostMapping(value = "/page/tournaments", consumes = MediaType.APPLICATION_JSON_VALUE)

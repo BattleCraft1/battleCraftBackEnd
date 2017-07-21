@@ -1,11 +1,11 @@
 {
   "uniqueColumn":"name",
   "columns": [{
-    "name": "name",
-    "keys": ["name"]
+    "name": ,
+    "keys": []
   }, {
     "name": "province",
-    "keys": ["address", "province", "location"]
+    "keys": []
   }, {
     "name": "city",
     "keys": ["address", "city"]
@@ -15,5 +15,56 @@
   }, {
     "name": "date",
     "keys": ["dateOfStart"]
+  }],
+  "searchFormFields":[{
+    "name":"Tournament name",
+    "placeholder":"Tournament1",
+    "kind":"text",
+    "source":null,
+    "searchCriteria":{
+      "keys":["name"],
+      "operation":":",
+      "value":""
+    }
+  },{
+    "name":"From date",
+    "placeholder":"09:24:00 13-05-2017",
+    "kind":"calendar",
+    "source":null,
+    "searchCriteria":{
+      "keys":["dateOfStart"],
+      "operation":">",
+      "value":""
+    }
+  },{
+    "name":"To date",
+    "placeholder":"12:24:00 10-06-2018",
+    "kind":"calendar",
+    "source":null,
+    "searchCriteria":{
+      "keys":["dateOfStart"],
+      "operation":"<",
+      "value":""
+    }
+  },{
+    "name":"City",
+    "placeholder":"Lublin",
+    "kind":"text",
+    "source":null,
+    "searchCriteria":{
+      "keys":["address", "city"],
+      "operation":":",
+      "value":""
+    }
+  },{
+    "name":"Province",
+    "placeholder":"Lubelskie",
+    "kind":"list",
+    "source":null,
+    "searchCriteria":{
+      "keys":["address", "city"],
+      "operation":":",
+      "value":""
+    }
   }]
 }
