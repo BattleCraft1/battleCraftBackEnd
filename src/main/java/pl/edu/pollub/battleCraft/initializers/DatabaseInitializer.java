@@ -55,7 +55,6 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
     private Province testProvince7;
     private Province testProvince8;
     private Province testProvince9;
-    private Province testProvince10;
 
     private Game testGame1;
     private Game testGame2;
@@ -83,36 +82,34 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
         testAddress10 = new Address("Białystok","Rozpaczy","40-304");
 
         testProvince1 = new Province("lubelskie");
-        testProvince2 = new Province("lubelskie");
-        testProvince3 = new Province("dolnośląskie");
-        testProvince4 = new Province("małopolskie");
-        testProvince5 = new Province("śląskie");
-        testProvince6 = new Province("zachodiopomorskie");
-        testProvince7 = new Province("wielkopolskie");
-        testProvince8 = new Province("opolskie");
-        testProvince9 = new Province("łódzkie");
-        testProvince10 = new Province("podlaskie");
+        testProvince2 = new Province("dolnośląskie");
+        testProvince3 = new Province("małopolskie");
+        testProvince4 = new Province("śląskie");
+        testProvince5 = new Province("zachodiopomorskie");
+        testProvince6 = new Province("wielkopolskie");
+        testProvince7 = new Province("opolskie");
+        testProvince8 = new Province("łódzkie");
+        testProvince9 = new Province("podlaskie");
 
-        testProvince1.setAddress(testAddress1);
         testAddress1.setProvince(testProvince1);
-        testProvince2.setAddress(testAddress2);
-        testAddress2.setProvince(testProvince2);
-        testProvince3.setAddress(testAddress3);
-        testAddress3.setProvince(testProvince3);
-        testProvince4.setAddress(testAddress4);
-        testAddress4.setProvince(testProvince4);
-        testProvince5.setAddress(testAddress5);
-        testAddress5.setProvince(testProvince5);
-        testProvince6.setAddress(testAddress6);
-        testAddress6.setProvince(testProvince6);
-        testProvince7.setAddress(testAddress7);
-        testAddress7.setProvince(testProvince7);
-        testProvince8.setAddress(testAddress8);
-        testAddress8.setProvince(testProvince8);
-        testProvince9.setAddress(testAddress9);
-        testAddress9.setProvince(testProvince9);
-        testProvince10.setAddress(testAddress10);
-        testAddress10.setProvince(testProvince10);
+        testAddress2.setProvince(testProvince1);
+        testProvince1.setAddresses(Arrays.asList(testAddress1,testAddress2));
+        testAddress3.setProvince(testProvince2);
+        testProvince2.setAddresses(Collections.singletonList(testAddress3));
+        testAddress4.setProvince(testProvince3);
+        testProvince3.setAddresses(Collections.singletonList(testAddress4));
+        testAddress5.setProvince(testProvince4);
+        testProvince4.setAddresses(Collections.singletonList(testAddress5));
+        testAddress6.setProvince(testProvince5);
+        testProvince5.setAddresses(Collections.singletonList(testAddress6));
+        testAddress7.setProvince(testProvince6);
+        testProvince6.setAddresses(Collections.singletonList(testAddress7));
+        testAddress8.setProvince(testProvince7);
+        testProvince7.setAddresses(Collections.singletonList(testAddress8));
+        testAddress9.setProvince(testProvince8);
+        testProvince8.setAddresses(Collections.singletonList(testAddress9));
+        testAddress10.setProvince(testProvince9);
+        testProvince9.setAddresses(Collections.singletonList(testAddress10));
 
         try {
         testTournament1 = new Tournament("Tournament1", TournamentClass.CHALLENGER, (short)6, (short)3, format.parse("13:05:00 08-01-2017"), true, false);
