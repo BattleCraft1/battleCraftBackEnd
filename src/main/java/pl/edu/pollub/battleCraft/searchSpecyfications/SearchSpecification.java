@@ -5,9 +5,13 @@ import org.springframework.data.jpa.domain.Specification;
 import pl.edu.pollub.battleCraft.searchSpecyfications.searchCritieria.SearchCriteria;
 
 import javax.persistence.criteria.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class SearchSpecification<V> implements Specification<V>{
 
@@ -19,6 +23,8 @@ public class SearchSpecification<V> implements Specification<V>{
     }
 
     private List<SearchCriteria> criteries;
+
+    private final DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
     public List<SearchCriteria> getCriteries() {
         return criteries;
@@ -34,18 +40,24 @@ public class SearchSpecification<V> implements Specification<V>{
         List<Predicate> predicates=new ArrayList<>();
         criteries.forEach((criteria) -> {
         if (criteria.getOperation().equalsIgnoreCase(">")) {
-            if(criteria.getValue() instanceof Date)
-                predicates.add(builder.greaterThanOrEqualTo(
-                        this.getFieldByKeys(criteria.getKeys(), root), (Date)criteria.getValue()));
+            if(criteria.getType().equals("Date"))
+                try {
+                    predicates.add(builder.greaterThanOrEqualTo(this.getFieldByKeys(criteria.getKeys(), root), format.parse(criteria.getValue().toString())));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             else
                 predicates.add(builder.greaterThanOrEqualTo(
                         this.getFieldByKeys(criteria.getKeys(), root), criteria.getValue().toString()));
 
         }
         else if (criteria.getOperation().equalsIgnoreCase("<")) {
-            if(criteria.getValue() instanceof Date)
-                predicates.add(builder.lessThanOrEqualTo(
-                        this.getFieldByKeys(criteria.getKeys(),root), (Date)criteria.getValue()));
+            if(criteria.getType().equals("Date"))
+                try {
+                    predicates.add(builder.lessThanOrEqualTo(this.getFieldByKeys(criteria.getKeys(),root), format.parse(criteria.getValue().toString())));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             else
                 predicates.add(builder.lessThanOrEqualTo(
                         this.getFieldByKeys(criteria.getKeys(),root), criteria.getValue().toString()));
@@ -53,7 +65,7 @@ public class SearchSpecification<V> implements Specification<V>{
         else if (criteria.getOperation().equalsIgnoreCase(":")) {
             if (this.getFieldByKeys(criteria.getKeys(),root).getJavaType() == String.class) {
                 predicates.add(builder.like(
-                        this.getFieldByKeys(criteria.getKeys(),root), criteria.getValue().toString()));
+                        this.getFieldByKeys(criteria.getKeys(),root), "%" + criteria.getValue() + "%"));
             } else {
                 predicates.add(builder.equal(this.getFieldByKeys(criteria.getKeys(),root), criteria.getValue()));
             }

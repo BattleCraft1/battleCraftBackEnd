@@ -206,8 +206,8 @@ public class TournamentServiceImplTest {
     @Test
     public void searchAllTournamentsWithGameWahammerAfterSomeDate() throws ParseException {
         List<SearchCriteria> searchCriteria=new ArrayList<>();
-        searchCriteria.add(new SearchCriteria(Arrays.asList("game","name"),":","Warhammer"));
-        searchCriteria.add(new SearchCriteria(Collections.singletonList("dateOfStart"),">",format.parse("15:15:00 08-02-2017")));
+        searchCriteria.add(new SearchCriteria(Arrays.asList("game","name"),":","String","Warhammer"));
+        searchCriteria.add(new SearchCriteria(Collections.singletonList("dateOfStart"),">","Date","15:15:00 08-02-2017"));
 
         Pageable pageable=new PageRequest(0,10);
 
@@ -221,7 +221,7 @@ public class TournamentServiceImplTest {
     public void searchByFieldThatNotExist()
     {
         List<SearchCriteria> searchCriteria=new ArrayList<>();
-        searchCriteria.add(new SearchCriteria(Collections.singletonList("testField"),":","Warhammer"));
+        searchCriteria.add(new SearchCriteria(Collections.singletonList("testField"),":","String","Warhammer"));
 
         Pageable pageable=new PageRequest(0,10);
 
@@ -244,7 +244,7 @@ public class TournamentServiceImplTest {
     public void getAllTournamentsFromProvince()
     {
         List<SearchCriteria> searchCriteria=new ArrayList<>();
-        searchCriteria.add(new SearchCriteria(Arrays.asList("address","province","location"),":","lubelskie"));
+        searchCriteria.add(new SearchCriteria(Arrays.asList("address","province","location"),":","String","lubelskie"));
 
         Pageable pageable=new PageRequest(0,10);
 
@@ -258,9 +258,9 @@ public class TournamentServiceImplTest {
     public void getAllChallengerActiveTournamentsWithSomeCountOfTables()
     {
         List<SearchCriteria> searchCriteria=new ArrayList<>();
-        searchCriteria.add(new SearchCriteria(Collections.singletonList("active"),":",true));
-        searchCriteria.add(new SearchCriteria(Collections.singletonList("tablesCount"),">",4));
-        searchCriteria.add(new SearchCriteria(Collections.singletonList("tournamentClass"),":",TournamentClass.CHALLENGER));
+        searchCriteria.add(new SearchCriteria(Collections.singletonList("active"),":","String",true));
+        searchCriteria.add(new SearchCriteria(Collections.singletonList("tablesCount"),">","String",4));
+        searchCriteria.add(new SearchCriteria(Collections.singletonList("tournamentClass"),":","String",TournamentClass.CHALLENGER));
 
         Pageable pageable=new PageRequest(0,10);
 
