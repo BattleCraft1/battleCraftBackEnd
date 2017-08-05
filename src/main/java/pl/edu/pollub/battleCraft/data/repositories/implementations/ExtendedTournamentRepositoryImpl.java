@@ -86,6 +86,7 @@ public class ExtendedTournamentRepositoryImpl implements ExtendedTournamentRepos
 
     @Override
     public void deleteTournaments(List<String> tournamentsToDeleteUniqueNames){
+        this.tournamentRepository.deleteParticipationOfTournaments(tournamentsToDeleteUniqueNames);
         this.tournamentRepository.deleteTournaments(tournamentsToDeleteUniqueNames);
     }
 
@@ -103,6 +104,4 @@ public class ExtendedTournamentRepositoryImpl implements ExtendedTournamentRepos
     public void cancelAcceptTournaments(ArrayList<String> tournamentsToCancelAcceptUniqueNames) {
         this.tournamentRepository.cancelAcceptTournaments(tournamentsToCancelAcceptUniqueNames);
     }
-
-
 }

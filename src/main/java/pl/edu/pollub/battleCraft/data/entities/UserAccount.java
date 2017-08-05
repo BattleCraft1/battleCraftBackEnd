@@ -28,6 +28,6 @@ public class UserAccount extends AddressOwner implements Serializable {
     @Column(length = 30, unique = true)
     private String name;
 
-    @OneToMany(cascade={CascadeType.ALL}, mappedBy="user")
+    @OneToMany(orphanRemoval = true,cascade = CascadeType.ALL , mappedBy="user")
     private List<Participation> participatedTournaments;
 }

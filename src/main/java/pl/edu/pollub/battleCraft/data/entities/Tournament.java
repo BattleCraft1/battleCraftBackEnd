@@ -56,7 +56,6 @@ public class Tournament extends AddressOwner implements Serializable {
     private int tablesCount;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="hh:mm:ss dd-MM-yyyy")
     private Date dateOfStart;
 
     private boolean active;
@@ -73,7 +72,7 @@ public class Tournament extends AddressOwner implements Serializable {
     private boolean accepted;
 
     @JsonIgnore
-    @OneToMany(cascade={CascadeType.ALL}, mappedBy = "tournament")
+    @OneToMany(orphanRemoval = true,cascade = CascadeType.ALL , mappedBy = "tournament")
     private List<Participation> participants;
 
     @Formula("(select count(*) from participation p where p.tournament_id = id)")

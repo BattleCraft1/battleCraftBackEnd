@@ -13,7 +13,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Locale;
+import java.util.TimeZone;
 
 @Component
 public class DatabaseInitializer implements ApplicationListener<ContextRefreshedEvent> {
@@ -91,10 +91,11 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
     private Game testGame5;
     private Game testGame6;
 
-    private DateFormat format = new SimpleDateFormat("HH:mm:ss dd-MM-yyyy", Locale.ENGLISH);
+    private DateFormat format = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
 
     @Autowired
     public DatabaseInitializer(TournamentRepository tournamentRepository) {
+        format.setTimeZone(TimeZone.getTimeZone("UTC"));
         this.tournamentRepository = tournamentRepository;
     }
 
@@ -156,25 +157,25 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
 
         try {
         testTournament1 = new Tournament("Tournament1", TournamentClass.CHALLENGER, 6, 3,
-                format.parse("13:05:00 08-01-2017"), true, true,true);
+                format.parse("08-01-2017 13:05:00"), true, true,true);
         testTournament2 = new Tournament("Tournament2",TournamentClass.LOCAL, 8, 4,
-                format.parse("14:11:00 09-02-2018"), false, false,true);
+                format.parse("09-02-2018 14:11:00"), false, false,true);
         testTournament3 = new Tournament("Tournament3",TournamentClass.MASTER, 6, 3,
-                format.parse("15:15:00 12-03-2017"), true, false,true);
+                format.parse("12-03-2017 15:15:00"), true, false,true);
         testTournament4 = new Tournament("Tournament4",TournamentClass.CHALLENGER, 10, 5,
-                format.parse("16:25:00 25-04-2018"), true, false,false);
+                format.parse("25-04-2018 16:25:00"), true, false,false);
         testTournament5 = new Tournament("Tournament5",TournamentClass.CHALLENGER, 8, 4,
-                format.parse("11:24:00 13-05-2017"), true, false,true);
+                format.parse("13-05-2017 11:24:00"), true, false,true);
         testTournament6 = new Tournament("Tournament6",TournamentClass.MASTER, 6, 3,
-                format.parse("10:13:00 11-11-2018"), false, false,false);
+                format.parse("11-11-2018 10:13:00"), false, false,false);
         testTournament7 = new Tournament("Tournament7",TournamentClass.CHALLENGER, 4, 2,
-                format.parse("11:06:00 01-12-2017"), true, true,true);
+                format.parse("01-12-2017 11:06:00"), true, true,true);
         testTournament8 = new Tournament("Tournament8",TournamentClass.LOCAL, 20, 10,
-                format.parse("12:12:00 02-06-2018"), false, false,false);
+                format.parse("02-06-2018 12:12:00"), false, false,false);
         testTournament9 = new Tournament("Tournament9",TournamentClass.MASTER, 8, 4,
-                format.parse("17:17:00 13-07-2017"), true, false,true);
+                format.parse("13-07-2017 17:17:00"), true, false,true);
         testTournament10 = new Tournament("Tournament10",TournamentClass.LOCAL, 6, 3,
-                format.parse("18:05:00 26-08-2018"), false, false,true);
+                format.parse("26-08-2018 18:05:00"), false, false,true);
         } catch (ParseException e) {
             e.printStackTrace();
         }
