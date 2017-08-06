@@ -1,4 +1,4 @@
-package pl.edu.pollub.battleCraft.web.controllers;
+package pl.edu.pollub.battleCraft.web.controllers.restEntitiesControllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
