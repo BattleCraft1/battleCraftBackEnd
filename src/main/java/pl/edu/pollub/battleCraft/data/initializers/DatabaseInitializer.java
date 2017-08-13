@@ -6,6 +6,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 import pl.edu.pollub.battleCraft.data.entities.*;
 import pl.edu.pollub.battleCraft.data.entities.enums.TournamentClass;
+import pl.edu.pollub.battleCraft.data.entities.enums.TournamentStatus;
 import pl.edu.pollub.battleCraft.data.repositories.interfaces.TournamentRepository;
 
 import java.text.DateFormat;
@@ -157,25 +158,25 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
 
         try {
         testTournament1 = new Tournament("Tournament1", TournamentClass.CHALLENGER, 6, 3,
-                format.parse("08-01-2017 13:05:00"), true, true,true);
-        testTournament2 = new Tournament("Tournament2",TournamentClass.LOCAL, 8, 4,
-                format.parse("09-02-2018 14:11:00"), false, false,true);
+                format.parse("08-01-2017 13:05:00"), TournamentStatus.ACCEPTED,false);
+        testTournament2 = new Tournament("Tournament2xxxxxxxx",TournamentClass.LOCAL, 8, 4,
+                format.parse("09-02-2018 14:11:00"), TournamentStatus.NEW,false);
         testTournament3 = new Tournament("Tournament3",TournamentClass.MASTER, 6, 3,
-                format.parse("12-03-2017 15:15:00"), true, false,true);
+                format.parse("12-03-2017 15:15:00"), TournamentStatus.NEW, true);
         testTournament4 = new Tournament("Tournament4",TournamentClass.CHALLENGER, 10, 5,
-                format.parse("25-04-2018 16:25:00"), true, false,false);
+                format.parse("25-04-2018 16:25:00"), TournamentStatus.FINISHED, false);
         testTournament5 = new Tournament("Tournament5",TournamentClass.CHALLENGER, 8, 4,
-                format.parse("13-05-2017 11:24:00"), true, false,true);
+                format.parse("13-05-2017 11:24:00"), TournamentStatus.ACCEPTED,false);
         testTournament6 = new Tournament("Tournament6",TournamentClass.MASTER, 6, 3,
-                format.parse("11-11-2018 10:13:00"), false, false,false);
+                format.parse("11-11-2018 10:13:00"), TournamentStatus.FINISHED,true);
         testTournament7 = new Tournament("Tournament7",TournamentClass.CHALLENGER, 4, 2,
-                format.parse("01-12-2017 11:06:00"), true, true,true);
+                format.parse("01-12-2017 11:06:00"), TournamentStatus.ACCEPTED,false);
         testTournament8 = new Tournament("Tournament8",TournamentClass.LOCAL, 20, 10,
-                format.parse("02-06-2018 12:12:00"), false, false,false);
+                format.parse("02-06-2018 12:12:00"), TournamentStatus.FINISHED,false);
         testTournament9 = new Tournament("Tournament9",TournamentClass.MASTER, 8, 4,
-                format.parse("13-07-2017 17:17:00"), true, false,true);
+                format.parse("13-07-2017 17:17:00"), TournamentStatus.ACCEPTED,false);
         testTournament10 = new Tournament("Tournament10",TournamentClass.LOCAL, 6, 3,
-                format.parse("26-08-2018 18:05:00"), false, false,true);
+                format.parse("26-08-2018 18:05:00"), TournamentStatus.NEW,false);
         } catch (ParseException e) {
             e.printStackTrace();
         }

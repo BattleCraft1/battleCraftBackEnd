@@ -23,6 +23,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Component
@@ -61,12 +62,11 @@ public class ExtendedTournamentRepositoryImpl implements ExtendedTournamentRepos
                 .add(Projections.property("tournament.freeSlots"), "freeSlots")
                 .add(Projections.property("tournament.maxPlayers"), "maxPlayers")
                 .add(Projections.property("tournament.dateOfStart"), "dateOfStart")
-                .add(Projections.property("tournament.active"), "active")
-                .add(Projections.property("tournament.banned"), "banned")
                 .add(Projections.property("address.city"), "city")
                 .add(Projections.property("province.location"), "province")
                 .add(Projections.property("game.name"), "game")
-                .add(Projections.property("tournament.accepted"), "accepted")
+                .add(Projections.property("tournament.tournamentStatus"), "tournamentStatus")
+                .add(Projections.property("tournament.banned"), "banned")
                 .add(Projections.groupProperty("tournament.id"))
                 .add(Projections.groupProperty("address.city"))
                 .add(Projections.groupProperty("province.location"))
@@ -80,28 +80,28 @@ public class ExtendedTournamentRepositoryImpl implements ExtendedTournamentRepos
     }
 
     @Override
-    public void banTournaments(List<String> tournamentsToBanUniqueNames){
+    public void banTournaments(String... tournamentsToBanUniqueNames){
         this.tournamentRepository.banTournaments(tournamentsToBanUniqueNames);
     }
 
     @Override
-    public void deleteTournaments(List<String> tournamentsToDeleteUniqueNames){
+    public void deleteTournaments(String... tournamentsToDeleteUniqueNames){
         this.tournamentRepository.deleteParticipationOfTournaments(tournamentsToDeleteUniqueNames);
         this.tournamentRepository.deleteTournaments(tournamentsToDeleteUniqueNames);
     }
 
     @Override
-    public void unlockTournaments(List<String> tournamentsToBanUniqueNames){
+    public void unlockTournaments(String... tournamentsToBanUniqueNames){
         this.tournamentRepository.unlockTournaments(tournamentsToBanUniqueNames);
     }
 
     @Override
-    public void acceptTournaments(ArrayList<String> tournamentsToAcceptUniqueNames) {
+    public void acceptTournaments(String... tournamentsToAcceptUniqueNames) {
         this.tournamentRepository.acceptTournaments(tournamentsToAcceptUniqueNames);
     }
 
     @Override
-    public void cancelAcceptTournaments(ArrayList<String> tournamentsToCancelAcceptUniqueNames) {
+    public void cancelAcceptTournaments(String... tournamentsToCancelAcceptUniqueNames) {
         this.tournamentRepository.cancelAcceptTournaments(tournamentsToCancelAcceptUniqueNames);
     }
 }
