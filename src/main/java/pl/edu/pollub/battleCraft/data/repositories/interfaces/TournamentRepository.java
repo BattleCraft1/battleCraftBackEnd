@@ -15,26 +15,26 @@ import java.util.List;
 @Transactional
 public interface TournamentRepository extends JpaSpecificationExecutor<Tournament>, JpaRepository<Tournament, Long> {
     @Modifying
-    @Query("UPDATE Tournament t SET t.banned = true WHERE t.name in ?1")
-    void banTournaments(List<String> tournamentsToBanUniqueNames);
+    @Query("DELETE FROM Participation p WHERE (SELECT t.name FROM Tournament t WHERE t.banned = true AND t.id=p.tournament) IN ?1")
+    void deleteParticipationOfTournaments(String... tournamentsToDeleteUniqueNames);
 
     @Modifying
-    @Query("DELETE FROM Participation p WHERE (SELECT t.name FROM Tournament t WHERE t.id=p.tournament) IN ?1")
-    void deleteParticipationOfTournaments(List<String> tournamentsToDeleteUniqueNames);
-
-    @Modifying
-    @Query("DELETE FROM Tournament t WHERE t.name in ?1")
-    void deleteTournaments(List<String> tournamentsToDeleteUniqueNames);
+    @Query("DELETE FROM Tournament t WHERE t.banned = true AND t.name in ?1")
+    void deleteTournaments(String... tournamentsToDeleteUniqueNames);
 
     @Modifying
     @Query("UPDATE Tournament t SET t.banned = false WHERE t.name in ?1")
-    void unlockTournaments(List<String> tournamentsToBanUniqueNames);
+    void unlockTournaments(String... tournamentsToBanUniqueNames);
 
     @Modifying
-    @Query("UPDATE Tournament t SET t.accepted = true WHERE t.name in ?1")
-    void acceptTournaments(ArrayList<String> tournamentsToAcceptUniqueNames);
+    @Query("UPDATE Tournament t SET t.banned = true WHERE t.name in ?1")
+    void banTournaments(String... tournamentsToBanUniqueNames);
 
     @Modifying
-    @Query("UPDATE Tournament t SET t.accepted = false WHERE t.name in ?1")
-    void cancelAcceptTournaments(ArrayList<String> tournamentsToCancelAcceptUniqueNames);
+    @Query("UPDATE Tournament t SET t.tournamentStatus = 'ACCEPTED' WHERE t.name in ?1 AND t.tournamentStatus = 'NEW' AND t.banned = false")
+    void acceptTournaments(String... tournamentsToAcceptUniqueNames);
+
+    @Modifying
+    @Query("UPDATE Tournament t SET t.tournamentStatus = 'NEW' WHERE t.name in ?1 AND t.tournamentStatus = 'ACCEPTED' AND t.banned = false")
+    void cancelAcceptTournaments(String... tournamentsToCancelAcceptUniqueNames);
 }

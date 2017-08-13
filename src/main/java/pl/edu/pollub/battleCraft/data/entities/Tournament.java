@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import org.hibernate.annotations.Formula;
 import pl.edu.pollub.battleCraft.data.entities.enums.TournamentClass;
+import pl.edu.pollub.battleCraft.data.entities.enums.TournamentStatus;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -21,34 +22,32 @@ import java.util.List;
 @ToString
 public class Tournament extends AddressOwner implements Serializable {
 
-    public Tournament(String name, TournamentClass tournamentClass, int maxPlayers, int tablesCount, Date dateOfStart,
-                      boolean active, boolean banned, boolean accepted) {
+    public Tournament(String name, TournamentClass tournamentClass, int maxPlayers, int tablesCount,
+                      Date dateOfStart, TournamentStatus tournamentStatus, boolean banned) {
         this.name = name;
         this.maxPlayers = maxPlayers;
         this.tablesCount = tablesCount;
         this.dateOfStart = dateOfStart;
-        this.active = active;
         this.tournamentClass = tournamentClass;
+        this.tournamentStatus = tournamentStatus;
         this.banned = banned;
-        this.accepted = accepted;
     }
 
-    public Tournament(String name, TournamentClass tournamentClass ,int maxPlayers, int tablesCount, Date dateOfStart, boolean active,
-                      boolean banned, Game game, Address address, List<Participation> participants, boolean accepted) {
+    public Tournament(String name, TournamentClass tournamentClass ,int maxPlayers, int tablesCount, Date dateOfStart
+            , Game game, Address address, List<Participation> participants, TournamentStatus tournamentStatus, boolean banned) {
         super(address);
         this.name = name;
         this.maxPlayers = maxPlayers;
         this.tablesCount = tablesCount;
         this.dateOfStart = dateOfStart;
-        this.active = active;
-        this.banned = banned;
         this.game = game;
         this.tournamentClass = tournamentClass;
         this.participants = participants;
-        this.accepted = accepted;
+        this.banned = banned;
+        this.tournamentStatus = tournamentStatus;
     }
 
-    @Column(length = 100, unique = true)
+    @Column(length = 30, unique = true)
     private String name;
 
     private int maxPlayers;
@@ -58,8 +57,6 @@ public class Tournament extends AddressOwner implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateOfStart;
 
-    private boolean active;
-
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REFRESH})
     @JoinColumn
     private Game game;
@@ -67,9 +64,10 @@ public class Tournament extends AddressOwner implements Serializable {
     @Enumerated(EnumType.STRING)
     private TournamentClass tournamentClass;
 
-    private boolean banned;
+    @Enumerated(EnumType.STRING)
+    private TournamentStatus tournamentStatus;
 
-    private boolean accepted;
+    private boolean banned;
 
     @JsonIgnore
     @OneToMany(orphanRemoval = true,cascade = CascadeType.ALL , mappedBy = "tournament")

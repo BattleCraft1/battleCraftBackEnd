@@ -8,6 +8,7 @@ import pl.edu.pollub.battleCraft.service.services.interfaces.TournamentService;
 import pl.edu.pollub.battleCraft.web.jsonModels.GetPageObjectsWrapper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 @RestController
 public class TournamentController {
@@ -27,30 +28,27 @@ public class TournamentController {
     }
 
     @PostMapping(value = "/ban/tournaments", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void banTournaments(@RequestBody ArrayList<String> tournamentsToBanUniqueNames){
-        System.out.println(tournamentsToBanUniqueNames);
+    public void banTournaments(@RequestBody String... tournamentsToBanUniqueNames){
         tournamentService.banTournaments(tournamentsToBanUniqueNames);
     }
 
     @PostMapping(value = "/unlock/tournaments", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void unlockTournaments(@RequestBody ArrayList<String> tournamentsToUnlockUniqueNames){
-        System.out.println(tournamentsToUnlockUniqueNames);
+    public void unlockTournaments(@RequestBody String... tournamentsToUnlockUniqueNames){
         tournamentService.unlockTournaments(tournamentsToUnlockUniqueNames);
     }
 
     @PostMapping(value = "/delete/tournaments", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void deleteTournaments(@RequestBody ArrayList<String> tournamentsToDeleteUniqueNames){
-        System.out.println(tournamentsToDeleteUniqueNames);
+    public void deleteTournaments(@RequestBody String... tournamentsToDeleteUniqueNames){
         tournamentService.deleteTournaments(tournamentsToDeleteUniqueNames);
     }
 
     @PostMapping(value = "/accept/tournaments", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void acceptTournaments(@RequestBody ArrayList<String> tournamentsToAcceptUniqueNames){
+    public void acceptTournaments(@RequestBody String... tournamentsToAcceptUniqueNames){
         tournamentService.acceptTournaments(tournamentsToAcceptUniqueNames);
     }
 
     @PostMapping(value = "/cancel/accept/tournaments", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void cancelAcceptTournaments(@RequestBody ArrayList<String> tournamentsToCancelAcceptUniqueNames){
+    public void cancelAcceptTournaments(@RequestBody String... tournamentsToCancelAcceptUniqueNames){
         tournamentService.cancelAcceptTournaments(tournamentsToCancelAcceptUniqueNames);
     }
 }

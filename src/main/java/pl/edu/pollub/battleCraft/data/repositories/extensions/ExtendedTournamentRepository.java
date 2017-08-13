@@ -11,13 +11,13 @@ import java.util.List;
 public interface ExtendedTournamentRepository {
     Page getPageOfTournaments(SearchSpecification<Tournament> objectSearchSpecification, Pageable requestedPage);
 
-    void banTournaments(List<String> tournamentsToBanUniqueNames);
+    void banTournaments(String... tournamentsToBanUniqueNames);
 
-    void deleteTournaments(List<String> tournamentsToDeleteUniqueNames);
+    void deleteTournaments(String... tournamentsToDeleteUniqueNames);
 
-    void unlockTournaments(List<String> tournamentsToBanUniqueNames);
+    void unlockTournaments(String... tournamentsToBanUniqueNames);
 
-    void acceptTournaments(ArrayList<String> tournamentsToAcceptUniqueNames);
+    void acceptTournaments(String... tournamentsToAcceptUniqueNames);
 
-    void cancelAcceptTournaments(ArrayList<String> tournamentsToCancelAcceptUniqueNames);
+    void cancelAcceptTournaments(String... tournamentsToCancelAcceptUniqueNames);
 }

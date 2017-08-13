@@ -9,7 +9,6 @@ import pl.edu.pollub.battleCraft.data.searchSpecyficators.SearchSpecification;
 import pl.edu.pollub.battleCraft.data.searchSpecyficators.searchCritieria.SearchCriteria;
 import pl.edu.pollub.battleCraft.service.services.interfaces.TournamentService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -28,27 +27,27 @@ public class TournamentServiceImpl implements TournamentService {
     }
 
     @Override
-    public void banTournaments(List<String> tournamentsToBanUniqueNames) {
+    public void banTournaments(String... tournamentsToBanUniqueNames) {
         tournamentRepository.banTournaments(tournamentsToBanUniqueNames);
     }
 
     @Override
-    public void unlockTournaments(List<String> tournamentsToBanUniqueNames) {
+    public void unlockTournaments(String... tournamentsToBanUniqueNames) {
         tournamentRepository.unlockTournaments(tournamentsToBanUniqueNames);
     }
 
     @Override
-    public void deleteTournaments(List<String> tournamentsToDeleteUniqueNames) {
+    public void deleteTournaments(String... tournamentsToDeleteUniqueNames) {
         tournamentRepository.deleteTournaments(tournamentsToDeleteUniqueNames);
     }
 
     @Override
-    public void acceptTournaments(ArrayList<String> tournamentsToAcceptUniqueNames) {
+    public void acceptTournaments(String... tournamentsToAcceptUniqueNames) {
         tournamentRepository.acceptTournaments(tournamentsToAcceptUniqueNames);
     }
 
     @Override
-    public void cancelAcceptTournaments(ArrayList<String> tournamentsToCancelAcceptUniqueNames) {
+    public void cancelAcceptTournaments(String... tournamentsToCancelAcceptUniqueNames) {
         tournamentRepository.cancelAcceptTournaments(tournamentsToCancelAcceptUniqueNames);
     }
 
