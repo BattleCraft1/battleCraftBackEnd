@@ -5,10 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import pl.edu.pollub.battleCraft.service.services.interfaces.TournamentService;
+import pl.edu.pollub.battleCraft.web.jsonModels.GetPageAndModifyDataObjectsWrapper;
 import pl.edu.pollub.battleCraft.web.jsonModels.GetPageObjectsWrapper;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 
 @RestController
 public class TournamentController {
@@ -28,27 +26,42 @@ public class TournamentController {
     }
 
     @PostMapping(value = "/ban/tournaments", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void banTournaments(@RequestBody String... tournamentsToBanUniqueNames){
-        tournamentService.banTournaments(tournamentsToBanUniqueNames);
+    public Page banTournaments(@RequestBody GetPageAndModifyDataObjectsWrapper getPageAndModifyDataObjectsWrapper){
+        tournamentService.banTournaments(getPageAndModifyDataObjectsWrapper.getNamesOfObjectsToModify());
+        GetPageObjectsWrapper getPageObjectsWrapper=getPageAndModifyDataObjectsWrapper.getGetPageObjectsWrapper();
+        return tournamentService.getPageOfTournaments(getPageObjectsWrapper.unwrapPageRequest(),
+                getPageObjectsWrapper.getSearchCriteria());
     }
 
     @PostMapping(value = "/unlock/tournaments", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void unlockTournaments(@RequestBody String... tournamentsToUnlockUniqueNames){
-        tournamentService.unlockTournaments(tournamentsToUnlockUniqueNames);
+    public Page unlockTournaments(@RequestBody GetPageAndModifyDataObjectsWrapper getPageAndModifyDataObjectsWrapper){
+        tournamentService.unlockTournaments(getPageAndModifyDataObjectsWrapper.getNamesOfObjectsToModify());
+        GetPageObjectsWrapper getPageObjectsWrapper=getPageAndModifyDataObjectsWrapper.getGetPageObjectsWrapper();
+        return tournamentService.getPageOfTournaments(getPageObjectsWrapper.unwrapPageRequest(),
+                getPageObjectsWrapper.getSearchCriteria());
     }
 
     @PostMapping(value = "/delete/tournaments", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void deleteTournaments(@RequestBody String... tournamentsToDeleteUniqueNames){
-        tournamentService.deleteTournaments(tournamentsToDeleteUniqueNames);
+    public Page deleteTournaments(@RequestBody GetPageAndModifyDataObjectsWrapper getPageAndModifyDataObjectsWrapper){
+        tournamentService.deleteTournaments(getPageAndModifyDataObjectsWrapper.getNamesOfObjectsToModify());
+        GetPageObjectsWrapper getPageObjectsWrapper=getPageAndModifyDataObjectsWrapper.getGetPageObjectsWrapper();
+        return tournamentService.getPageOfTournaments(getPageObjectsWrapper.unwrapPageRequest(),
+                getPageObjectsWrapper.getSearchCriteria());
     }
 
     @PostMapping(value = "/accept/tournaments", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void acceptTournaments(@RequestBody String... tournamentsToAcceptUniqueNames){
-        tournamentService.acceptTournaments(tournamentsToAcceptUniqueNames);
+    public Page acceptTournaments(@RequestBody GetPageAndModifyDataObjectsWrapper getPageAndModifyDataObjectsWrapper){
+        tournamentService.acceptTournaments(getPageAndModifyDataObjectsWrapper.getNamesOfObjectsToModify());
+        GetPageObjectsWrapper getPageObjectsWrapper=getPageAndModifyDataObjectsWrapper.getGetPageObjectsWrapper();
+        return tournamentService.getPageOfTournaments(getPageObjectsWrapper.unwrapPageRequest(),
+                getPageObjectsWrapper.getSearchCriteria());
     }
 
     @PostMapping(value = "/cancel/accept/tournaments", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void cancelAcceptTournaments(@RequestBody String... tournamentsToCancelAcceptUniqueNames){
-        tournamentService.cancelAcceptTournaments(tournamentsToCancelAcceptUniqueNames);
+    public Page cancelAcceptTournaments(@RequestBody GetPageAndModifyDataObjectsWrapper getPageAndModifyDataObjectsWrapper){
+        tournamentService.cancelAcceptTournaments(getPageAndModifyDataObjectsWrapper.getNamesOfObjectsToModify());
+        GetPageObjectsWrapper getPageObjectsWrapper=getPageAndModifyDataObjectsWrapper.getGetPageObjectsWrapper();
+        return tournamentService.getPageOfTournaments(getPageObjectsWrapper.unwrapPageRequest(),
+                getPageObjectsWrapper.getSearchCriteria());
     }
 }
