@@ -57,7 +57,8 @@ public class SearchSpecification<V> implements Specification<V>{
                     query.add(Restrictions.le(getFieldByKeys(criteria.getKeys()),criteria.getValue()));
             }
             else if (criteria.getOperation().equalsIgnoreCase(":")) {
-                if(this.getFieldByKeys(criteria.getKeys(),root).getJavaType() == String.class)
+                if(this.getFieldByKeys(criteria.getKeys(),root).getJavaType() == String.class ||
+                        this.getFieldByKeys(criteria.getKeys(),root).getJavaType() == Enum.class)
                     query.add(Restrictions.like(getFieldByKeys(criteria.getKeys()),new StringBuilder("%").append(criteria.getValue()).append("%").toString()));
                 else
                     query.add(Restrictions.eq(getFieldByKeys(criteria.getKeys()),criteria.getValue()));

@@ -1,9 +1,4 @@
-package pl.edu.pollub.battleCraft.web.jsonModels;
-
-import org.springframework.data.domain.PageRequest;
-import pl.edu.pollub.battleCraft.data.searchSpecyficators.searchCritieria.SearchCriteria;
-
-import java.util.List;
+package pl.edu.pollub.battleCraft.web.jsonRequestsModels;
 
 public class GetPageAndModifyDataObjectsWrapper {
     private String[] namesOfObjectsToModify;

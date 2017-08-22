@@ -176,7 +176,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
         testTournament9 = new Tournament("Tournament9",TournamentClass.MASTER, 8, 4,
                 format.parse("13-07-2017 17:17:00"), TournamentStatus.ACCEPTED,false);
         testTournament10 = new Tournament("Tournament10",TournamentClass.LOCAL, 6, 3,
-                format.parse("26-08-2018 18:05:00"), TournamentStatus.NEW,false);
+                format.parse("26-08-2018 18:05:00"), TournamentStatus.IN_PROGRESS,false);
         } catch (ParseException e) {
             e.printStackTrace();
         }

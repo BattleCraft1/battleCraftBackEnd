@@ -14,4 +14,5 @@ public interface TournamentService {
     void deleteTournaments(String... tournamentsToDeleteUniqueNames);
     void acceptTournaments(String... tournamentsToDeleteUniqueNames);
     void cancelAcceptTournaments(String... tournamentsToDeleteUniqueNames);
+    List<String> getAllTournamentStatus();
 }

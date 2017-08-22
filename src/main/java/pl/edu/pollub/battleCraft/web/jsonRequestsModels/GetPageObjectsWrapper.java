@@ -1,4 +1,4 @@
-package pl.edu.pollub.battleCraft.web.jsonModels;
+package pl.edu.pollub.battleCraft.web.jsonRequestsModels;
 
 import org.springframework.data.domain.PageRequest;
 import pl.edu.pollub.battleCraft.data.searchSpecyficators.searchCritieria.SearchCriteria;

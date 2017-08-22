@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import pl.edu.pollub.battleCraft.data.entities.enums.TournamentStatus;
 import pl.edu.pollub.battleCraft.data.repositories.extensions.ExtendedTournamentRepository;
 import pl.edu.pollub.battleCraft.data.searchSpecyficators.SearchSpecification;
 import pl.edu.pollub.battleCraft.data.searchSpecyficators.searchCritieria.SearchCriteria;
@@ -49,6 +50,11 @@ public class TournamentServiceImpl implements TournamentService {
     @Override
     public void cancelAcceptTournaments(String... tournamentsToCancelAcceptUniqueNames) {
         tournamentRepository.cancelAcceptTournaments(tournamentsToCancelAcceptUniqueNames);
+    }
+
+    @Override
+    public List<String> getAllTournamentStatus() {
+        return TournamentStatus.getNames();
     }
 
 

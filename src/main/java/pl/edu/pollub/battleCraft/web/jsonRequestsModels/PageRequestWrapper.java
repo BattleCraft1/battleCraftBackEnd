@@ -1,4 +1,4 @@
-package pl.edu.pollub.battleCraft.web.jsonModels;
+package pl.edu.pollub.battleCraft.web.jsonRequestsModels;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;

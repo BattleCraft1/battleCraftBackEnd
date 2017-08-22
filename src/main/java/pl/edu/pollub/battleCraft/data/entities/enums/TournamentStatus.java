@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public enum TournamentStatus {
-    NEW, ACCEPTED, FINISHED;
+    NEW, ACCEPTED, IN_PROGRESS, FINISHED;
 
     public static List<String> getNames() {
-        return Arrays.stream(TournamentClass.values()).map(Enum::name).collect(Collectors.toList());
+        return Arrays.stream(TournamentStatus.values()).map(Enum::name).collect(Collectors.toList());
     }
 }
