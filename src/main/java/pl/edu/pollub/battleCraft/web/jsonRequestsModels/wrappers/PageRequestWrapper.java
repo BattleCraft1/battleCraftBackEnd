@@ -1,5 +1,6 @@
-package pl.edu.pollub.battleCraft.web.jsonRequestsModels;
+package pl.edu.pollub.battleCraft.web.jsonRequestsModels.wrappers;
 
+import lombok.*;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
@@ -45,9 +46,8 @@ public class PageRequestWrapper {
         this.property = property;
     }
 
-    public PageRequest getPageRequest(){
+    public PageRequest unwrapPageRequest(){
         Sort.Direction direction;
-        System.out.println(page+" "+size+" "+this.direction+" "+this.property);
         if(this.direction.equals("ASC"))
             direction= Sort.Direction.ASC;
         else

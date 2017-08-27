@@ -4,12 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import pl.edu.pollub.battleCraft.data.entities.Tournament;
 import pl.edu.pollub.battleCraft.service.services.interfaces.GameService;
 import pl.edu.pollub.battleCraft.service.services.interfaces.ProvinceService;
 import pl.edu.pollub.battleCraft.service.services.interfaces.TournamentService;
-import pl.edu.pollub.battleCraft.web.jsonRequestsModels.GetPageAndModifyDataObjectsWrapper;
-import pl.edu.pollub.battleCraft.web.jsonRequestsModels.GetPageObjectsWrapper;
+import pl.edu.pollub.battleCraft.web.jsonRequestsModels.wrappers.GetPageAndModifyDataObjectsWrapper;
+import pl.edu.pollub.battleCraft.web.jsonRequestsModels.wrappers.GetPageObjectsWrapper;
 
 import java.util.HashMap;
 import java.util.List;

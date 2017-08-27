@@ -10,7 +10,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class SearchSpecification<V> implements Specification<V>{
 
@@ -18,97 +17,89 @@ public class SearchSpecification<V> implements Specification<V>{
     }
 
     public SearchSpecification(List<SearchCriteria> criteries) {
-        this.criteries = criteries;
+        this.criteria = criteries;
     }
 
-    private List<SearchCriteria> criteries;
+    private List<SearchCriteria> criteria;
 
     private final DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
-    public List<SearchCriteria> getCriteries() {
-        return criteries;
+    public List<SearchCriteria> getCriteria() {
+        return criteria;
     }
 
-    public void setCriteries(List<SearchCriteria> criteries) {
-        this.criteries = criteries;
+    public void setCriteria(List<SearchCriteria> criteria) {
+        this.criteria = criteria;
     }
 
-    public void toRestrictions(Criteria query, Root<V> root){
-        criteries.forEach((criteria) -> {
-            String field=criteria.getKeys().stream().map(Object::toString).collect(Collectors.joining("."));
-            if (criteria.getOperation().equalsIgnoreCase(">")) {
-                if (this.getFieldByKeys(criteria.getKeys(),root).getJavaType() == Date.class)
+    public void toRestrictions(Criteria restrictions, Root<V> rootEntity){
+        criteria.forEach((criteria) -> {
+                Object fieldValue = criteria.getValue();
+                Path<Object> fieldPath = this.getFieldPathByKeys(criteria.getKeys(),rootEntity);
+                Class fieldJavaClass = fieldPath.getJavaType();
+                String fieldName = this.getFieldNameByKeys(criteria.getKeys());
+
+                if(fieldJavaClass == Date.class){
                     try {
-                        query.add(Restrictions.ge(getFieldByKeys(criteria.getKeys()),format.parse(criteria.getValue().toString())));
+                        fieldValue = format.parse(fieldValue.toString());
                     } catch (ParseException e) {
-                        e.printStackTrace();
+                        fieldValue = new Date();
                     }
+                }
+                else if(fieldJavaClass == String.class){
+                    fieldValue = new StringBuilder("%").append(fieldValue).append("%").toString();
+                    restrictions.add(Restrictions.like(fieldName,fieldValue));
+                    return;
+                }
+                else if(fieldJavaClass.getSuperclass() == Enum.class){
+                    fieldValue = Enum.valueOf(fieldJavaClass,fieldValue.toString());
+                }
+
+                String operationOnField = criteria.getOperation();
+
+                if (operationOnField.equalsIgnoreCase(">"))
+                    restrictions.add(Restrictions.ge(fieldName,fieldValue));
+                else if (operationOnField.equalsIgnoreCase("<"))
+                    restrictions.add(Restrictions.le(fieldName,fieldValue));
                 else
-                    query.add(Restrictions.ge(getFieldByKeys(criteria.getKeys()),criteria.getValue()));
-            }
-            else if (criteria.getOperation().equalsIgnoreCase("<")) {
-                if (this.getFieldByKeys(criteria.getKeys(),root).getJavaType() == Date.class)
-                    try {
-                        query.add(Restrictions.le(getFieldByKeys(criteria.getKeys()),format.parse(criteria.getValue().toString())));
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                else
-                    query.add(Restrictions.le(getFieldByKeys(criteria.getKeys()),criteria.getValue()));
-            }
-            else if (criteria.getOperation().equalsIgnoreCase(":")) {
-                if(this.getFieldByKeys(criteria.getKeys(),root).getJavaType() == String.class ||
-                        this.getFieldByKeys(criteria.getKeys(),root).getJavaType() == Enum.class)
-                    query.add(Restrictions.like(getFieldByKeys(criteria.getKeys()),new StringBuilder("%").append(criteria.getValue()).append("%").toString()));
-                else
-                    query.add(Restrictions.eq(getFieldByKeys(criteria.getKeys()),criteria.getValue()));
-            }
-        });
+                    restrictions.add(Restrictions.eq(fieldName,fieldValue));
+            });
     }
 
     @Override
     public Predicate toPredicate(Root<V> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
         List<Predicate> predicates=new ArrayList<>();
-        criteries.forEach((criteria) -> {
-        if (criteria.getOperation().equalsIgnoreCase(">")) {
-            if(this.getFieldByKeys(criteria.getKeys(),root).getJavaType() == Date.class)
-                try {
-                    predicates.add(builder.greaterThanOrEqualTo(this.getFieldByKeys(criteria.getKeys(), root), format.parse(criteria.getValue().toString())));
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-            else
-                predicates.add(builder.greaterThanOrEqualTo(
-                        this.getFieldByKeys(criteria.getKeys(), root), criteria.getValue().toString()));
+        criteria.forEach((criteria) -> {
+                    Object fieldValue = criteria.getValue();
+                    Path fieldPath = this.getFieldPathByKeys(criteria.getKeys(),root);
+                    Class fieldJavaClass = fieldPath.getJavaType();
+                    if(fieldJavaClass == Date.class)
+                        try {
+                            fieldValue = format.parse(criteria.getValue().toString());
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                    else if(fieldJavaClass == String.class) {
+                        fieldValue = new StringBuilder("%").append(fieldValue).append("%").toString();
+                        predicates.add(builder.like(fieldPath, fieldValue.toString()));
+                        return;
+                    }
 
-        }
-        else if (criteria.getOperation().equalsIgnoreCase("<")) {
-            if(this.getFieldByKeys(criteria.getKeys(),root).getJavaType() == Date.class)
-                try {
-                    predicates.add(builder.lessThanOrEqualTo(this.getFieldByKeys(criteria.getKeys(),root), format.parse(criteria.getValue().toString())));
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
+                    String operationOnField = criteria.getOperation();
+
+            if (operationOnField.equalsIgnoreCase(">"))
+                predicates.add(builder.greaterThanOrEqualTo(fieldPath, fieldValue.toString()));
+            else if(operationOnField.equalsIgnoreCase("<"))
+                predicates.add(builder.greaterThanOrEqualTo(fieldPath, fieldValue.toString()));
             else
-                predicates.add(builder.lessThanOrEqualTo(
-                        this.getFieldByKeys(criteria.getKeys(),root), criteria.getValue().toString()));
-        }
-        else if (criteria.getOperation().equalsIgnoreCase(":")) {
-            if (this.getFieldByKeys(criteria.getKeys(),root).getJavaType() == String.class) {
-                predicates.add(builder.like(
-                        this.getFieldByKeys(criteria.getKeys(),root), new StringBuilder("%").append(criteria.getValue()).append("%").toString()));
-            } else {
-                predicates.add(builder.equal(this.getFieldByKeys(criteria.getKeys(),root), criteria.getValue()));
-            }
-        }
+                predicates.add(builder.equal(fieldPath, criteria.getValue()));
         }
         );
-
         Predicate[] predicatesTable = new Predicate[predicates.size()];
         return builder.and(predicates.toArray(predicatesTable));
     }
 
-    private <Y, X> Path<Y> getFieldByKeys(List<String> keys, Root<X> root)
+    private <Y, X> Path<Y> getFieldPathByKeys(List<String> keys, Root<X> root)
     {
         Path<Y> path=root.get(keys.get(0));
         for(int i=1;i<keys.size();i++)
@@ -116,7 +107,7 @@ public class SearchSpecification<V> implements Specification<V>{
         return path;
     }
 
-    private String getFieldByKeys(List<String> keys)
+    private String getFieldNameByKeys(List<String> keys)
     {
         if(keys.size()>=2)
             return new StringBuilder(keys.get(keys.size()-2)).append(".").append(keys.get(keys.size()-1)).toString();
