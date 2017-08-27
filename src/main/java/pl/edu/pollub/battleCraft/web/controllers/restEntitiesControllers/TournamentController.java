@@ -4,23 +4,38 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import pl.edu.pollub.battleCraft.service.services.interfaces.GameService;
+import pl.edu.pollub.battleCraft.service.services.interfaces.ProvinceService;
 import pl.edu.pollub.battleCraft.service.services.interfaces.TournamentService;
-import pl.edu.pollub.battleCraft.web.jsonModels.GetPageAndModifyDataObjectsWrapper;
-import pl.edu.pollub.battleCraft.web.jsonModels.GetPageObjectsWrapper;
+import pl.edu.pollub.battleCraft.web.jsonRequestsModels.wrappers.GetPageAndModifyDataObjectsWrapper;
+import pl.edu.pollub.battleCraft.web.jsonRequestsModels.wrappers.GetPageObjectsWrapper;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 public class TournamentController {
 
     private final TournamentService tournamentService;
 
+    private final ProvinceService provinceService;
+
+    private final GameService gameService;
+
     @Autowired
-    public TournamentController(TournamentService tournamentService) {
+    public TournamentController(TournamentService tournamentService,
+                                ProvinceService provinceService,
+                                GameService gameService) {
         this.tournamentService = tournamentService;
+        this.gameService = gameService;
+        this.provinceService = provinceService;
     }
 
     @PostMapping(value = "/page/tournaments", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Page getPageOfTournaments(@RequestBody GetPageObjectsWrapper getPageObjectsWrapper){
+        System.out.println("Try to get tournaments");
         return tournamentService.getPageOfTournaments(getPageObjectsWrapper.unwrapPageRequest(),
                 getPageObjectsWrapper.getSearchCriteria());
     }
@@ -63,5 +78,22 @@ public class TournamentController {
         GetPageObjectsWrapper getPageObjectsWrapper=getPageAndModifyDataObjectsWrapper.getGetPageObjectsWrapper();
         return tournamentService.getPageOfTournaments(getPageObjectsWrapper.unwrapPageRequest(),
                 getPageObjectsWrapper.getSearchCriteria());
+    }
+
+    @GetMapping("/get/tournaments/status")
+    public List<String> getAllProvincesNames(){
+        return tournamentService.getAllTournamentStatus();
+    }
+
+    @GetMapping("/get/tournaments/enums")
+    public Map<String,List<String>> getTournamentsEnums(){
+        List<String> tournamentStatus = tournamentService.getAllTournamentStatus();
+        List<String> provincesNames = provinceService.getAllProvincesNames();
+        List<String> gamesNames = gameService.getAllGamesNames();
+        Map<String,List<String>> enums = new HashMap<>();
+        enums.put("tournamentStatus",tournamentStatus);
+        enums.put("provincesNames",provincesNames);
+        enums.put("gamesNames",gamesNames);
+        return enums;
     }
 }

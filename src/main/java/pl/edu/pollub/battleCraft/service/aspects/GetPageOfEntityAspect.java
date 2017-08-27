@@ -35,7 +35,7 @@ public class GetPageOfEntityAspect {
                                  PageRequest pageRequest, Page fetchedPage) throws PageNotFoundException {
         logger.info("checking page content");
         if(!fetchedPage.hasContent()) {
-            if(objectSearchSpecification.getCriteries().size()>0)
+            if(objectSearchSpecification.getCriteria().size()>0)
                 throw new AnyEntityNotFoundException();
             else
                 throw new PageNotFoundException(pageRequest.getPageNumber()+1);

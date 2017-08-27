@@ -18,6 +18,7 @@ public class ProvinceController {
 
     @GetMapping("/get/allProvinces/names")
     public List<String> getAllProvincesNames(){
+        System.out.println("Try to get provinces");
         return provinceService.getAllProvincesNames();
     }
 }
