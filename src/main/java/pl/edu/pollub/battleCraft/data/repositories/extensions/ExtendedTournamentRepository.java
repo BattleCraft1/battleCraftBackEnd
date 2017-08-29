@@ -5,8 +5,6 @@ import org.springframework.data.domain.Pageable;
 import pl.edu.pollub.battleCraft.data.entities.Tournament;
 import pl.edu.pollub.battleCraft.data.searchSpecyficators.SearchSpecification;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public interface ExtendedTournamentRepository {
     Page getPageOfTournaments(SearchSpecification<Tournament> objectSearchSpecification, Pageable requestedPage);

@@ -23,23 +23,25 @@ import java.util.List;
 public class Tournament extends AddressOwner implements Serializable {
 
     public Tournament(String name, TournamentClass tournamentClass, int maxPlayers, int tablesCount,
-                      Date dateOfStart, TournamentStatus tournamentStatus, boolean banned) {
+                      Date dateOfStart, Date dateOfEnd, TournamentStatus tournamentStatus, boolean banned) {
         this.name = name;
         this.maxPlayers = maxPlayers;
         this.tablesCount = tablesCount;
         this.dateOfStart = dateOfStart;
+        this.dateOfEnd = dateOfEnd;
         this.tournamentClass = tournamentClass;
         this.tournamentStatus = tournamentStatus;
         this.banned = banned;
     }
 
-    public Tournament(String name, TournamentClass tournamentClass ,int maxPlayers, int tablesCount, Date dateOfStart
+    public Tournament(String name, TournamentClass tournamentClass ,int maxPlayers, int tablesCount, Date dateOfStart, Date dateOfEnd
             , Game game, Address address, List<Participation> participants, TournamentStatus tournamentStatus, boolean banned) {
         super(address);
         this.name = name;
         this.maxPlayers = maxPlayers;
         this.tablesCount = tablesCount;
         this.dateOfStart = dateOfStart;
+        this.dateOfEnd = dateOfEnd;
         this.game = game;
         this.tournamentClass = tournamentClass;
         this.participants = participants;
@@ -56,6 +58,9 @@ public class Tournament extends AddressOwner implements Serializable {
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateOfStart;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateOfEnd;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REFRESH})
     @JoinColumn
