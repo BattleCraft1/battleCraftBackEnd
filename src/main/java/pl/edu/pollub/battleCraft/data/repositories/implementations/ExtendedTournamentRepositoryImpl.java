@@ -2,7 +2,6 @@ package pl.edu.pollub.battleCraft.data.repositories.implementations;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.criterion.Order;
 import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.transform.AliasToEntityMapResultTransformer;
@@ -10,8 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Component;
 import pl.edu.pollub.battleCraft.data.entities.Tournament;
-import pl.edu.pollub.battleCraft.data.pagers.implementations.PagerImpl;
-import pl.edu.pollub.battleCraft.data.pagers.interfaces.Pager;
+import pl.edu.pollub.battleCraft.data.page.implementations.PagerImpl;
 import pl.edu.pollub.battleCraft.data.repositories.interfaces.TournamentRepository;
 import pl.edu.pollub.battleCraft.data.repositories.extensions.ExtendedTournamentRepository;
 import pl.edu.pollub.battleCraft.data.searchSpecyficators.SearchSpecification;
@@ -22,9 +20,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 @Component
 public class ExtendedTournamentRepositoryImpl implements ExtendedTournamentRepository{
@@ -51,6 +46,7 @@ public class ExtendedTournamentRepositoryImpl implements ExtendedTournamentRepos
         Root<Tournament> tournamentRoot = criteriaQuery.from(Tournament.class);
 
         Criteria criteria = hibernateSession.createCriteria(Tournament.class,"tournament");
+
         criteria.createAlias("tournament.participants", "participants");
         criteria.createAlias("tournament.address", "address");
         criteria.createAlias("address.province", "province");
@@ -62,6 +58,7 @@ public class ExtendedTournamentRepositoryImpl implements ExtendedTournamentRepos
                 .add(Projections.property("tournament.freeSlots"), "freeSlots")
                 .add(Projections.property("tournament.maxPlayers"), "maxPlayers")
                 .add(Projections.property("tournament.dateOfStart"), "dateOfStart")
+                .add(Projections.property("tournament.dateOfEnd"), "dateOfEnd")
                 .add(Projections.property("address.city"), "city")
                 .add(Projections.property("province.location"), "province")
                 .add(Projections.property("game.name"), "game")
@@ -74,9 +71,7 @@ public class ExtendedTournamentRepositoryImpl implements ExtendedTournamentRepos
 
         criteria.setProjection(projectionList).setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
 
-        searchSpecification.toRestrictions(criteria, tournamentRoot);
-
-        return pager.createPage(hibernateSession, criteria, requestedPage);
+        return pager.createPage( tournamentRoot, searchSpecification, hibernateSession, criteria, requestedPage);
     }
 
     @Override

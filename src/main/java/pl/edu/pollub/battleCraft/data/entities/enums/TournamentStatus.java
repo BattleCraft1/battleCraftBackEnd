@@ -1,11 +1,9 @@
 package pl.edu.pollub.battleCraft.data.entities.enums;
 
-import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @ToString

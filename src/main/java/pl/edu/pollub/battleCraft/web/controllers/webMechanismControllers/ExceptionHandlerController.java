@@ -21,15 +21,15 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
     protected ResponseEntity<String> handleInternalException(Exception ex, WebRequest req)
     {
-        System.out.println(ex.getMessage());
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        System.out.println("exception: "+ex.getMessage());
+        return new ResponseEntity<>("There are not recognized problems on the server side. Please contact with administrator.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(value = {PageNotFoundException.class,StorageFileNotFoundException.class, AnyEntityNotFoundException.class})
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     protected ResponseEntity<String> handleNotFoundException(Exception ex, WebRequest req)
     {
-        System.out.println(ex.getMessage());
+        System.out.println("exception: "+ex.getMessage());
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 }
