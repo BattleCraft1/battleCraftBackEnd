@@ -71,7 +71,22 @@ public class ExtendedTournamentRepositoryImpl implements ExtendedTournamentRepos
 
         criteria.setProjection(projectionList).setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
 
-        return pager.createPage( tournamentRoot, searchSpecification, hibernateSession, criteria, requestedPage);
+        searchSpecification.toRestrictions(criteria, tournamentRoot);
+
+        Criteria criteriaCount = hibernateSession.createCriteria(Tournament.class,"tournamentsCount");
+
+        criteriaCount.setProjection(Projections.countDistinct("tournamentsCount.id"));
+
+        criteriaCount.createAlias("tournamentsCount.participants", "participants");
+        criteriaCount.createAlias("tournamentsCount.address", "address");
+        criteriaCount.createAlias("address.province", "province");
+        criteriaCount.createAlias("tournamentsCount.game", "game");
+
+        searchSpecification.toRestrictions(criteriaCount, tournamentRoot);
+
+        Long countOfSuitableEntities = (Long)criteriaCount.uniqueResult();
+
+        return pager.createPage( countOfSuitableEntities ,criteria, requestedPage);
     }
 
     @Override
