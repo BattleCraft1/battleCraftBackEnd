@@ -4,9 +4,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
-import pl.edu.pollub.battleCraft.data.entities.*;
-import pl.edu.pollub.battleCraft.data.entities.enums.TournamentClass;
-import pl.edu.pollub.battleCraft.data.entities.enums.TournamentStatus;
+import pl.edu.pollub.battleCraft.data.entities.Address.Address;
+import pl.edu.pollub.battleCraft.data.entities.Address.Province;
+import pl.edu.pollub.battleCraft.data.entities.Game.Game;
+import pl.edu.pollub.battleCraft.data.entities.Tournament.Tournament;
+import pl.edu.pollub.battleCraft.data.entities.Tournament.TournamentBuilder;
+import pl.edu.pollub.battleCraft.data.entities.Tournament.enums.TournamentClass;
+import pl.edu.pollub.battleCraft.data.entities.Tournament.enums.TournamentStatus;
+import pl.edu.pollub.battleCraft.data.entities.User.UserBuilder;
+import pl.edu.pollub.battleCraft.data.entities.User.subClasses.organizers.Organizer;
+import pl.edu.pollub.battleCraft.data.entities.User.subClasses.organizers.OrganizerBuilder;
+import pl.edu.pollub.battleCraft.data.entities.User.subClasses.players.Player;
+import pl.edu.pollub.battleCraft.data.entities.User.subClasses.players.PlayerBuilder;
+import pl.edu.pollub.battleCraft.data.entities.User.subClasses.players.relationships.Participation;
+import pl.edu.pollub.battleCraft.data.entities.User.UserAccount;
 import pl.edu.pollub.battleCraft.data.repositories.interfaces.TournamentRepository;
 
 import java.text.DateFormat;
@@ -21,6 +32,11 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
 
     private final TournamentRepository tournamentRepository;
 
+    private final TournamentBuilder tournamentBuilder = new TournamentBuilder();
+    private final PlayerBuilder playerBuilder = new PlayerBuilder();
+    private final OrganizerBuilder organizerBuilder = new OrganizerBuilder();
+    private final UserBuilder userBuilder = new UserBuilder();
+
     private Tournament testTournament1;
     private Tournament testTournament2;
     private Tournament testTournament3;
@@ -31,59 +47,6 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
     private Tournament testTournament8;
     private Tournament testTournament9;
     private Tournament testTournament10;
-
-    private UserAccount testUser1;
-    private UserAccount testUser2;
-    private UserAccount testUser3;
-    private UserAccount testUser4;
-    private UserAccount testUser5;
-    private UserAccount testUser6;
-    private UserAccount testUser7;
-    private UserAccount testUser8;
-    private UserAccount testUser9;
-    private UserAccount testUser10;
-
-    private Participation testParticipation1;
-    private Participation testParticipation2;
-    private Participation testParticipation3;
-    private Participation testParticipation4;
-    private Participation testParticipation5;
-    private Participation testParticipation6;
-    private Participation testParticipation7;
-    private Participation testParticipation8;
-    private Participation testParticipation9;
-    private Participation testParticipation10;
-    private Participation testParticipation11;
-    private Participation testParticipation12;
-    private Participation testParticipation13;
-    private Participation testParticipation14;
-    private Participation testParticipation15;
-    private Participation testParticipation16;
-    private Participation testParticipation17;
-    private Participation testParticipation18;
-    private Participation testParticipation19;
-    private Participation testParticipation20;
-
-    private Address testAddress1;
-    private Address testAddress2;
-    private Address testAddress3;
-    private Address testAddress4;
-    private Address testAddress5;
-    private Address testAddress6;
-    private Address testAddress7;
-    private Address testAddress8;
-    private Address testAddress9;
-    private Address testAddress10;
-
-    private Province testProvince1;
-    private Province testProvince2;
-    private Province testProvince3;
-    private Province testProvince4;
-    private Province testProvince5;
-    private Province testProvince6;
-    private Province testProvince7;
-    private Province testProvince8;
-    private Province testProvince9;
 
     private Game testGame1;
     private Game testGame2;
@@ -104,62 +67,79 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
         tournamentRepository.deleteAll();
 
-        testAddress1 = new Address("Lublin","Nadbystrzycka","20-501");
-        testAddress2 = new Address("Zamość","1 Maja","30-301");
-        testAddress3 = new Address("Wrocław","Krańcowa","40-301");
-        testAddress4 = new Address("Kraków","Ostatnia","50-301");
-        testAddress5 = new Address("Katowice","Szara","60-301");
-        testAddress6 = new Address("Szczecin","Nudna","70-301");
-        testAddress7 = new Address("Poznań","Smutna","80-301");
-        testAddress8 = new Address("Opole","Długa","32-302");
-        testAddress9 = new Address("Łódź","Czarna","33-303");
-        testAddress10 = new Address("Białystok","Rozpaczy","40-304");
+        Province testProvince1 = new Province("lubelskie");
+        Province testProvince2 = new Province("dolnośląskie");
+        Province testProvince3 = new Province("małopolskie");
+        Province testProvince4 = new Province("śląskie");
+        Province testProvince5 = new Province("zachodiopomorskie");
+        Province testProvince6 = new Province("wielkopolskie");
+        Province testProvince7 = new Province("opolskie");
+        Province testProvince8 = new Province("łódzkie");
+        Province testProvince9 = new Province("podlaskie");
 
-        testProvince1 = new Province("lubelskie");
-        testProvince2 = new Province("dolnośląskie");
-        testProvince3 = new Province("małopolskie");
-        testProvince4 = new Province("śląskie");
-        testProvince5 = new Province("zachodiopomorskie");
-        testProvince6 = new Province("wielkopolskie");
-        testProvince7 = new Province("opolskie");
-        testProvince8 = new Province("łódzkie");
-        testProvince9 = new Province("podlaskie");
+        Address testAddress1 = new Address(testProvince1,"Lublin","Nadbystrzycka","20-501");
+        Address testAddress2 = new Address(testProvince1,"Zamość","1 Maja","30-301");
+        Address testAddress3 = new Address(testProvince2,"Wrocław","Krańcowa","40-301");
+        Address testAddress4 = new Address(testProvince3,"Kraków","Ostatnia","50-301");
+        Address testAddress5 = new Address(testProvince4,"Katowice","Szara","60-301");
+        Address testAddress6 = new Address(testProvince5,"Szczecin","Nudna","70-301");
+        Address testAddress7 = new Address(testProvince6,"Poznań","Smutna","80-301");
+        Address testAddress8 = new Address(testProvince7,"Opole","Długa","32-302");
+        Address testAddress9 = new Address(testProvince8,"Łódź","Czarna","33-303");
+        Address testAddress10 = new Address(testProvince9,"Białystok","Rozpaczy","40-304");
 
-        testUser1 = new UserAccount("Dawid");
-        testUser2 = new UserAccount("Andrzej");
-        testUser3 = new UserAccount("Bartek");
-        testUser4 = new UserAccount("Filip");
-        testUser5 = new UserAccount("Albert");
-        testUser6 = new UserAccount("Tomek");
-        testUser7 = new UserAccount("Jarek");
-        testUser8 = new UserAccount("Anastazy");
-        testUser9 = new UserAccount("Wincent");
-        testUser10 = new UserAccount("Krzysiek");
+        Player testUser1 = playerBuilder.create("Bartek","Nowogrodzki","bart2123",
+                        "bart2123@gmail.com","abc123")
+                        .from(testAddress1)
+                        .withPhoneNumber("123123123").build();
+        Player testUser2 = playerBuilder.create("Andrzej","Bartoszewski","art2123",
+                "art2123@gmail.com","abc123")
+                .from(testAddress2)
+                .withPhoneNumber("123123123").build();
+        Player testUser3 = playerBuilder.create("Artur","Partoszewski","part2123",
+                "part2123@gmail.com","abc123")
+                .from(testAddress3)
+                .withPhoneNumber("123123123").build();
+        Player testUser4 = playerBuilder.create("Jurek","Jurkowski","jur2123",
+                "jur2123@gmail.com","abc123")
+                .from(testAddress4)
+                .withPhoneNumber("123123123").build();
+        Player testUser5 = playerBuilder.create("Anna","Bielec","biel2123",
+                "biel2123@gmail.com","abc123")
+                .from(testAddress5).build();
+        Player testUser6 = playerBuilder.create("Tomasz","Blawucki","blaw2123",
+                "blawl2123@gmail.com","abc123")
+                .from(testAddress5).build();
+        Organizer testUser7 = organizerBuilder.create("Jurek","Jurkowski","jur2123",
+                "jur2123@gmail.com","abc123")
+                .from(testAddress4)
+                .withPhoneNumber("123123123").build();
+        Organizer testUser8 = organizerBuilder.create("Lukasz","Depta","dept2123",
+                "dept2123@gmail.com","abc123")
+                .from(testAddress4)
+                .withPhoneNumber("123123123").build();
+        Organizer testUser9 = organizerBuilder.create("Albert","Kwasny","kwas2123",
+                "kwas2123@gmail.com","abc123")
+                .from(testAddress4)
+                .withPhoneNumber("123123123").build();
+        Organizer testUser10 = organizerBuilder.create("Anastazja","Nijaka","nijak2123",
+                "nijak2123@gmail.com","abc123")
+                .from(testAddress4)
+                .withPhoneNumber("123123123").build();
 
-        testAddress1.setProvince(testProvince1);
-        testAddress2.setProvince(testProvince1);
-        testProvince1.setAddresses(Arrays.asList(testAddress1,testAddress2));
-        testAddress3.setProvince(testProvince2);
-        testProvince2.setAddresses(Collections.singletonList(testAddress3));
-        testAddress4.setProvince(testProvince3);
-        testProvince3.setAddresses(Collections.singletonList(testAddress4));
-        testAddress5.setProvince(testProvince4);
-        testProvince4.setAddresses(Collections.singletonList(testAddress5));
-        testAddress6.setProvince(testProvince5);
-        testProvince5.setAddresses(Collections.singletonList(testAddress6));
-        testAddress7.setProvince(testProvince6);
-        testProvince6.setAddresses(Collections.singletonList(testAddress7));
-        testAddress8.setProvince(testProvince7);
-        testProvince7.setAddresses(Collections.singletonList(testAddress8));
-        testAddress9.setProvince(testProvince8);
-        testProvince8.setAddresses(Collections.singletonList(testAddress9));
-        testAddress10.setProvince(testProvince9);
-        testProvince9.setAddresses(Collections.singletonList(testAddress10));
+
+        testGame1=new Game("Warhammer");
+        testGame2=new Game("Star wars");
+        testGame3=new Game("Warhammer 40k");
+        testGame4=new Game("Cyber punk");
+        testGame5=new Game("Heroes");
+        testGame6=new Game("Lord of the rings");
 
         try {
-        testTournament1 = new Tournament("Tournament1", TournamentClass.CHALLENGER, 6, 3,
+        testTournamentx = new Tournament("Tournament1", , 6, 3,
                 format.parse("08-01-2017 13:05:00"), format.parse("09-01-2017 14:05:00"),
                 TournamentStatus.ACCEPTED,false);
+            testTournament1 = tournamentBuilder.createTournament("Tournament1",6,3,TournamentClass.CHALLENGER)
         testTournament2 = new Tournament("Tournament2xxxxxxxx",TournamentClass.LOCAL, 8, 4,
                 format.parse("09-02-2018 14:11:00"), format.parse("11-02-2017 14:05:00"),
                 TournamentStatus.NEW,false);
@@ -211,13 +191,6 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
         testAddress9.setAddressOwner(testTournament9);
         testTournament10.setAddress(testAddress10);
         testAddress10.setAddressOwner(testTournament10);
-
-        testGame1=new Game("Warhammer");
-        testGame2=new Game("Star wars");
-        testGame3=new Game("Warhammer 40k");
-        testGame4=new Game("Cyber punk");
-        testGame5=new Game("Heroes");
-        testGame6=new Game("Lord of the rings");
 
         testTournament1.setGame(testGame1);
         testTournament2.setGame(testGame2);

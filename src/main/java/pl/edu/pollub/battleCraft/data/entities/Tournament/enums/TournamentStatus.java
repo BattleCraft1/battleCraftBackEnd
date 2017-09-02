@@ -1,4 +1,4 @@
-package pl.edu.pollub.battleCraft.data.entities.enums;
+package pl.edu.pollub.battleCraft.data.entities.Tournament.enums;
 
 import lombok.ToString;
 

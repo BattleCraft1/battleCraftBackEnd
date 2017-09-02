@@ -1,4 +1,4 @@
-package pl.edu.pollub.battleCraft.data.entities;
+package pl.edu.pollub.battleCraft.data.entities.Address;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

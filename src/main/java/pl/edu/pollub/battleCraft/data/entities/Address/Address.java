@@ -1,4 +1,4 @@
-package pl.edu.pollub.battleCraft.data.entities;
+package pl.edu.pollub.battleCraft.data.entities.Address;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -17,18 +17,11 @@ import java.io.Serializable;
 public class Address implements Serializable {
 
 
-    public Address( String city, String street, String zip_code) {
-        this.city = city;
-        this.street = street;
-        this.zip_code = zip_code;
-    }
-
-    public Address(Province province, String city, String street, String zip_code, AddressOwner addressOwner) {
+    public Address(Province province, String city, String street, String zip_code) {
         this.province = province;
         this.city = city;
         this.street = street;
         this.zip_code = zip_code;
-        this.addressOwner = addressOwner;
     }
 
     @Id
@@ -53,4 +46,8 @@ public class Address implements Serializable {
     @OneToOne(mappedBy = "address", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REFRESH})
     private AddressOwner addressOwner;
 
+    public void setAddressOwner(AddressOwner addressOwner){
+        this.addressOwner = addressOwner;
+        addressOwner.setAddress(this);
+    }
 }

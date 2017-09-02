@@ -1,31 +1,34 @@
-package pl.edu.pollub.battleCraft.data.entities;
+package pl.edu.pollub.battleCraft.data.entities.User.subClasses.organizers.relationships;
 
 import lombok.*;
+import pl.edu.pollub.battleCraft.data.entities.Tournament.Tournament;
+import pl.edu.pollub.battleCraft.data.entities.User.subClasses.organizers.Organizer;
 
 import javax.persistence.*;
 
 @Entity
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
 @ToString
-public class Participation {
+public class Organization {
     @Id
     @GeneratedValue
     private Long id;
 
     @ManyToOne(cascade={CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REFRESH})
-    @JoinColumn(name = "user_id")
-    private UserAccount user;
+    @JoinColumn(name = "organizer_id")
+    private Organizer organizer;
 
     @ManyToOne(cascade={CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REFRESH})
     @JoinColumn(name = "tournament_id")
     private Tournament tournament;
 
-    public Participation(UserAccount user, Tournament tournament) {
-        this.user = user;
+    public Organization(Organizer organizer, Tournament tournament) {
+        this.organizer = organizer;
         this.tournament = tournament;
     }
 }

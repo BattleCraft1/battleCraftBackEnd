@@ -8,7 +8,7 @@ import org.hibernate.transform.AliasToEntityMapResultTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Component;
-import pl.edu.pollub.battleCraft.data.entities.Tournament;
+import pl.edu.pollub.battleCraft.data.entities.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.data.page.implementations.PagerImpl;
 import pl.edu.pollub.battleCraft.data.repositories.interfaces.TournamentRepository;
 import pl.edu.pollub.battleCraft.data.repositories.extensions.ExtendedTournamentRepository;

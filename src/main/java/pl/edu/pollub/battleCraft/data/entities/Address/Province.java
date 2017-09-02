@@ -1,8 +1,9 @@
-package pl.edu.pollub.battleCraft.data.entities;
+package pl.edu.pollub.battleCraft.data.entities.Address;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
+import pl.edu.pollub.battleCraft.data.entities.Address.Address;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -15,15 +16,10 @@ import java.util.List;
 @NoArgsConstructor
 @EqualsAndHashCode
 @ToString
-public class Game implements Serializable {
+public class Province implements Serializable {
 
-    public Game(String name) {
-        this.name=name;
-    }
-
-    public Game(String name,List<Tournament> tournaments) {
-        this.name=name;
-        this.tournaments=tournaments;
+    public Province(String location) {
+        this.location = location;
     }
 
     @Id
@@ -32,10 +28,5 @@ public class Game implements Serializable {
     private Long id;
 
     @Column(length = 30)
-    private String name;
-
-    @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "game", cascade = CascadeType.ALL)
-    private List<Tournament> tournaments;
-
+    String location;
 }
