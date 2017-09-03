@@ -24,21 +24,21 @@ public class GetPageOfEntityAspect {
     @Before("execution(* pl.edu.pollub.battleCraft.service.services.implementations.*ServiceImpl.getPageOf*(..)) && args(pageRequest,..)")
     public void checkPageSize(PageRequest pageRequest) throws IllegalAccessException {
         logger.info("checking page size");
-        if(pageRequest.getPageSize()> allowedPageSize)
+        if (pageRequest.getPageSize() > allowedPageSize)
             throw new IllegalAccessException("Your page must have less than 10 elements");
     }
 
-    @AfterReturning(pointcut="execution(* pl.edu.pollub.battleCraft.data.repositories.extensions.*Repository.*(..)) " +
-            "&& args(objectSearchSpecification,pageRequest)", returning="fetchedPage",
+    @AfterReturning(pointcut = "execution(* pl.edu.pollub.battleCraft.data.repositories.extensions.*Repository.*(..)) " +
+            "&& args(objectSearchSpecification,pageRequest)", returning = "fetchedPage",
             argNames = "objectSearchSpecification,pageRequest,fetchedPage")
     public void checkPageContent(SearchSpecification<?> objectSearchSpecification,
                                  PageRequest pageRequest, Page fetchedPage) throws PageNotFoundException {
         logger.info("checking page content");
-        if(!fetchedPage.hasContent()) {
-            if(objectSearchSpecification.getCriteria().size()>0)
+        if (!fetchedPage.hasContent()) {
+            if (objectSearchSpecification.getCriteria().size() > 0)
                 throw new AnyEntityNotFoundException();
             else
-                throw new PageNotFoundException(pageRequest.getPageNumber()+1);
+                throw new PageNotFoundException(pageRequest.getPageNumber() + 1);
         }
     }
 

@@ -8,10 +8,16 @@ import java.util.List;
 
 public interface TournamentService {
     Page getPageOfTournaments(Pageable pageable, List<SearchCriteria> searchCriteria);
+
     void banTournaments(String... tournamentsToBanUniqueNames);
+
     void unlockTournaments(String... tournamentsToBanUniqueNames);
+
     void deleteTournaments(String... tournamentsToDeleteUniqueNames);
+
     void acceptTournaments(String... tournamentsToDeleteUniqueNames);
+
     void cancelAcceptTournaments(String... tournamentsToDeleteUniqueNames);
+
     List<String> getAllTournamentStatus();
 }

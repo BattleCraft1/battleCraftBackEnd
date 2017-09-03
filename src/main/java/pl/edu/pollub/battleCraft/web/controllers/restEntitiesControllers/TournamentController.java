@@ -34,66 +34,66 @@ public class TournamentController {
 
     @PostMapping(value = "/page/tournaments", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Page getPageOfTournaments(@RequestBody GetPageObjectsWrapper getPageObjectsWrapper){
+    public Page getPageOfTournaments(@RequestBody GetPageObjectsWrapper getPageObjectsWrapper) {
         System.out.println("Try to get tournaments");
         return tournamentService.getPageOfTournaments(getPageObjectsWrapper.unwrapPageRequest(),
                 getPageObjectsWrapper.getSearchCriteria());
     }
 
     @PostMapping(value = "/ban/tournaments", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Page banTournaments(@RequestBody GetPageAndModifyDataObjectsWrapper getPageAndModifyDataObjectsWrapper){
+    public Page banTournaments(@RequestBody GetPageAndModifyDataObjectsWrapper getPageAndModifyDataObjectsWrapper) {
         tournamentService.banTournaments(getPageAndModifyDataObjectsWrapper.getNamesOfObjectsToModify());
-        GetPageObjectsWrapper getPageObjectsWrapper=getPageAndModifyDataObjectsWrapper.getGetPageObjectsWrapper();
+        GetPageObjectsWrapper getPageObjectsWrapper = getPageAndModifyDataObjectsWrapper.getGetPageObjectsWrapper();
         return tournamentService.getPageOfTournaments(getPageObjectsWrapper.unwrapPageRequest(),
                 getPageObjectsWrapper.getSearchCriteria());
     }
 
     @PostMapping(value = "/unlock/tournaments", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Page unlockTournaments(@RequestBody GetPageAndModifyDataObjectsWrapper getPageAndModifyDataObjectsWrapper){
+    public Page unlockTournaments(@RequestBody GetPageAndModifyDataObjectsWrapper getPageAndModifyDataObjectsWrapper) {
         tournamentService.unlockTournaments(getPageAndModifyDataObjectsWrapper.getNamesOfObjectsToModify());
-        GetPageObjectsWrapper getPageObjectsWrapper=getPageAndModifyDataObjectsWrapper.getGetPageObjectsWrapper();
+        GetPageObjectsWrapper getPageObjectsWrapper = getPageAndModifyDataObjectsWrapper.getGetPageObjectsWrapper();
         return tournamentService.getPageOfTournaments(getPageObjectsWrapper.unwrapPageRequest(),
                 getPageObjectsWrapper.getSearchCriteria());
     }
 
     @PostMapping(value = "/delete/tournaments", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Page deleteTournaments(@RequestBody GetPageAndModifyDataObjectsWrapper getPageAndModifyDataObjectsWrapper){
+    public Page deleteTournaments(@RequestBody GetPageAndModifyDataObjectsWrapper getPageAndModifyDataObjectsWrapper) {
         tournamentService.deleteTournaments(getPageAndModifyDataObjectsWrapper.getNamesOfObjectsToModify());
-        GetPageObjectsWrapper getPageObjectsWrapper=getPageAndModifyDataObjectsWrapper.getGetPageObjectsWrapper();
+        GetPageObjectsWrapper getPageObjectsWrapper = getPageAndModifyDataObjectsWrapper.getGetPageObjectsWrapper();
         return tournamentService.getPageOfTournaments(getPageObjectsWrapper.unwrapPageRequest(),
                 getPageObjectsWrapper.getSearchCriteria());
     }
 
     @PostMapping(value = "/accept/tournaments", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Page acceptTournaments(@RequestBody GetPageAndModifyDataObjectsWrapper getPageAndModifyDataObjectsWrapper){
+    public Page acceptTournaments(@RequestBody GetPageAndModifyDataObjectsWrapper getPageAndModifyDataObjectsWrapper) {
         tournamentService.acceptTournaments(getPageAndModifyDataObjectsWrapper.getNamesOfObjectsToModify());
-        GetPageObjectsWrapper getPageObjectsWrapper=getPageAndModifyDataObjectsWrapper.getGetPageObjectsWrapper();
+        GetPageObjectsWrapper getPageObjectsWrapper = getPageAndModifyDataObjectsWrapper.getGetPageObjectsWrapper();
         return tournamentService.getPageOfTournaments(getPageObjectsWrapper.unwrapPageRequest(),
                 getPageObjectsWrapper.getSearchCriteria());
     }
 
     @PostMapping(value = "/cancel/accept/tournaments", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Page cancelAcceptTournaments(@RequestBody GetPageAndModifyDataObjectsWrapper getPageAndModifyDataObjectsWrapper){
+    public Page cancelAcceptTournaments(@RequestBody GetPageAndModifyDataObjectsWrapper getPageAndModifyDataObjectsWrapper) {
         tournamentService.cancelAcceptTournaments(getPageAndModifyDataObjectsWrapper.getNamesOfObjectsToModify());
-        GetPageObjectsWrapper getPageObjectsWrapper=getPageAndModifyDataObjectsWrapper.getGetPageObjectsWrapper();
+        GetPageObjectsWrapper getPageObjectsWrapper = getPageAndModifyDataObjectsWrapper.getGetPageObjectsWrapper();
         return tournamentService.getPageOfTournaments(getPageObjectsWrapper.unwrapPageRequest(),
                 getPageObjectsWrapper.getSearchCriteria());
     }
 
     @GetMapping("/get/tournaments/status")
-    public List<String> getAllProvincesNames(){
+    public List<String> getAllProvincesNames() {
         return tournamentService.getAllTournamentStatus();
     }
 
     @GetMapping("/get/tournaments/enums")
-    public Map<String,List<String>> getTournamentsEnums(){
+    public Map<String, List<String>> getTournamentsEnums() {
         List<String> tournamentStatus = tournamentService.getAllTournamentStatus();
         List<String> provincesNames = provinceService.getAllProvincesNames();
         List<String> gamesNames = gameService.getAllGamesNames();
-        Map<String,List<String>> enums = new HashMap<>();
-        enums.put("tournamentStatus",tournamentStatus);
-        enums.put("provincesNames",provincesNames);
-        enums.put("gamesNames",gamesNames);
+        Map<String, List<String>> enums = new HashMap<>();
+        enums.put("tournamentStatus", tournamentStatus);
+        enums.put("provincesNames", provincesNames);
+        enums.put("gamesNames", gamesNames);
         return enums;
     }
 }

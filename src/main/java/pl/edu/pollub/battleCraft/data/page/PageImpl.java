@@ -15,7 +15,7 @@ public class PageImpl<T> implements Page<T> {
     private final List<T> content;
     private final Pageable pageable;
 
-    public PageImpl(List<T> content, long totalElements, Pageable pageable){
+    public PageImpl(List<T> content, long totalElements, Pageable pageable) {
         this.content = content;
         this.totalElements = totalElements;
         this.pageable = pageable;
@@ -53,7 +53,7 @@ public class PageImpl<T> implements Page<T> {
 
     @Override
     public boolean hasContent() {
-        return content.size()>0;
+        return content.size() > 0;
     }
 
     @Override
@@ -73,7 +73,7 @@ public class PageImpl<T> implements Page<T> {
 
     @Override
     public boolean hasNext() {
-        return getNumber()+ 1<totalElements;
+        return getNumber() + 1 < totalElements;
     }
 
     @Override

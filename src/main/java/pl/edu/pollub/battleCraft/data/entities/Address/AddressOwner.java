@@ -1,4 +1,4 @@
-package pl.edu.pollub.battleCraft.data.entities;
+package pl.edu.pollub.battleCraft.data.entities.Address;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -18,16 +18,25 @@ import java.io.Serializable;
 public abstract class AddressOwner implements Serializable {
 
 
-    public AddressOwner(Address address) {
-        this.address = address;
-    }
-
     @Id
     @GeneratedValue
     @JsonIgnore
     private Long id;
-
-    @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn
     private Address address;
+
+    public AddressOwner(Address address) {
+        this.address = address;
+        address.setAddressOwnerByOneSide(this);
+    }
+
+    public void setAddress(Address address){
+        this.address = address;
+        address.setAddressOwnerByOneSide(this);
+    }
+
+    public void setAddressByOneSide(Address address){
+        this.address = address;
+    }
 }

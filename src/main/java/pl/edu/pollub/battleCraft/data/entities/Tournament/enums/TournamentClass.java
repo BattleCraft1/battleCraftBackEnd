@@ -1,11 +1,11 @@
-package pl.edu.pollub.battleCraft.data.entities.enums;
+package pl.edu.pollub.battleCraft.data.entities.Tournament.enums;
 
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public enum TournamentClass  implements Serializable{
+public enum TournamentClass implements Serializable {
     LOCAL("LOCAL"), CHALLENGER("CHALLENGER"), MASTER("MASTER");
 
     String name;

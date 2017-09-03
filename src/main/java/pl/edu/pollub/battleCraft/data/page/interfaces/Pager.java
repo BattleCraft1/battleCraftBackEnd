@@ -5,5 +5,5 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface Pager<V> {
-    Page createPage(Long countOfSuitableEntities ,Criteria criteria, Pageable requestedPage);
+    Page createPage(Long countOfSuitableEntities, Criteria criteria, Pageable requestedPage);
 }

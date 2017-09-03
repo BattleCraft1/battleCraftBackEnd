@@ -2,7 +2,7 @@ package pl.edu.pollub.battleCraft.data.repositories.extensions;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import pl.edu.pollub.battleCraft.data.entities.Tournament;
+import pl.edu.pollub.battleCraft.data.entities.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.data.searchSpecyficators.SearchSpecification;
 
 

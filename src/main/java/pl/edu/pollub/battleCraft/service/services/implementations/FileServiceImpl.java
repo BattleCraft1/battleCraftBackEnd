@@ -33,26 +33,26 @@ public class FileServiceImpl implements FileService {
             if (file.isEmpty()) {
                 throw new StorageException("Failed to store empty file " + file.getOriginalFilename());
             }
-            if (file.getSize()/1048576>20) {//20MB
-                throw new StorageException("Failed to store file " + file.getOriginalFilename()+". File have size larger than 20MB ");
+            if (file.getSize() / 1048576 > 20) {//20MB
+                throw new StorageException("Failed to store file " + file.getOriginalFilename() + ". File have size larger than 20MB ");
             }
 
-            Files.copy(file.getInputStream(), this.rootLocation.resolve(name+"."+fileType));
+            Files.copy(file.getInputStream(), this.rootLocation.resolve(name + "." + fileType));
 
 
         } catch (IOException e) {
             throw new StorageException("Failed to store file " + file.getOriginalFilename(), e);
         }
     }
+
     @Override
     public Resource loadAsResource(String filename) {
         try {
             Path file = load(filename);
             Resource resource = new UrlResource(file.toUri());
-            if(resource.exists() || resource.isReadable()) {
+            if (resource.exists() || resource.isReadable()) {
                 return resource;
-            }
-            else {
+            } else {
                 throw new StorageFileNotFoundException("Could not read file: " + filename);
 
             }
@@ -60,22 +60,26 @@ public class FileServiceImpl implements FileService {
             throw new StorageFileNotFoundException("Could not read file: " + filename, e);
         }
     }
+
     @Override
     public Path load(String filename) {
         return rootLocation.resolve(filename);
     }
+
     @Override
     public void deleteAll() {
         FileSystemUtils.deleteRecursively(rootLocation.toFile());
 
     }
+
     @Override
     public void delete(Path path) throws IOException {
-        if(Files.exists(path))
+        if (Files.exists(path))
             Files.delete(path);
 
-        throw new StorageFileNotFoundException("file of path: "+path.getFileName()+" not exist");
+        throw new StorageFileNotFoundException("file of path: " + path.getFileName() + " not exist");
     }
+
     @Override
     public void init() {
         try {

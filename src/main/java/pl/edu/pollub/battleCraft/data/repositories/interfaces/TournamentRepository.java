@@ -5,11 +5,9 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import pl.edu.pollub.battleCraft.data.entities.Tournament;
+import pl.edu.pollub.battleCraft.data.entities.Tournament.Tournament;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
 
 @Repository
 @Transactional

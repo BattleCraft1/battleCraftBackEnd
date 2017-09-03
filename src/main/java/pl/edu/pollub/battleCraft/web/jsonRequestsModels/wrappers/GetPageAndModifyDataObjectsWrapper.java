@@ -1,6 +1,9 @@
 package pl.edu.pollub.battleCraft.web.jsonRequestsModels.wrappers;
 
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.data.domain.PageRequest;
 
 @Getter
@@ -12,7 +15,7 @@ public class GetPageAndModifyDataObjectsWrapper {
 
     private GetPageObjectsWrapper getPageObjectsWrapper;
 
-    public PageRequest unwrapPageRequest(){
+    public PageRequest unwrapPageRequest() {
         return this.getPageObjectsWrapper.unwrapPageRequest();
     }
 }
