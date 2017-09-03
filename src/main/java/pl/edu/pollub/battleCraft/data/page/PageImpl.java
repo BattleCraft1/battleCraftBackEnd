@@ -23,7 +23,7 @@ public class PageImpl<T> implements Page<T> {
 
     @Override
     public int getTotalPages() {
-        return getSize() == 0 ? 1 : (int) Math.ceil((double) totalElements / (double) getSize());
+        return pageable.getPageSize() == 0 ? 1 : (int) Math.ceil((double) totalElements / (double) pageable.getPageSize());
     }
 
     @Override
