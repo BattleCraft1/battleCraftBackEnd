@@ -32,8 +32,8 @@ public class PagerImpl<V> implements Pager<V> {
         if (requestedPageSize > countOfSuitableEntities) {
             requestedPageSize = (int) (long) countOfSuitableEntities;
         }
-        if (requestedPageNumber > countOfSuitableEntities / requestedPageSize - 1) {
-            requestedPageNumber = (int) (long) countOfSuitableEntities / requestedPageSize - 1;
+        if (requestedPageNumber > countOfSuitableEntities / requestedPageSize) {
+            requestedPageNumber = (int) (long) countOfSuitableEntities / requestedPageSize;
         }
         int firstResultNumber = requestedPageNumber * requestedPageSize;
 
