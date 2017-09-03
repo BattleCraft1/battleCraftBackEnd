@@ -17,7 +17,7 @@ public class GameController {
     }
 
     @GetMapping("/get/allGames/names")
-    public List<String> getAllGamesClassesNames(){
+    public List<String> getAllGamesClassesNames() {
         return gameService.getAllGamesNames();
     }
 }

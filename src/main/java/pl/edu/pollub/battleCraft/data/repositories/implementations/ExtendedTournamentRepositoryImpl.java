@@ -6,12 +6,13 @@ import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.transform.AliasToEntityMapResultTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import pl.edu.pollub.battleCraft.data.entities.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.data.page.implementations.PagerImpl;
-import pl.edu.pollub.battleCraft.data.repositories.interfaces.TournamentRepository;
 import pl.edu.pollub.battleCraft.data.repositories.extensions.ExtendedTournamentRepository;
+import pl.edu.pollub.battleCraft.data.repositories.interfaces.TournamentRepository;
 import pl.edu.pollub.battleCraft.data.searchSpecyficators.SearchSpecification;
 
 import javax.persistence.EntityManager;
@@ -22,7 +23,7 @@ import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 
 @Component
-public class ExtendedTournamentRepositoryImpl implements ExtendedTournamentRepository{
+public class ExtendedTournamentRepositoryImpl implements ExtendedTournamentRepository {
 
     private final PagerImpl<Tournament> pager;
     private final TournamentRepository tournamentRepository;
@@ -39,13 +40,13 @@ public class ExtendedTournamentRepositoryImpl implements ExtendedTournamentRepos
     @Override
     @Transactional
     public Page getPageOfTournaments(SearchSpecification<Tournament> searchSpecification, Pageable requestedPage) {
-        Session hibernateSession = (Session)entityManager.getDelegate();
+        Session hibernateSession = (Session) entityManager.getDelegate();
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Tournament> criteriaQuery = criteriaBuilder.createQuery(Tournament.class);
         Root<Tournament> tournamentRoot = criteriaQuery.from(Tournament.class);
 
-        Criteria criteria = hibernateSession.createCriteria(Tournament.class,"tournament");
+        Criteria criteria = hibernateSession.createCriteria(Tournament.class, "tournament");
 
         criteria.createAlias("tournament.participants", "participants");
         criteria.createAlias("tournament.address", "address");
@@ -73,7 +74,7 @@ public class ExtendedTournamentRepositoryImpl implements ExtendedTournamentRepos
 
         searchSpecification.toRestrictions(criteria, tournamentRoot);
 
-        Criteria criteriaCount = hibernateSession.createCriteria(Tournament.class,"tournamentsCount");
+        Criteria criteriaCount = hibernateSession.createCriteria(Tournament.class, "tournamentsCount");
 
         criteriaCount.setProjection(Projections.countDistinct("tournamentsCount.id"));
 
@@ -84,24 +85,24 @@ public class ExtendedTournamentRepositoryImpl implements ExtendedTournamentRepos
 
         searchSpecification.toRestrictions(criteriaCount, tournamentRoot);
 
-        Long countOfSuitableEntities = (Long)criteriaCount.uniqueResult();
+        Long countOfSuitableEntities = (Long) criteriaCount.uniqueResult();
 
-        return pager.createPage( countOfSuitableEntities ,criteria, requestedPage);
+        return pager.createPage(countOfSuitableEntities, criteria, requestedPage);
     }
 
     @Override
-    public void banTournaments(String... tournamentsToBanUniqueNames){
+    public void banTournaments(String... tournamentsToBanUniqueNames) {
         this.tournamentRepository.banTournaments(tournamentsToBanUniqueNames);
     }
 
     @Override
-    public void deleteTournaments(String... tournamentsToDeleteUniqueNames){
+    public void deleteTournaments(String... tournamentsToDeleteUniqueNames) {
         this.tournamentRepository.deleteParticipationOfTournaments(tournamentsToDeleteUniqueNames);
         this.tournamentRepository.deleteTournaments(tournamentsToDeleteUniqueNames);
     }
 
     @Override
-    public void unlockTournaments(String... tournamentsToBanUniqueNames){
+    public void unlockTournaments(String... tournamentsToBanUniqueNames) {
         this.tournamentRepository.unlockTournaments(tournamentsToBanUniqueNames);
     }
 

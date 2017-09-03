@@ -9,8 +9,8 @@ import pl.edu.pollub.battleCraft.config.StorageProperties;
 @EnableConfigurationProperties(StorageProperties.class)
 public class BattleCraftApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(BattleCraftApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(BattleCraftApplication.class, args);
+    }
 
 }

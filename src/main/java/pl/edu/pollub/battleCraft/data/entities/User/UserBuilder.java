@@ -5,11 +5,11 @@ import pl.edu.pollub.battleCraft.data.entities.Address.Address;
 public class UserBuilder {
     private UserAccount instance;
 
-    public UserBuilder(){
+    public UserBuilder() {
         this.instance = new UserAccount();
     }
 
-    public UserBuilder createPlayer(String name, String surname, String username, String email, String password){
+    public UserBuilder create(String name, String surname, String username, String email, String password) {
         this.instance = new UserAccount();
         this.instance.setName(name);
         this.instance.setSurname(surname);
@@ -19,12 +19,12 @@ public class UserBuilder {
         return this;
     }
 
-    public UserBuilder withPhoneNumber(String phoneNumber){
+    public UserBuilder withPhoneNumber(String phoneNumber) {
         this.instance.setPhoneNumber(phoneNumber);
         return this;
     }
 
-    public UserBuilder from(Address address){
+    public UserBuilder from(Address address) {
         this.instance.setAddress(address);
         return this;
     }

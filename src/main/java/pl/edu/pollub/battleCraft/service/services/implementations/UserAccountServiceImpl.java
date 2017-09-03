@@ -13,7 +13,7 @@ import pl.edu.pollub.battleCraft.service.services.interfaces.UserAccountService;
 import java.util.List;
 
 @Service
-public class UserAccountServiceImpl implements UserAccountService{
+public class UserAccountServiceImpl implements UserAccountService {
     private final ExtendedUserAccountRepository userAccountRepository;
 
     @Autowired
@@ -23,7 +23,7 @@ public class UserAccountServiceImpl implements UserAccountService{
 
     @Override
     public Page getPageOfUserAccounts(Pageable requestedPage, List<SearchCriteria> searchCriteria) {
-        return userAccountRepository.getPageOfUserAccounts(new SearchSpecification<>(searchCriteria),requestedPage);
+        return userAccountRepository.getPageOfUserAccounts(new SearchSpecification<>(searchCriteria), requestedPage);
     }
 
     @Override

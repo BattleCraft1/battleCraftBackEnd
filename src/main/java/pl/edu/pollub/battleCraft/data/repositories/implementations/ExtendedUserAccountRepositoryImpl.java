@@ -22,7 +22,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 @Component
-public class ExtendedUserAccountRepositoryImpl implements ExtendedUserAccountRepository{
+public class ExtendedUserAccountRepositoryImpl implements ExtendedUserAccountRepository {
 
     private final PagerImpl<UserAccount> pager;
     private final UserAccountRepository userAccountRepository;
@@ -38,35 +38,45 @@ public class ExtendedUserAccountRepositoryImpl implements ExtendedUserAccountRep
 
     @Override
     public Page getPageOfUserAccounts(SearchSpecification<UserAccount> searchSpecification, Pageable requestedPage) {
-        Session hibernateSession = (Session)entityManager.getDelegate();
+        Session hibernateSession = (Session) entityManager.getDelegate();
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<UserAccount> criteriaQuery = criteriaBuilder.createQuery(UserAccount.class);
-        Root<UserAccount> tournamentRoot = criteriaQuery.from(UserAccount.class);
+        Root<UserAccount> userRoot = criteriaQuery.from(UserAccount.class);
 
-        Criteria criteria = hibernateSession.createCriteria(UserAccount.class,"userAccount");
+        Criteria criteria = hibernateSession.createCriteria(UserAccount.class, "userAccount");
 
         criteria.createAlias("userAccount.address", "address");
+        criteria.createAlias("address.province", "province");
 
         ProjectionList projectionList = Projections.projectionList()
                 .add(Projections.property("userAccount.name"), "name")
                 .add(Projections.property("userAccount.surname"), "surname")
                 .add(Projections.property("userAccount.username"), "username")
                 .add(Projections.property("userAccount.email"), "email")
-                .add(Projections.property("userAccount.phoneNumber"), "phoneNumber");
+                .add(Projections.property("userAccount.phoneNumber"), "phoneNumber")
+                .add(Projections.property("address.city"), "city")
+                .add(Projections.property("province.location"), "province")
+                .add(Projections.property("userAccount.userType"), "userType")
+                .add(Projections.groupProperty("userAccount.id"))
+                .add(Projections.groupProperty("address.city"))
+                .add(Projections.groupProperty("province.location"));
 
         criteria.setProjection(projectionList).setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
 
-        searchSpecification.toRestrictions(criteria, tournamentRoot);
+        searchSpecification.toRestrictions(criteria, userRoot);
 
-        Criteria criteriaCount = hibernateSession.createCriteria(UserAccount.class,"tournamentsCount");
+        Criteria criteriaCount = hibernateSession.createCriteria(UserAccount.class, "userAccountCount");
 
-        criteriaCount.setProjection(Projections.countDistinct("tournamentsCount.id"));
+        criteriaCount.setProjection(Projections.countDistinct("userAccountCount.id"));
 
-        searchSpecification.toRestrictions(criteriaCount, tournamentRoot);
+        criteriaCount.createAlias("userAccountCount.address", "address");
+        criteriaCount.createAlias("address.province", "province");
 
-        Long countOfSuitableEntities = (Long)criteriaCount.uniqueResult();
+        searchSpecification.toRestrictions(criteriaCount, userRoot);
 
-        return pager.createPage( countOfSuitableEntities ,criteria, requestedPage);
+        Long countOfSuitableEntities = (Long) criteriaCount.uniqueResult();
+
+        return pager.createPage(countOfSuitableEntities, criteria, requestedPage);
     }
 }

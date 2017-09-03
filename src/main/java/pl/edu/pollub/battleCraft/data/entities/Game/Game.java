@@ -20,39 +20,41 @@ import java.util.List;
 @ToString
 public class Game implements Serializable {
 
-    public Game(String name) {
-        this.name=name;
-    }
-
     @Id
     @GeneratedValue
     @JsonIgnore
     private Long id;
-
     @Column(length = 30)
     private String name;
-
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "game", cascade = CascadeType.ALL)
-    private List<Tournament> tournaments;
+    private List<Tournament> tournaments = new ArrayList<>();
 
-    public void setTournaments(List<Tournament> tournaments){
+    public Game(String name) {
+        this.name = name;
+    }
+
+    public void setTournaments(List<Tournament> tournaments) {
         this.tournaments = tournaments;
-        tournaments.forEach(tournament -> tournament.setGame(this));
+        tournaments.forEach(tournament -> tournament.setGameByOneSide(this));
     }
 
-    public void setTournaments(Tournament... tournaments){
+    public void setTournaments(Tournament... tournaments) {
         this.tournaments = Arrays.asList(tournaments);
-        Arrays.stream(tournaments).forEach(tournament -> tournament.setGame(this));
+        Arrays.stream(tournaments).forEach(tournament -> tournament.setGameByOneSide(this));
     }
 
-    public void addTournaments(List<Tournament> tournaments){
+    public void addTournaments(List<Tournament> tournaments) {
         this.tournaments.addAll(tournaments);
-        tournaments.forEach(tournament -> tournament.setGame(this));
+        tournaments.forEach(tournament -> tournament.setGameByOneSide(this));
     }
 
-    public void addTournaments(Tournament... tournaments){
+    public void addTournaments(Tournament... tournaments) {
         this.tournaments.addAll(Arrays.asList(tournaments));
-        Arrays.stream(tournaments).forEach(tournament -> tournament.setGame(this));
+        Arrays.stream(tournaments).forEach(tournament -> tournament.setGameByOneSide(this));
+    }
+
+    public void addTournament(Tournament tournament){
+        this.tournaments.add(tournament);
     }
 }

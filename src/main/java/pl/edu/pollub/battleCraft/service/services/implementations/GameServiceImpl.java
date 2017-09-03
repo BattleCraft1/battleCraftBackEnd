@@ -8,7 +8,7 @@ import pl.edu.pollub.battleCraft.service.services.interfaces.GameService;
 import java.util.List;
 
 @Service
-public class GameServiceImpl implements GameService{
+public class GameServiceImpl implements GameService {
     private final GameRepository gameRepository;
 
     @Autowired

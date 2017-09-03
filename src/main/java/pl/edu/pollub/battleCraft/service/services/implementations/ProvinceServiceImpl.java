@@ -8,7 +8,7 @@ import pl.edu.pollub.battleCraft.service.services.interfaces.ProvinceService;
 import java.util.List;
 
 @Service
-public class ProvinceServiceImpl implements ProvinceService{
+public class ProvinceServiceImpl implements ProvinceService {
     private final ProvinceRepository provinceRepository;
 
     @Autowired
@@ -16,7 +16,7 @@ public class ProvinceServiceImpl implements ProvinceService{
         this.provinceRepository = provinceRepository;
     }
 
-    public List<String> getAllProvincesNames(){
+    public List<String> getAllProvincesNames() {
         return provinceRepository.getAllProvincesNames();
     }
 }

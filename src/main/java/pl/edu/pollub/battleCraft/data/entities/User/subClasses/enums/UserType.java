@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public enum UserType {
-    NEW(Values.NEW),PLAYER(Values.PLAYER),ORGANIZER(Values.ORGANIZER),ADMIN(Values.ADMIN);
+    NEW(Values.NEW), PLAYER(Values.PLAYER), ORGANIZER(Values.ORGANIZER), ADMIN(Values.ADMIN);
 
     String name;
 

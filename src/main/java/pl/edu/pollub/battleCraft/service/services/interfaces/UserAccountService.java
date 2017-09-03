@@ -8,5 +8,6 @@ import java.util.List;
 
 public interface UserAccountService {
     Page getPageOfUserAccounts(Pageable pageable, List<SearchCriteria> searchCriteria);
+
     List<String> getAllUserTypes();
 }

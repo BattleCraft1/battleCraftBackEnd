@@ -13,13 +13,13 @@ import javax.persistence.SecondaryTable;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 
 @Entity
-@DiscriminatorValue(value= UserType.Values.ADMIN)
-@SecondaryTable(name = "administrator", pkJoinColumns = {@PrimaryKeyJoinColumn(name="id", referencedColumnName = "id")})
 
 @Getter
 @Setter
-@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class Administrator extends UserAccount{
+public class Administrator extends UserAccount {
+    public Administrator() {
+        super(UserType.ADMIN);
+    }
 }
