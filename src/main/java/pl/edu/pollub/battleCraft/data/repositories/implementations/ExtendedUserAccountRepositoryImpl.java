@@ -10,8 +10,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import pl.edu.pollub.battleCraft.data.entities.User.UserAccount;
-import pl.edu.pollub.battleCraft.data.page.implementations.PagerImpl;
+import pl.edu.pollub.battleCraft.data.repositories.helpers.page.implementations.PaginatorImpl;
 import pl.edu.pollub.battleCraft.data.repositories.extensions.ExtendedUserAccountRepository;
+import pl.edu.pollub.battleCraft.data.repositories.interfaces.OrganizerRepository;
+import pl.edu.pollub.battleCraft.data.repositories.interfaces.PlayerRepository;
 import pl.edu.pollub.battleCraft.data.repositories.interfaces.UserAccountRepository;
 import pl.edu.pollub.battleCraft.data.searchSpecyficators.SearchSpecification;
 
@@ -24,15 +26,21 @@ import javax.persistence.criteria.Root;
 @Component
 public class ExtendedUserAccountRepositoryImpl implements ExtendedUserAccountRepository {
 
-    private final PagerImpl<UserAccount> pager;
+    private final PaginatorImpl<UserAccount> pager;
     private final UserAccountRepository userAccountRepository;
+    private final PlayerRepository playerRepository;
+    private final OrganizerRepository organiserRepository;
 
     @PersistenceContext
     private EntityManager entityManager;
 
     @Autowired
-    public ExtendedUserAccountRepositoryImpl(UserAccountRepository userAccountRepository) {
-        this.pager = new PagerImpl<>(UserAccount.class);
+    public ExtendedUserAccountRepositoryImpl(UserAccountRepository userAccountRepository,
+                                             PlayerRepository playerRepository,
+                                             OrganizerRepository organiserRepository) {
+        this.playerRepository = playerRepository;
+        this.organiserRepository = organiserRepository;
+        this.pager = new PaginatorImpl<>(UserAccount.class);
         this.userAccountRepository = userAccountRepository;
     }
 
@@ -79,4 +87,42 @@ public class ExtendedUserAccountRepositoryImpl implements ExtendedUserAccountRep
 
         return pager.createPage(countOfSuitableEntities, criteria, requestedPage);
     }
+
+    @Override
+    public void banUsersAccounts(String... usersAccountsToBanUniqueNames) {
+        playerRepository.banUserAccounts(usersAccountsToBanUniqueNames);
+    }
+
+    @Override
+    public void deleteUsersAccounts(String... usersAccountsToDeleteUniqueNames) {
+        userAccountRepository.deleteUserAccounts(usersAccountsToDeleteUniqueNames);
+    }
+
+    @Override
+    public void unlockUsersAccounts(String... usersAccountsToUnlockUniqueNames) {
+        playerRepository.unlockUserAccounts(usersAccountsToUnlockUniqueNames);
+    }
+
+    @Override
+    public void acceptUsersAccounts(String... usersAccountsToAcceptUniqueNames) {
+        userAccountRepository.acceptUserAccounts(usersAccountsToAcceptUniqueNames);
+        playerRepository.unlockUserAccounts(usersAccountsToAcceptUniqueNames);
+    }
+
+    @Override
+    public void cancelAcceptUsersAccounts(String... usersAccountsToCancelAcceptUniqueNames) {
+        playerRepository.cancelAcceptUsersAccounts(usersAccountsToCancelAcceptUniqueNames);
+    }
+
+    @Override
+    public void advancePlayersToOrganizer(String... playersToAdvanceToOrganizersUniqueNames) {
+        playerRepository.advancePlayersToOrganizer(playersToAdvanceToOrganizersUniqueNames);
+    }
+
+    @Override
+    public void degradeOrganizerToPlayers(String... organizerToDegradeToPlayersUniqueNames) {
+        organiserRepository.degradeOrganizerToPlayers(organizerToDegradeToPlayersUniqueNames);
+    }
+
+
 }

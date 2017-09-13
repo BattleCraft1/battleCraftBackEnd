@@ -1,4 +1,4 @@
-package pl.edu.pollub.battleCraft.data.page;
+package pl.edu.pollub.battleCraft.data.repositories.helpers.page;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.domain.Page;

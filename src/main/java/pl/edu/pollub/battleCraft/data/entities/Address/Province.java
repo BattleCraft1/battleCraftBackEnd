@@ -17,10 +17,11 @@ import java.io.Serializable;
 @NoArgsConstructor
 @EqualsAndHashCode
 @ToString
-public class Province implements Serializable {
+public class Province{
 
     @Column(length = 30)
     String location;
+
     @Id
     @GeneratedValue
     @JsonIgnore

@@ -1,7 +1,6 @@
 package pl.edu.pollub.battleCraft.data.entities.User.subClasses.players;
 
 import pl.edu.pollub.battleCraft.data.entities.Address.Address;
-import pl.edu.pollub.battleCraft.data.entities.Tournament.Tournament;
 
 public class PlayerBuilder {
     private Player instance;
@@ -20,18 +19,13 @@ public class PlayerBuilder {
         return this;
     }
 
-    public PlayerBuilder participateTo(Tournament... tournaments) {
-        this.instance.setParticipatedTournaments(tournaments);
-        return this;
-    }
-
     public PlayerBuilder withPhoneNumber(String phoneNumber) {
         this.instance.setPhoneNumber(phoneNumber);
         return this;
     }
 
     public PlayerBuilder from(Address address) {
-        this.instance.setAddress(address);
+        this.instance.changeAddress(address);
         return this;
     }
 

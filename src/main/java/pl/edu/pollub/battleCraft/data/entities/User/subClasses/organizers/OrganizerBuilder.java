@@ -20,24 +20,13 @@ public class OrganizerBuilder {
         return this;
     }
 
-
-    public OrganizerBuilder organize(Tournament... tournaments) {
-        this.instance.setOrganizedTournaments(tournaments);
-        return this;
-    }
-
-    public OrganizerBuilder participateTo(Tournament... tournaments) {
-        this.instance.setParticipatedTournaments(tournaments);
-        return this;
-    }
-
     public OrganizerBuilder withPhoneNumber(String phoneNumber) {
         this.instance.setPhoneNumber(phoneNumber);
         return this;
     }
 
     public OrganizerBuilder from(Address address) {
-        this.instance.setAddress(address);
+        this.instance.changeAddress(address);
         return this;
     }
 

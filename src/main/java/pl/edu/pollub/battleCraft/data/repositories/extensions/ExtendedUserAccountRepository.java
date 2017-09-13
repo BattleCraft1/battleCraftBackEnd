@@ -7,4 +7,18 @@ import pl.edu.pollub.battleCraft.data.searchSpecyficators.SearchSpecification;
 
 public interface ExtendedUserAccountRepository {
     Page getPageOfUserAccounts(SearchSpecification<UserAccount> objectSearchSpecification, Pageable requestedPage);
+
+    void banUsersAccounts(String... usersAccountsToBanUniqueNames);
+
+    void deleteUsersAccounts(String... usersAccountsToDeleteUniqueNames);
+
+    void unlockUsersAccounts(String... usersAccountsToBanUniqueNames);
+
+    void acceptUsersAccounts(String... usersAccountsToAcceptUniqueNames);
+
+    void cancelAcceptUsersAccounts(String... usersAccountsToCancelAcceptUniqueNames);
+
+    void advancePlayersToOrganizer(String... playersToAdvanceToOrganizersUniqueNames);
+
+    void degradeOrganizerToPlayers(String... organizerToDegradeToPlayersUniqueNames);
 }

@@ -11,13 +11,13 @@ public interface TournamentService {
 
     void banTournaments(String... tournamentsToBanUniqueNames);
 
-    void unlockTournaments(String... tournamentsToBanUniqueNames);
+    void unlockTournaments(String... tournamentsToUnlockUniqueNames);
 
     void deleteTournaments(String... tournamentsToDeleteUniqueNames);
 
-    void acceptTournaments(String... tournamentsToDeleteUniqueNames);
+    void acceptTournaments(String... tournamentsToAcceptUniqueNames);
 
-    void cancelAcceptTournaments(String... tournamentsToDeleteUniqueNames);
+    void cancelAcceptTournaments(String... tournamentsToCancelAcceptUniqueNames);
 
     List<String> getAllTournamentStatus();
 }

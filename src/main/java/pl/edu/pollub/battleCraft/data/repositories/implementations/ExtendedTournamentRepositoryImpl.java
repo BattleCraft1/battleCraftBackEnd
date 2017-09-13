@@ -10,7 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import pl.edu.pollub.battleCraft.data.entities.Tournament.Tournament;
-import pl.edu.pollub.battleCraft.data.page.implementations.PagerImpl;
+import pl.edu.pollub.battleCraft.data.repositories.helpers.page.implementations.PaginatorImpl;
 import pl.edu.pollub.battleCraft.data.repositories.extensions.ExtendedTournamentRepository;
 import pl.edu.pollub.battleCraft.data.repositories.interfaces.TournamentRepository;
 import pl.edu.pollub.battleCraft.data.searchSpecyficators.SearchSpecification;
@@ -25,16 +25,16 @@ import javax.transaction.Transactional;
 @Component
 public class ExtendedTournamentRepositoryImpl implements ExtendedTournamentRepository {
 
-    private final PagerImpl<Tournament> pager;
+    private final PaginatorImpl<Tournament> pager;
     private final TournamentRepository tournamentRepository;
 
     @PersistenceContext
     private EntityManager entityManager;
 
     @Autowired
-    public ExtendedTournamentRepositoryImpl(TournamentRepository accountRepository) {
-        this.pager = new PagerImpl<>(Tournament.class);
-        this.tournamentRepository = accountRepository;
+    public ExtendedTournamentRepositoryImpl(TournamentRepository tournamentRepository) {
+        this.pager = new PaginatorImpl<>(Tournament.class);
+        this.tournamentRepository = tournamentRepository;
     }
 
     @Override
@@ -98,6 +98,7 @@ public class ExtendedTournamentRepositoryImpl implements ExtendedTournamentRepos
     @Override
     public void deleteTournaments(String... tournamentsToDeleteUniqueNames) {
         this.tournamentRepository.deleteParticipationOfTournaments(tournamentsToDeleteUniqueNames);
+        this.tournamentRepository.deleteOrganizationOfTournaments(tournamentsToDeleteUniqueNames);
         this.tournamentRepository.deleteTournaments(tournamentsToDeleteUniqueNames);
     }
 

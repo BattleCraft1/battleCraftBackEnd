@@ -1,4 +1,4 @@
-package pl.edu.pollub.battleCraft.service.exceptions;
+package pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.PageOfEntities;
 
 public class AnyEntityNotFoundException extends RuntimeException {
     public AnyEntityNotFoundException() {
