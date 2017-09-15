@@ -10,18 +10,21 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import pl.edu.pollub.battleCraft.data.entities.User.UserAccount;
+import pl.edu.pollub.battleCraft.data.entities.User.subClasses.organizers.Organizer;
+import pl.edu.pollub.battleCraft.data.entities.User.subClasses.players.Player;
 import pl.edu.pollub.battleCraft.data.repositories.helpers.page.implementations.PaginatorImpl;
 import pl.edu.pollub.battleCraft.data.repositories.extensions.ExtendedUserAccountRepository;
 import pl.edu.pollub.battleCraft.data.repositories.interfaces.OrganizerRepository;
 import pl.edu.pollub.battleCraft.data.repositories.interfaces.PlayerRepository;
 import pl.edu.pollub.battleCraft.data.repositories.interfaces.UserAccountRepository;
-import pl.edu.pollub.battleCraft.data.searchSpecyficators.SearchSpecification;
+import pl.edu.pollub.battleCraft.data.repositories.helpers.searchSpecyficators.SearchSpecification;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
+import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class ExtendedUserAccountRepositoryImpl implements ExtendedUserAccountRepository {
@@ -45,6 +48,7 @@ public class ExtendedUserAccountRepositoryImpl implements ExtendedUserAccountRep
     }
 
     @Override
+    @Transactional
     public Page getPageOfUserAccounts(SearchSpecification<UserAccount> searchSpecification, Pageable requestedPage) {
         Session hibernateSession = (Session) entityManager.getDelegate();
 
@@ -66,7 +70,9 @@ public class ExtendedUserAccountRepositoryImpl implements ExtendedUserAccountRep
                 .add(Projections.property("address.city"), "city")
                 .add(Projections.property("province.location"), "province")
                 .add(Projections.property("userAccount.userType"), "userType")
+                .add(Projections.property("userAccount.banned"), "banned")
                 .add(Projections.groupProperty("userAccount.id"))
+                .add(Projections.groupProperty("userAccount.banned"))
                 .add(Projections.groupProperty("address.city"))
                 .add(Projections.groupProperty("province.location"));
 
@@ -85,7 +91,8 @@ public class ExtendedUserAccountRepositoryImpl implements ExtendedUserAccountRep
 
         Long countOfSuitableEntities = (Long) criteriaCount.uniqueResult();
 
-        return pager.createPage(countOfSuitableEntities, criteria, requestedPage);
+        Page result = pager.createPage(countOfSuitableEntities, criteria, requestedPage);
+        return result;
     }
 
     @Override
@@ -93,10 +100,6 @@ public class ExtendedUserAccountRepositoryImpl implements ExtendedUserAccountRep
         playerRepository.banUserAccounts(usersAccountsToBanUniqueNames);
     }
 
-    @Override
-    public void deleteUsersAccounts(String... usersAccountsToDeleteUniqueNames) {
-        userAccountRepository.deleteUserAccounts(usersAccountsToDeleteUniqueNames);
-    }
 
     @Override
     public void unlockUsersAccounts(String... usersAccountsToUnlockUniqueNames) {
@@ -105,8 +108,17 @@ public class ExtendedUserAccountRepositoryImpl implements ExtendedUserAccountRep
 
     @Override
     public void acceptUsersAccounts(String... usersAccountsToAcceptUniqueNames) {
-        userAccountRepository.acceptUserAccounts(usersAccountsToAcceptUniqueNames);
-        playerRepository.unlockUserAccounts(usersAccountsToAcceptUniqueNames);
+        List<UserAccount> userAccountsToAccept =
+                userAccountRepository.findAllUsersAccountsByUsername(usersAccountsToAcceptUniqueNames);
+        List<Player> acceptedUserAccounts = this.advanceUsersToPlayers(userAccountsToAccept);
+        userAccountRepository.delete(userAccountsToAccept);
+        userAccountRepository.save(acceptedUserAccounts);
+    }
+
+
+    @Override
+    public void deleteUsersAccounts(String... usersAccountsToDeleteUniqueNames) {
+        userAccountRepository.deleteUserAccounts(usersAccountsToDeleteUniqueNames);
     }
 
     @Override
@@ -116,7 +128,11 @@ public class ExtendedUserAccountRepositoryImpl implements ExtendedUserAccountRep
 
     @Override
     public void advancePlayersToOrganizer(String... playersToAdvanceToOrganizersUniqueNames) {
-        playerRepository.advancePlayersToOrganizer(playersToAdvanceToOrganizersUniqueNames);
+        List<Player> playersToAdvance =
+                playerRepository.findAllPlayersByUsername(playersToAdvanceToOrganizersUniqueNames);
+        List<Organizer> organizers = this.advancePlayersToOrganizers(playersToAdvance);
+        playerRepository.delete(playersToAdvance);
+        organiserRepository.save(organizers);
     }
 
     @Override
@@ -124,5 +140,23 @@ public class ExtendedUserAccountRepositoryImpl implements ExtendedUserAccountRep
         organiserRepository.degradeOrganizerToPlayers(organizerToDegradeToPlayersUniqueNames);
     }
 
+    private List<Player> advanceUsersToPlayers(List<UserAccount> userAccounts){
+        List<Player> players = new ArrayList<>();
+        userAccounts.forEach(
+                userAccount -> {
+                    players.add(new Player(userAccount));
+                }
+        );
+        return players;
+    }
 
+    private List<Organizer> advancePlayersToOrganizers(List<Player> players){
+        List<Organizer> organizers = new ArrayList<>();
+        players.forEach(
+                player -> {
+                    organizers.add(new Organizer(player));
+                }
+        );
+        return organizers;
+    }
 }

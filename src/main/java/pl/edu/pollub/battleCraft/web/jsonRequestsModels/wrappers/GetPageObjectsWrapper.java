@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.domain.PageRequest;
-import pl.edu.pollub.battleCraft.data.searchSpecyficators.searchCritieria.SearchCriteria;
+import pl.edu.pollub.battleCraft.data.repositories.helpers.searchSpecyficators.searchCritieria.SearchCriteria;
 
 import java.util.List;
 

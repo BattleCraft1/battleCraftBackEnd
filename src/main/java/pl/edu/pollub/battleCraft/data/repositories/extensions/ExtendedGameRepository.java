@@ -3,7 +3,7 @@ package pl.edu.pollub.battleCraft.data.repositories.extensions;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import pl.edu.pollub.battleCraft.data.entities.Game.Game;
-import pl.edu.pollub.battleCraft.data.searchSpecyficators.SearchSpecification;
+import pl.edu.pollub.battleCraft.data.repositories.helpers.searchSpecyficators.SearchSpecification;
 
 import java.util.List;
 

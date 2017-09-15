@@ -13,13 +13,14 @@ import pl.edu.pollub.battleCraft.data.entities.Game.Game;
 import pl.edu.pollub.battleCraft.data.repositories.extensions.ExtendedGameRepository;
 import pl.edu.pollub.battleCraft.data.repositories.helpers.page.implementations.PaginatorImpl;
 import pl.edu.pollub.battleCraft.data.repositories.interfaces.GameRepository;
-import pl.edu.pollub.battleCraft.data.searchSpecyficators.SearchSpecification;
+import pl.edu.pollub.battleCraft.data.repositories.helpers.searchSpecyficators.SearchSpecification;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Component
@@ -37,6 +38,7 @@ public class ExtendedGameRepositoryImpl implements ExtendedGameRepository{
     }
 
     @Override
+    @Transactional
     public Page getPageOfGames(SearchSpecification<Game> searchSpecification, Pageable requestedPage) {
         Session hibernateSession = (Session) entityManager.getDelegate();
 

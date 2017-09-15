@@ -6,7 +6,7 @@ import org.aspectj.lang.annotation.Before;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
-import pl.edu.pollub.battleCraft.data.searchSpecyficators.SearchSpecification;
+import pl.edu.pollub.battleCraft.data.repositories.helpers.searchSpecyficators.SearchSpecification;
 import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.PageOfEntities.AnyEntityNotFoundException;
 import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.PageOfEntities.PageNotFoundException;
 

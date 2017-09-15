@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import pl.edu.pollub.battleCraft.data.entities.User.UserAccount;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Repository
 @Transactional
@@ -15,13 +16,10 @@ public interface UserAccountRepository extends JpaSpecificationExecutor<UserAcco
     @Modifying
     @Query("DELETE FROM UserAccount u WHERE u.username in" +
             "(SELECT username FROM  UserAccount u1 " +
-            "WHERE u1.class = Player AND u1.banned = true AND u1.userType = 'PLAYER'" +
-            "OR u1.class = UserAccount AND u1.userType = 'NEW')")
+            "WHERE ((type(u1) = Player AND u1.banned = true AND u1.userType = 'PLAYER')" +
+            "OR (type(u1) = UserAccount AND u1.userType = 'NEW')) AND u.username in ?1)")
     void deleteUserAccounts(String... usersAccountsToDeleteUniqueNames);
 
-    @Modifying
-    @Query("UPDATE UserAccount u " +
-            "SET u.class = Player, u.userType = 'PLAYER'" +
-            "WHERE u.class = UserAccount AND u.userType = 'NEW'")
-    void acceptUserAccounts(String[] usersAccountsToAcceptUniqueNames);
+    @Query("SELECT u FROM UserAccount u WHERE type(u) = UserAccount AND u.userType = 'NEW' AND u.username in ?1")
+    List<UserAccount> findAllUsersAccountsByUsername(String... usersAccountsToAcceptUniqueNames);
 }

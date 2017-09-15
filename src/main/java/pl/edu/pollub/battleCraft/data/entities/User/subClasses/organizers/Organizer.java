@@ -41,6 +41,18 @@ public class Organizer extends Player {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "creator")
     private List<Game> createdGames = new ArrayList<>();
 
+    public Organizer(Player player) {
+        this();
+        this.setId(player.getId());
+        this.setUsername(player.getName());
+        this.setSurname(player.getSurname());
+        this.setUsername(player.getUsername());
+        this.setEmail(player.getEmail());
+        this.setPassword(player.getPassword());
+        this.setPhoneNumber(player.getPhoneNumber());
+        this.setParticipatedTournaments(player.getParticipatedTournaments());
+    }
+
     @Transient
     public Game createGame(String name){
         Game createdGame = new Game(name,this);

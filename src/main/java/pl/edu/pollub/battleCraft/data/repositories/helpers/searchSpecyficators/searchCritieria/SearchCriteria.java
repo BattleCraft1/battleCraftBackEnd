@@ -1,4 +1,4 @@
-package pl.edu.pollub.battleCraft.data.searchSpecyficators.searchCritieria;
+package pl.edu.pollub.battleCraft.data.repositories.helpers.searchSpecyficators.searchCritieria;
 
 import lombok.*;
 

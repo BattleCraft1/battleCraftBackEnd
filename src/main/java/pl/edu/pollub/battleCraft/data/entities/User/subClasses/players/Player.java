@@ -35,16 +35,27 @@ public class Player extends UserAccount {
         this.banned = false;
     }
 
-    protected Player(UserType userType) {
+    public Player(UserType userType) {
         super(userType);
         this.banned = false;
+    }
+
+    public Player(UserAccount userAccounts) {
+        this(UserType.PLAYER);
+        this.setId(userAccounts.getId());
+        this.setUsername(userAccounts.getName());
+        this.setSurname(userAccounts.getSurname());
+        this.setUsername(userAccounts.getUsername());
+        this.setEmail(userAccounts.getEmail());
+        this.setPassword(userAccounts.getPassword());
+        this.setPhoneNumber(userAccounts.getPhoneNumber());
     }
 
     public void addParticipation(Participation participation) {
         this.participatedTournaments.add(participation);
     }
 
-    private void setParticipatedTournaments(List<Participation> participatedTournaments){
+    protected void setParticipatedTournaments(List<Participation> participatedTournaments){
         this.participatedTournaments = participatedTournaments;
     }
 }

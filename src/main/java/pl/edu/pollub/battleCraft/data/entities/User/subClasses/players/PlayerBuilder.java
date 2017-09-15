@@ -1,6 +1,7 @@
 package pl.edu.pollub.battleCraft.data.entities.User.subClasses.players;
 
 import pl.edu.pollub.battleCraft.data.entities.Address.Address;
+import pl.edu.pollub.battleCraft.data.entities.User.UserAccount;
 
 public class PlayerBuilder {
     private Player instance;

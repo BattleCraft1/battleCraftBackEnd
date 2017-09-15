@@ -13,7 +13,7 @@ import pl.edu.pollub.battleCraft.data.entities.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.data.repositories.helpers.page.implementations.PaginatorImpl;
 import pl.edu.pollub.battleCraft.data.repositories.extensions.ExtendedTournamentRepository;
 import pl.edu.pollub.battleCraft.data.repositories.interfaces.TournamentRepository;
-import pl.edu.pollub.battleCraft.data.searchSpecyficators.SearchSpecification;
+import pl.edu.pollub.battleCraft.data.repositories.helpers.searchSpecyficators.SearchSpecification;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

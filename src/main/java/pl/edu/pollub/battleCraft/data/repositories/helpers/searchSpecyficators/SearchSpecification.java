@@ -1,9 +1,9 @@
-package pl.edu.pollub.battleCraft.data.searchSpecyficators;
+package pl.edu.pollub.battleCraft.data.repositories.helpers.searchSpecyficators;
 
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.data.jpa.domain.Specification;
-import pl.edu.pollub.battleCraft.data.searchSpecyficators.searchCritieria.SearchCriteria;
+import pl.edu.pollub.battleCraft.data.repositories.helpers.searchSpecyficators.searchCritieria.SearchCriteria;
 
 import javax.persistence.criteria.*;
 import java.text.DateFormat;

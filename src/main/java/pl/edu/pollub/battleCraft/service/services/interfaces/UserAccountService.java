@@ -2,7 +2,7 @@ package pl.edu.pollub.battleCraft.service.services.interfaces;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import pl.edu.pollub.battleCraft.data.searchSpecyficators.searchCritieria.SearchCriteria;
+import pl.edu.pollub.battleCraft.data.repositories.helpers.searchSpecyficators.searchCritieria.SearchCriteria;
 
 import java.io.IOException;
 import java.util.List;
