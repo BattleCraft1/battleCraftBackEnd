@@ -13,18 +13,19 @@ import java.io.Serializable;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class UserAccount extends AddressOwner implements Serializable {
+public class UserAccount extends AddressOwner{
 
     public UserAccount(){
+        super();
         this.userType = UserType.NEW;
     }
 
     protected UserAccount(UserType userType){
+        super();
         this.userType = userType;
     }
 

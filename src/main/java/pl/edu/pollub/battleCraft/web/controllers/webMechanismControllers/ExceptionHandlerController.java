@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import pl.edu.pollub.battleCraft.service.exceptions.AnyEntityNotFoundException;
-import pl.edu.pollub.battleCraft.service.exceptions.PageNotFoundException;
-import pl.edu.pollub.battleCraft.service.exceptions.StorageException;
-import pl.edu.pollub.battleCraft.service.exceptions.StorageFileNotFoundException;
+import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.PageOfEntities.AnyEntityNotFoundException;
+import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.PageOfEntities.PageNotFoundException;
+import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.File.StorageException;
+import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.File.StorageFileNotFoundException;
 
 
 @ControllerAdvice
@@ -20,6 +20,7 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
     protected ResponseEntity<String> handleInternalException(Exception ex, WebRequest req) {
         System.out.println("exception: " + ex.getMessage());
+        ex.printStackTrace();
         return new ResponseEntity<>("There are not recognized problems on the server side. Please contact with administrator.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -27,6 +28,7 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     protected ResponseEntity<String> handleNotFoundException(Exception ex, WebRequest req) {
         System.out.println("exception: " + ex.getMessage());
+        ex.printStackTrace();
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

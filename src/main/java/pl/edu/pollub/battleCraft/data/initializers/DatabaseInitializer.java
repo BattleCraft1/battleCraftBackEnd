@@ -8,8 +8,6 @@ import pl.edu.pollub.battleCraft.data.entities.Address.Address;
 import pl.edu.pollub.battleCraft.data.entities.Address.Province;
 import pl.edu.pollub.battleCraft.data.entities.Game.Game;
 import pl.edu.pollub.battleCraft.data.entities.Tournament.Tournament;
-import pl.edu.pollub.battleCraft.data.entities.Tournament.TournamentBuilder;
-import pl.edu.pollub.battleCraft.data.entities.Tournament.enums.TournamentClass;
 import pl.edu.pollub.battleCraft.data.entities.User.UserAccount;
 import pl.edu.pollub.battleCraft.data.entities.User.UserBuilder;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.organizers.Organizer;
@@ -32,7 +30,6 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
     private final UserAccountRepository userAccountRepository;
     private final ProvinceRepository provinceRepository;
 
-    private final TournamentBuilder tournamentBuilder = new TournamentBuilder();
     private final PlayerBuilder playerBuilder = new PlayerBuilder();
     private final OrganizerBuilder organizerBuilder = new OrganizerBuilder();
     private final UserBuilder userBuilder = new UserBuilder();
@@ -140,114 +137,110 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
                 .withPhoneNumber("123123123").build();
 
 
-        Game testGame1 = new Game("Warhammer");
-        Game testGame2 = new Game("Star wars");
-        Game testGame3 = new Game("Warhammer 40k");
-        Game testGame4 = new Game("Cyber punk");
-        Game testGame5 = new Game("Heroes");
-        Game testGame6 = new Game("Lord of the rings");
+        Game testGame1 = testUser8.createGame("Warhammer");
+        Game testGame2 = testUser9.createGame("Star wars");
+        Game testGame3 = testUser10.createGame("Warhammer 40k");
+        Game testGame4 = testUser7.createGame("Cyber punk");
+        Game testGame5 = testUser8.createGame("Heroes");
+        Game testGame6 = testUser9.createGame("Lord of the rings");
 
         try {
-            Tournament testTournament1 = tournamentBuilder
-                    .create("Tournament1", 6, 3, TournamentClass.CHALLENGER)
+            Tournament testTournament1 = testUser7
+                    .startOrganizeTournament("Tournament1", 3,5)
+                    .with(testUser8)
                     .in(testAddress11)
                     .withGame( testGame1)
                     .startAt(format.parse("08-01-2017 13:05:00"))
                     .endingIn(format.parse("09-01-2017 14:05:00"))
-                    .organizedBy(testUser7,testUser8)
-                    .withParticipants(testUser1,testUser2,testUser3,testUser4)
-                    .build();
+                    .inviteParticipants(testUser1,testUser2,testUser3,testUser4)
+                    .finishOrganize();
 
-            Tournament testTournament2 = tournamentBuilder
-                    .create("Tournament2", 8, 4, TournamentClass.LOCAL)
+            Tournament testTournament2 = testUser10
+                    .startOrganizeTournament("Tournament2", 4,7)
                     .in(testAddress12)
                     .withGame( testGame2)
                     .startAt(format.parse("09-02-2018 14:11:00"))
                     .endingIn(format.parse("11-02-2017 14:05:00"))
-                    .organizedBy(testUser10)
-                    .withParticipants(testUser2,testUser3,testUser5,testUser9)
-                    .build();
+                    .inviteParticipants(testUser2,testUser3,testUser5,testUser9)
+                    .finishOrganize();
 
-            Tournament testTournament3 = tournamentBuilder
-                    .create("Tournament3", 6, 3, TournamentClass.MASTER)
+            Tournament testTournament3 = testUser7
+                    .startOrganizeTournament("Tournament3", 3,5)
+                    .with(testUser9)
                     .in(testAddress13)
                     .withGame( testGame3)
                     .startAt(format.parse("12-03-2017 15:15:00"))
                     .endingIn(format.parse("12-03-2017 16:05:00"))
-                    .organizedBy(testUser7,testUser9)
-                    .withParticipants(testUser1,testUser3,testUser5,testUser7)
-                    .build();
+                    .inviteParticipants(testUser1,testUser3,testUser5,testUser7)
+                    .finishOrganize();
 
-            Tournament testTournament4 = tournamentBuilder
-                    .create("Tournament4", 10, 5, TournamentClass.CHALLENGER)
+            Tournament testTournament4 = testUser10
+                    .startOrganizeTournament("Tournament4",  5,8)
                     .in(testAddress14)
                     .withGame( testGame4)
                     .startAt(format.parse("25-04-2018 16:25:00"))
                     .endingIn(format.parse("27-04-2018 16:05:00"))
-                    .organizedBy(testUser10)
-                    .withParticipants(testUser2,testUser4,testUser6,testUser8)
-                    .build();
+                    .inviteParticipants(testUser2,testUser4,testUser6,testUser8)
+                    .finishOrganize();
 
 
-            Tournament testTournament5 = tournamentBuilder
-                    .create("Tournament5", 8, 4, TournamentClass.CHALLENGER)
+            Tournament testTournament5 = testUser9
+                    .startOrganizeTournament("Tournament5", 4,8)
+                    .with(testUser7)
                     .in(testAddress15)
                     .withGame( testGame5)
                     .startAt(format.parse("13-05-2017 11:24:00"))
                     .endingIn(format.parse("15-05-2018 16:05:00"))
-                    .organizedBy(testUser9,testUser7)
-                    .withParticipants(testUser5,testUser10)
-                    .build();
+                    .inviteParticipants(testUser5,testUser10)
+                    .finishOrganize();
 
-            Tournament testTournament6 = tournamentBuilder
-                    .create("Tournament6", 6, 3, TournamentClass.MASTER)
+            Tournament testTournament6 = testUser8
+                    .startOrganizeTournament("Tournament6", 3,6)
+                    .with(testUser9)
                     .in(testAddress16)
                     .withGame( testGame6)
                     .startAt(format.parse("11-11-2018 10:13:00"))
                     .endingIn(format.parse("15-11-2018 10:13:00"))
-                    .organizedBy(testUser8,testUser9)
-                    .withParticipants(testUser5,testUser10,testUser1,testUser2)
-                    .build();
+                    .inviteParticipants(testUser5,testUser10,testUser1,testUser2)
+                    .finishOrganize();
 
-            Tournament testTournament7 = tournamentBuilder
-                    .create("Tournament7", 4, 2, TournamentClass.CHALLENGER)
+            Tournament testTournament7 = testUser10
+                    .startOrganizeTournament("Tournament7", 2,4)
                     .in(testAddress17)
                     .withGame( testGame1)
                     .startAt(format.parse("01-12-2017 11:06:00"))
                     .endingIn(format.parse("02-12-2017 11:06:00"))
-                    .organizedBy(testUser10)
-                    .withParticipants(testUser10,testUser1,testUser3,testUser5)
-                    .build();
+                    .inviteParticipants(testUser10,testUser1,testUser3,testUser5)
+                    .finishOrganize();
 
-            Tournament testTournament8 = tournamentBuilder
-                    .create("Tournament8", 20, 10, TournamentClass.LOCAL)
+            Tournament testTournament8 = testUser7
+                    .startOrganizeTournament("Tournament8", 10,18)
+                    .with(testUser8)
                     .in(testAddress18)
                     .withGame( testGame2)
                     .startAt(format.parse("02-06-2018 12:12:00"))
                     .endingIn(format.parse("03-06-2018 12:12:00"))
-                    .organizedBy(testUser7,testUser8)
-                    .withParticipants(testUser1,testUser2,testUser5,testUser6)
-                    .build();
+                    .inviteParticipants(testUser1,testUser2,testUser5,testUser6)
+                    .finishOrganize();
 
-            Tournament testTournament9 = tournamentBuilder
-                    .create("Tournament9", 8, 4, TournamentClass.MASTER)
+            Tournament testTournament9 = testUser9
+                    .startOrganizeTournament("Tournament9", 4,8)
                     .in(testAddress19)
                     .withGame( testGame3)
                     .startAt(format.parse("13-07-2017 17:17:00"))
                     .endingIn(format.parse("16-07-2017 17:17:00"))
-                    .organizedBy(testUser9)
-                    .withParticipants(testUser10,testUser8)
-                    .build();
+                    .inviteParticipants(testUser10,testUser8)
+                    .finishOrganize();
 
-            Tournament testTournament10 = tournamentBuilder
-                    .create("Tournament10", 6, 3, TournamentClass.LOCAL)
+            Tournament testTournament10 = testUser9
+                    .startOrganizeTournament("Tournament10", 3,5)
+                    .with(testUser8)
                     .in(testAddress20)
                     .withGame( testGame4)
                     .startAt(format.parse("26-08-2018 18:05:00"))
                     .endingIn(format.parse("26-08-2018 18:05:00"))
-                    .organizedBy(testUser9,testUser8)
-                    .withParticipants(testUser10,testUser7,testUser6,testUser2)
-                    .build();
+                    .inviteParticipants(testUser10,testUser7,testUser6,testUser2)
+                    .finishOrganize();
 
             tournamentRepository.save(testTournament1);
             tournamentRepository.save(testTournament2);

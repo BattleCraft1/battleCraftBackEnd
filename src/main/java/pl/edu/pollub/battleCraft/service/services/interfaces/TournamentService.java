@@ -2,7 +2,7 @@ package pl.edu.pollub.battleCraft.service.services.interfaces;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import pl.edu.pollub.battleCraft.data.searchSpecyficators.searchCritieria.SearchCriteria;
+import pl.edu.pollub.battleCraft.data.repositories.helpers.searchSpecyficators.searchCritieria.SearchCriteria;
 
 import java.util.List;
 
@@ -11,13 +11,13 @@ public interface TournamentService {
 
     void banTournaments(String... tournamentsToBanUniqueNames);
 
-    void unlockTournaments(String... tournamentsToBanUniqueNames);
+    void unlockTournaments(String... tournamentsToUnlockUniqueNames);
 
     void deleteTournaments(String... tournamentsToDeleteUniqueNames);
 
-    void acceptTournaments(String... tournamentsToDeleteUniqueNames);
+    void acceptTournaments(String... tournamentsToAcceptUniqueNames);
 
-    void cancelAcceptTournaments(String... tournamentsToDeleteUniqueNames);
+    void cancelAcceptTournaments(String... tournamentsToCancelAcceptUniqueNames);
 
     List<String> getAllTournamentStatus();
 }

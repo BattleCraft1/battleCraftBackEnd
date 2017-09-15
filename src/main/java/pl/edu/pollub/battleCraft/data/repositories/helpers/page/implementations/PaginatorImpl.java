@@ -1,4 +1,4 @@
-package pl.edu.pollub.battleCraft.data.page.implementations;
+package pl.edu.pollub.battleCraft.data.repositories.helpers.page.implementations;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,23 +7,26 @@ import org.hibernate.criterion.Order;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import pl.edu.pollub.battleCraft.data.page.PageImpl;
-import pl.edu.pollub.battleCraft.data.page.interfaces.Pager;
+import pl.edu.pollub.battleCraft.data.repositories.helpers.page.PageImpl;
+import pl.edu.pollub.battleCraft.data.repositories.helpers.page.interfaces.Paginator;
+import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.PageOfEntities.AnyEntityNotFoundException;
 
 import java.util.List;
 import java.util.Map;
 
 @Getter
 @Setter
-public class PagerImpl<V> implements Pager<V> {
+public class PaginatorImpl<V> implements Paginator<V> {
 
     public Class<V> pagerClass;
 
-    public PagerImpl(Class<V> pagerClass) {
+    public PaginatorImpl(Class<V> pagerClass) {
         this.pagerClass = pagerClass;
     }
 
     public PageImpl createPage(Long countOfSuitableEntities, Criteria criteria, Pageable requestedPage) {
+        if(countOfSuitableEntities==0)
+            throw new AnyEntityNotFoundException();
         requestedPage.getSort().forEach(order -> {
             criteria.addOrder(order.getDirection() == Sort.Direction.ASC ? Order.asc(order.getProperty()) : Order.desc(order.getProperty()));
         });

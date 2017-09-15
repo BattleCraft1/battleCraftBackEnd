@@ -3,7 +3,7 @@ package pl.edu.pollub.battleCraft.data.repositories.extensions;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import pl.edu.pollub.battleCraft.data.entities.Tournament.Tournament;
-import pl.edu.pollub.battleCraft.data.searchSpecyficators.SearchSpecification;
+import pl.edu.pollub.battleCraft.data.repositories.helpers.searchSpecyficators.SearchSpecification;
 
 
 public interface ExtendedTournamentRepository {

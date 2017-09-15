@@ -10,18 +10,17 @@ import java.io.Serializable;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
+@NoArgsConstructor
 @Getter
 @Setter
-@NoArgsConstructor
 @EqualsAndHashCode
 @ToString
-public abstract class AddressOwner implements Serializable {
-
-
+public abstract class AddressOwner{
     @Id
     @GeneratedValue
     @JsonIgnore
     private Long id;
+
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn
     private Address address;
@@ -31,12 +30,12 @@ public abstract class AddressOwner implements Serializable {
         address.setAddressOwnerByOneSide(this);
     }
 
-    public void setAddress(Address address){
+    public void changeAddress(Address address){
         this.address = address;
         address.setAddressOwnerByOneSide(this);
     }
 
-    public void setAddressByOneSide(Address address){
+    private void setAddress(Address address){
         this.address = address;
     }
 }

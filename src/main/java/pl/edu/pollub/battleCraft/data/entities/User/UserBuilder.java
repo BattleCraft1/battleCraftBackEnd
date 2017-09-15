@@ -25,7 +25,7 @@ public class UserBuilder {
     }
 
     public UserBuilder from(Address address) {
-        this.instance.setAddress(address);
+        this.instance.changeAddress(address);
         return this;
     }
 

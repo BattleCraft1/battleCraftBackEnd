@@ -17,6 +17,10 @@ public interface TournamentRepository extends JpaSpecificationExecutor<Tournamen
     void deleteParticipationOfTournaments(String... tournamentsToDeleteUniqueNames);
 
     @Modifying
+    @Query("DELETE FROM Organization o WHERE (SELECT t.name FROM Tournament t WHERE t.banned = true AND t.id=o.tournament) IN ?1")
+    void deleteOrganizationOfTournaments(String... tournamentsToDeleteUniqueNames);
+
+    @Modifying
     @Query("DELETE FROM Tournament t WHERE t.banned = true AND t.name in ?1")
     void deleteTournaments(String... tournamentsToDeleteUniqueNames);
 

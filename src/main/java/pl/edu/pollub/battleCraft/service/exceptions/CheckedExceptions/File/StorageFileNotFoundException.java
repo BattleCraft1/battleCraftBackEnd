@@ -1,4 +1,4 @@
-package pl.edu.pollub.battleCraft.service.exceptions;
+package pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.File;
 
 public class StorageFileNotFoundException extends StorageException {
 
