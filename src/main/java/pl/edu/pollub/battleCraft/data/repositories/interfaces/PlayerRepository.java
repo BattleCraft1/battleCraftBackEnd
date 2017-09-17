@@ -13,7 +13,7 @@ import java.util.List;
 
 @Repository
 @Transactional
-public interface PlayerRepository extends JpaSpecificationExecutor<Player>, JpaRepository<Player, Long> {
+public interface PlayerRepository extends JpaRepository<Player, Long> {
     @Modifying
     @Query("UPDATE Player p SET p.banned = false WHERE p.username in ?1")
     void unlockUserAccounts(String... playersToBanUniqueNames);

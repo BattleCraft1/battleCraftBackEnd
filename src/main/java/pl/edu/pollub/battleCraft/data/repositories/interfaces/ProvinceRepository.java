@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 @Transactional
-public interface ProvinceRepository extends JpaSpecificationExecutor<Province>, JpaRepository<Province, Long> {
+public interface ProvinceRepository extends JpaRepository<Province, Long> {
     @Query("SELECT p.location from Province p")
     List<String> getAllProvincesNames();
 }

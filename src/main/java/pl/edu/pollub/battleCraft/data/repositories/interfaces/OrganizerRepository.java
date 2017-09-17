@@ -11,7 +11,7 @@ import javax.transaction.Transactional;
 
 @Repository
 @Transactional
-public interface OrganizerRepository extends JpaSpecificationExecutor<Organizer>, JpaRepository<Organizer, Long> {
+public interface OrganizerRepository extends JpaRepository<Organizer, Long> {
     @Modifying
     @Query("UPDATE Organizer o " +
             "SET o.class = Player, o.userType = 'PLAYER' WHERE o.username in ?1 AND o.userType = 'ORGANIZER'")

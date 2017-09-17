@@ -25,8 +25,6 @@ public class PaginatorImpl<V> implements Paginator<V> {
     }
 
     public PageImpl createPage(Long countOfSuitableEntities, Criteria criteria, Pageable requestedPage) {
-        if(countOfSuitableEntities==0)
-            throw new AnyEntityNotFoundException();
         requestedPage.getSort().forEach(order -> {
             criteria.addOrder(order.getDirection() == Sort.Direction.ASC ? Order.asc(order.getProperty()) : Order.desc(order.getProperty()));
         });
@@ -39,12 +37,10 @@ public class PaginatorImpl<V> implements Paginator<V> {
             requestedPageNumber = (int) (long) countOfSuitableEntities / requestedPageSize;
         }
         int firstResultNumber = requestedPageNumber * requestedPageSize;
-
         criteria.setFirstResult(firstResultNumber);
         criteria.setMaxResults(requestedPageSize);
 
         List<Map<String, Object>> result = criteria.list();
-
         Pageable changedPageRequest = new PageRequest(requestedPageNumber, requestedPageSize, requestedPage.getSort());
 
         return new PageImpl<>(result, countOfSuitableEntities, changedPageRequest);

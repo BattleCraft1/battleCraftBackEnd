@@ -2,11 +2,12 @@ package pl.edu.pollub.battleCraft.data.repositories.extensions;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import pl.edu.pollub.battleCraft.data.entities.User.UserAccount;
-import pl.edu.pollub.battleCraft.data.repositories.helpers.searchSpecyficators.SearchSpecification;
+import pl.edu.pollub.battleCraft.data.repositories.helpers.searchSpecyficators.SearchCriteria;
+
+import java.util.List;
 
 public interface ExtendedUserAccountRepository {
-    Page getPageOfUserAccounts(SearchSpecification<UserAccount> objectSearchSpecification, Pageable requestedPage);
+    Page getPageOfUserAccounts(List<SearchCriteria> searchCriteria, Pageable requestedPage);
 
     void banUsersAccounts(String... usersAccountsToBanUniqueNames);
 

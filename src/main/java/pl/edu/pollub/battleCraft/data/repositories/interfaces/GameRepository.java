@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository
 @Transactional
-public interface GameRepository extends JpaSpecificationExecutor<Game>, JpaRepository<Game, Long> {
+public interface GameRepository extends JpaRepository<Game, Long> {
     @Query("SELECT DISTINCT g.name from Game g")
     List<String> getAllGamesNames();
 

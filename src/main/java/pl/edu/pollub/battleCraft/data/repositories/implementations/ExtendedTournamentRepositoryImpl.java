@@ -1,93 +1,57 @@
 package pl.edu.pollub.battleCraft.data.repositories.implementations;
 
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.criterion.ProjectionList;
-import org.hibernate.criterion.Projections;
-import org.hibernate.transform.AliasToEntityMapResultTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import pl.edu.pollub.battleCraft.data.entities.Tournament.Tournament;
-import pl.edu.pollub.battleCraft.data.repositories.helpers.page.implementations.PaginatorImpl;
 import pl.edu.pollub.battleCraft.data.repositories.extensions.ExtendedTournamentRepository;
+import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.Field;
+import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.interfaces.GetPageAssistant;
+import pl.edu.pollub.battleCraft.data.repositories.helpers.searchSpecyficators.SearchCriteria;
 import pl.edu.pollub.battleCraft.data.repositories.interfaces.TournamentRepository;
-import pl.edu.pollub.battleCraft.data.repositories.helpers.searchSpecyficators.SearchSpecification;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Component
 public class ExtendedTournamentRepositoryImpl implements ExtendedTournamentRepository {
-
-    private final PaginatorImpl<Tournament> pager;
     private final TournamentRepository tournamentRepository;
-
-    @PersistenceContext
-    private EntityManager entityManager;
+    private final GetPageAssistant getPageAssistant;
 
     @Autowired
-    public ExtendedTournamentRepositoryImpl(TournamentRepository tournamentRepository) {
-        this.pager = new PaginatorImpl<>(Tournament.class);
+    public ExtendedTournamentRepositoryImpl(TournamentRepository tournamentRepository, GetPageAssistant getPageAssistant) {
         this.tournamentRepository = tournamentRepository;
+        this.getPageAssistant = getPageAssistant;
     }
 
     @Override
     @Transactional
-    public Page getPageOfTournaments(SearchSpecification<Tournament> searchSpecification, Pageable requestedPage) {
-        Session hibernateSession = (Session) entityManager.getDelegate();
-
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Tournament> criteriaQuery = criteriaBuilder.createQuery(Tournament.class);
-        Root<Tournament> tournamentRoot = criteriaQuery.from(Tournament.class);
-
-        Criteria criteria = hibernateSession.createCriteria(Tournament.class, "tournament");
-
-        criteria.createAlias("tournament.participants", "participants");
-        criteria.createAlias("tournament.address", "address");
-        criteria.createAlias("address.province", "province");
-        criteria.createAlias("tournament.game", "game");
-
-        ProjectionList projectionList = Projections.projectionList()
-                .add(Projections.property("tournament.name"), "name")
-                .add(Projections.property("tournament.playersNumber"), "playersNumber")
-                .add(Projections.property("tournament.freeSlots"), "freeSlots")
-                .add(Projections.property("tournament.maxPlayers"), "maxPlayers")
-                .add(Projections.property("tournament.dateOfStart"), "dateOfStart")
-                .add(Projections.property("tournament.dateOfEnd"), "dateOfEnd")
-                .add(Projections.property("address.city"), "city")
-                .add(Projections.property("province.location"), "province")
-                .add(Projections.property("game.name"), "game")
-                .add(Projections.property("tournament.tournamentStatus"), "tournamentStatus")
-                .add(Projections.property("tournament.banned"), "banned")
-                .add(Projections.groupProperty("tournament.id"))
-                .add(Projections.groupProperty("address.city"))
-                .add(Projections.groupProperty("province.location"))
-                .add(Projections.groupProperty("game.name"));
-
-        criteria.setProjection(projectionList).setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-
-        searchSpecification.toRestrictions(criteria, tournamentRoot);
-
-        Criteria criteriaCount = hibernateSession.createCriteria(Tournament.class, "tournamentsCount");
-
-        criteriaCount.setProjection(Projections.countDistinct("tournamentsCount.id"));
-
-        criteriaCount.createAlias("tournamentsCount.participants", "participants");
-        criteriaCount.createAlias("tournamentsCount.address", "address");
-        criteriaCount.createAlias("address.province", "province");
-        criteriaCount.createAlias("tournamentsCount.game", "game");
-
-        searchSpecification.toRestrictions(criteriaCount, tournamentRoot);
-
-        Long countOfSuitableEntities = (Long) criteriaCount.uniqueResult();
-
-        return pager.createPage(countOfSuitableEntities, criteria, requestedPage);
+    public Page getPageOfTournaments(List<SearchCriteria> searchCriteria, Pageable requestedPage) {
+        return getPageAssistant
+                .select(
+                        new Field("name", "name"),
+                        new Field("playersNumber", "playersNumber"),
+                        new Field("freeSlots", "freeSlots"),
+                        new Field("maxPlayers", "maxPlayers"),
+                        new Field("dateOfStart", "dateOfStart"),
+                        new Field("dateOfEnd", "dateOfEnd"),
+                        new Field("address.city", "city"),
+                        new Field("province.location", "province"),
+                        new Field("game.name", "game"),
+                        new Field("tournamentStatus", "tournamentStatus"),
+                        new Field("banned", "banned")
+                )
+                .createAliases(
+                        new Field("participants", "participants"),
+                        new Field("address", "address"),
+                        new Field("address.province", "province"),
+                        new Field("game", "game")
+                )
+                .from(Tournament.class)
+                .where(searchCriteria)
+                .groupBy("id", "address.city", "province.location", "game.name")
+                .execute(requestedPage);
     }
 
     @Override

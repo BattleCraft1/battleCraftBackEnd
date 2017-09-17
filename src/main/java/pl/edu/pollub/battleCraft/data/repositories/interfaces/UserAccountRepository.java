@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository
 @Transactional
-public interface UserAccountRepository extends JpaSpecificationExecutor<UserAccount>, JpaRepository<UserAccount, Long> {
+public interface UserAccountRepository extends JpaRepository<UserAccount, Long> {
     @Modifying
     @Query("DELETE FROM UserAccount u WHERE u.username in" +
             "(SELECT username FROM  UserAccount u1 " +
