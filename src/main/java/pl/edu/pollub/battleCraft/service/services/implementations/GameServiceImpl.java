@@ -6,8 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import pl.edu.pollub.battleCraft.data.repositories.extensions.ExtendedGameRepository;
-import pl.edu.pollub.battleCraft.data.repositories.helpers.searchSpecyficators.SearchSpecification;
-import pl.edu.pollub.battleCraft.data.repositories.helpers.searchSpecyficators.searchCritieria.SearchCriteria;
+import pl.edu.pollub.battleCraft.data.repositories.helpers.searchSpecyficators.SearchCriteria;
 import pl.edu.pollub.battleCraft.service.services.helpers.file.interfaces.FileService;
 import pl.edu.pollub.battleCraft.service.services.interfaces.GameService;
 
@@ -34,7 +33,7 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public Page getPageOfGames(Pageable requestedPage, List<SearchCriteria> searchCriteria) {
-        return gameRepository.getPageOfGames(new SearchSpecification<>(searchCriteria), requestedPage);
+        return gameRepository.getPageOfGames(searchCriteria, requestedPage);
     }
 
     @Override

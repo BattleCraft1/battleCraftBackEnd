@@ -9,6 +9,6 @@ import javax.transaction.Transactional;
 
 @Repository
 @Transactional
-public interface AddressRepository extends JpaSpecificationExecutor<Address>, JpaRepository<Address, Long> {
+public interface AddressRepository extends JpaRepository<Address, Long> {
 
 }

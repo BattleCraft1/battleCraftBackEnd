@@ -11,7 +11,7 @@ import javax.transaction.Transactional;
 
 @Repository
 @Transactional
-public interface TournamentRepository extends JpaSpecificationExecutor<Tournament>, JpaRepository<Tournament, Long> {
+public interface TournamentRepository extends JpaRepository<Tournament, Long> {
     @Modifying
     @Query("DELETE FROM Participation p WHERE (SELECT t.name FROM Tournament t WHERE t.banned = true AND t.id=p.tournament) IN ?1")
     void deleteParticipationOfTournaments(String... tournamentsToDeleteUniqueNames);

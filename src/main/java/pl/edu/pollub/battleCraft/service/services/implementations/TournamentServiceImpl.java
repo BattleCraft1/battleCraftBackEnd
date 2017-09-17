@@ -6,8 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import pl.edu.pollub.battleCraft.data.entities.Tournament.enums.TournamentStatus;
 import pl.edu.pollub.battleCraft.data.repositories.extensions.ExtendedTournamentRepository;
-import pl.edu.pollub.battleCraft.data.repositories.helpers.searchSpecyficators.SearchSpecification;
-import pl.edu.pollub.battleCraft.data.repositories.helpers.searchSpecyficators.searchCritieria.SearchCriteria;
+import pl.edu.pollub.battleCraft.data.repositories.helpers.searchSpecyficators.SearchCriteria;
 import pl.edu.pollub.battleCraft.service.services.interfaces.TournamentService;
 
 import java.util.List;
@@ -24,7 +23,7 @@ public class TournamentServiceImpl implements TournamentService {
 
     @Override
     public Page getPageOfTournaments(Pageable requestedPage, List<SearchCriteria> searchCriteria) {
-        return tournamentRepository.getPageOfTournaments(new SearchSpecification<>(searchCriteria), requestedPage);
+        return tournamentRepository.getPageOfTournaments(searchCriteria, requestedPage);
     }
 
     @Override
