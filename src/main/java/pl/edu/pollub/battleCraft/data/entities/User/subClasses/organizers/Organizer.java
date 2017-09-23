@@ -12,11 +12,13 @@ import pl.edu.pollub.battleCraft.data.entities.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.enums.UserType;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.organizers.relationships.Organization;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.players.Player;
+import pl.edu.pollub.battleCraft.data.entities.User.subClasses.players.relationships.Participation;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 
@@ -41,15 +43,22 @@ public class Organizer extends Player {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "creator")
     private List<Game> createdGames = new ArrayList<>();
 
-    public Organizer(Player player) {
+    public Organizer(Player player){
         this();
-        this.setId(player.getId());
         this.setFirstname(player.getFirstname());
         this.setLastname(player.getLastname());
         this.setName(player.getName());
         this.setEmail(player.getEmail());
         this.setPassword(player.getPassword());
         this.setPhoneNumber(player.getPhoneNumber());
+        this.chooseParticipatedTournaments(
+                player.getParticipatedTournaments().stream().map(participation -> participation.clone()).collect(Collectors.toList()));
+        this.changeAddress(player.getAddress().clone());
+    }
+
+    private void chooseParticipatedTournaments(List<Participation> participatedTournaments) {
+        participatedTournaments.forEach(participation -> participation.setPlayer(this));
+        this.setParticipatedTournaments(participatedTournaments);
     }
 
     @Transient

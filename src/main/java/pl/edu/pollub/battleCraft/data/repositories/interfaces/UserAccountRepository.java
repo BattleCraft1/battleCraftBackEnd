@@ -16,11 +16,11 @@ public interface UserAccountRepository extends JpaRepository<UserAccount, Long> 
     @Modifying
     @Query("DELETE FROM UserAccount u WHERE u.name in" +
             "(SELECT name FROM  UserAccount u1 " +
-            "WHERE (((type(u1) = Player OR type(u1) = Organizer) AND u1.banned = true AND (u1.status = 'ACCEPTED' OR u1.status = 'ORGANIZER'))" +
-            "OR (type(u1) = UserAccount AND u1.status = 'NEW')) AND u.name in ?1)")
+            "WHERE ((u1.banned = true AND (u1.status = 'ACCEPTED' OR u1.status = 'ORGANIZER'))" +
+            "OR u1.status = 'NEW') AND u.name in ?1)")
     void deleteUserAccounts(String... usersAccountsToDeleteUniqueNames);
 
-    @Query("SELECT u FROM UserAccount u WHERE type(u) = UserAccount AND u.status = 'NEW' AND u.name in ?1")
+    @Query("SELECT u FROM UserAccount u WHERE u.status = 'NEW' AND u.name in ?1")
     List<UserAccount> findAllUsersAccountsByName(String... usersAccountsToAcceptUniqueNames);
 
     @Modifying

@@ -14,7 +14,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @EqualsAndHashCode
 @ToString
-public class Address{
+public class Address implements Cloneable{
 
     @Id
     @GeneratedValue
@@ -51,5 +51,9 @@ public class Address{
 
     private void setAddressOwner(AddressOwner addressOwner){
         this.addressOwner = addressOwner;
+    }
+
+    public Address clone(){
+        return new Address(this.province,this.city,this.street,this.zip_code);
     }
 }

@@ -120,7 +120,7 @@ public class ExtendedUserAccountRepositoryImpl implements ExtendedUserAccountRep
         userAccounts.forEach(
                 userAccount -> {
                     if(userAccount.getStatus()==UserType.NEW)
-                    players.add(new Player(userAccount));
+                        players.add(new Player(userAccount));
                 }
         );
         return players;
@@ -131,7 +131,7 @@ public class ExtendedUserAccountRepositoryImpl implements ExtendedUserAccountRep
         players.forEach(
                 player -> {
                     if(player.getStatus()==UserType.ACCEPTED)
-                    organizers.add(new Organizer(player));
+                        organizers.add(new Organizer(player));
                 }
         );
         return organizers;

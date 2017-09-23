@@ -43,13 +43,13 @@ public class Player extends UserAccount {
 
     public Player(UserAccount userAccount) {
         this(UserType.ACCEPTED);
-        this.setId(userAccount.getId());
         this.setFirstname(userAccount.getFirstname());
         this.setLastname(userAccount.getLastname());
         this.setName(userAccount.getName());
         this.setEmail(userAccount.getEmail());
         this.setPassword(userAccount.getPassword());
         this.setPhoneNumber(userAccount.getPhoneNumber());
+        this.changeAddress(userAccount.getAddress());
     }
 
     public void addParticipation(Participation participation) {

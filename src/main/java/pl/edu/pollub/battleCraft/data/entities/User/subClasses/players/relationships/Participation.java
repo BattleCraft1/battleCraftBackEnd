@@ -14,7 +14,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @EqualsAndHashCode
 @ToString
-public class Participation {
+public class Participation implements Cloneable{
     @Id
     @GeneratedValue
     private Long id;
@@ -30,5 +30,9 @@ public class Participation {
     public Participation(Player player, Tournament tournament) {
         this.player = player;
         this.tournament = tournament;
+    }
+
+    public Participation clone(){
+        return new Participation(this.player,this.tournament);
     }
 }

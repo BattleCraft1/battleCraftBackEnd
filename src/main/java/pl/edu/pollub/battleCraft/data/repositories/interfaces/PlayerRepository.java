@@ -27,7 +27,7 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
             "SET p.status = 'NEW' WHERE p.name in ?1")
     void cancelAcceptUsersAccounts(String... playersToCancelAcceptUniqueNames);
 
-    @Query("SELECT p FROM Player p WHERE type(p) = Player AND p.status = 'ACCEPTED' AND p.name in ?1")
+    @Query("SELECT p FROM Player p WHERE p.status = 'ACCEPTED' AND p.name in ?1")
     List<Player> findAllPlayersByName(String... playersToAdvanceToOrganizersUniqueNames);
 
     @Modifying
