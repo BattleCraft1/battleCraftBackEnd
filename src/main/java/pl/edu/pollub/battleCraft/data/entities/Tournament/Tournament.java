@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 public class Tournament extends AddressOwner{
     public Tournament() {
         super();
-        this.tournamentStatus = TournamentStatus.NEW;
+        this.status = TournamentStatus.NEW;
         this.banned = false;
     }
 
@@ -65,7 +65,7 @@ public class Tournament extends AddressOwner{
     private TournamentClass tournamentClass;
 
     @Enumerated(EnumType.STRING)
-    private TournamentStatus tournamentStatus;
+    private TournamentStatus status;
 
     private boolean banned;
 

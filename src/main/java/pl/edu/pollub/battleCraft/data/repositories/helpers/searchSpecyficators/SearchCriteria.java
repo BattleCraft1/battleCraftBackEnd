@@ -21,8 +21,6 @@ public class SearchCriteria {
     private String operation;
     private Object value;
 
-    DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-
     private Path getPath(Root root) {
         Path path = root.get(keys.get(0));
         for (int i = 1; i < keys.size(); i++)
@@ -55,6 +53,7 @@ public class SearchCriteria {
 
     private Date convertValueToDate(){
         try {
+            DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             return format.parse(value.toString());
         } catch (ParseException e) {
             return new Date();

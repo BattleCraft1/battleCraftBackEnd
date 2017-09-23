@@ -1,11 +1,14 @@
 package pl.edu.pollub.battleCraft.data.entities.User.subClasses.enums;
 
+import lombok.ToString;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@ToString
 public enum UserType {
-    NEW(Values.NEW), PLAYER(Values.PLAYER), ORGANIZER(Values.ORGANIZER), ADMIN(Values.ADMIN);
+    NEW(Values.NEW), ACCEPTED(Values.ACCEPTED), ORGANIZER(Values.ORGANIZER), ADMIN(Values.ADMIN);
 
     String name;
 
@@ -23,7 +26,7 @@ public enum UserType {
 
     public static class Values {
         public static final String NEW = "NEW";
-        public static final String PLAYER = "PLAYER";
+        public static final String ACCEPTED = "ACCEPTED";
         public static final String ORGANIZER = "ORGANIZER";
         public static final String ADMIN = "ADMIN";
     }

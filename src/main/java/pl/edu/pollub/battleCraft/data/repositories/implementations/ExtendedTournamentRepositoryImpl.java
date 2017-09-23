@@ -39,7 +39,7 @@ public class ExtendedTournamentRepositoryImpl implements ExtendedTournamentRepos
                         new Field("address.city", "city"),
                         new Field("province.location", "province"),
                         new Field("game.name", "game"),
-                        new Field("tournamentStatus", "tournamentStatus"),
+                        new Field("status", "status"),
                         new Field("banned", "banned")
                 )
                 .createAliases(
@@ -61,7 +61,7 @@ public class ExtendedTournamentRepositoryImpl implements ExtendedTournamentRepos
 
     @Override
     public void deleteTournaments(String... tournamentsToDeleteUniqueNames) {
-        this.tournamentRepository.deleteParticipationOfTournaments(tournamentsToDeleteUniqueNames);
+        this.tournamentRepository.deleteParticipationInTournaments(tournamentsToDeleteUniqueNames);
         this.tournamentRepository.deleteOrganizationOfTournaments(tournamentsToDeleteUniqueNames);
         this.tournamentRepository.deleteTournaments(tournamentsToDeleteUniqueNames);
     }

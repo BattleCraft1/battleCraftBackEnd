@@ -7,39 +7,37 @@ import pl.edu.pollub.battleCraft.data.entities.Address.AddressOwner;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.enums.UserType;
 
 import javax.persistence.*;
-import java.io.Serializable;
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
 @Getter
 @Setter
+@Inheritance(strategy = InheritanceType.JOINED)
 @EqualsAndHashCode(callSuper = true)
 @ToString
 public class UserAccount extends AddressOwner{
 
     public UserAccount(){
         super();
-        this.userType = UserType.NEW;
+        this.status = UserType.NEW;
     }
 
     protected UserAccount(UserType userType){
         super();
-        this.userType = userType;
+        this.status = userType;
     }
 
     @Enumerated(EnumType.STRING)
-    private UserType userType;
+    private UserType status;
 
     @Column(length = 20)
-    private String name;
+    private String firstname;
 
     @Column(length = 20)
-    private String surname;
+    private String lastname;
 
     @Column(length = 30, unique = true)
-    private String username;
+    private String name;
 
     @Column(length = 50, unique = true)
     private String email;
@@ -50,4 +48,5 @@ public class UserAccount extends AddressOwner{
 
     @Column(length = 11)
     private String phoneNumber;
+
 }

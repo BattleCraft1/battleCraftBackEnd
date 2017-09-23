@@ -34,7 +34,7 @@ public class Organizer extends Player {
     private Tournament tournamentInOrganisation;
 
     @JsonIgnore
-    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "organizer")
+    @OneToMany(orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, mappedBy = "organizer")
     private List<Organization> organizedTournaments = new ArrayList<>();
 
     @JsonIgnore
@@ -44,13 +44,12 @@ public class Organizer extends Player {
     public Organizer(Player player) {
         this();
         this.setId(player.getId());
-        this.setUsername(player.getName());
-        this.setSurname(player.getSurname());
-        this.setUsername(player.getUsername());
+        this.setFirstname(player.getFirstname());
+        this.setLastname(player.getLastname());
+        this.setName(player.getName());
         this.setEmail(player.getEmail());
         this.setPassword(player.getPassword());
         this.setPhoneNumber(player.getPhoneNumber());
-        this.setParticipatedTournaments(player.getParticipatedTournaments());
     }
 
     @Transient

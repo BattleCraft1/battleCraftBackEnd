@@ -32,16 +32,17 @@ public class ExtendedGameRepositoryImpl implements ExtendedGameRepository{
                 .select(
                         new Field("name", "name"),
                         new Field("tournamentsNumber", "tournamentsNumber"),
-                        new Field("creator.username", "creatorUsername"),
-                        new Field("gameStatus", "gameStatus"),
-                        new Field("banned", "banned")
+                        new Field("creator.name", "creatorName"),
+                        new Field("status", "status"),
+                        new Field("banned", "banned"),
+                        new Field("dateOfCreation", "dateOfCreation")
                 )
                 .createAliases(
                         new Field("creator", "creator")
                 )
                 .from(Game.class)
                 .where(searchCriteria)
-                .groupBy("creator.username","id")
+                .groupBy("creator.name","id")
                 .execute(requestedPage);
     }
 

@@ -29,10 +29,10 @@ public interface GameRepository extends JpaRepository<Game, Long> {
     void banGames(String... gamesToBanUniqueNames);
 
     @Modifying
-    @Query("UPDATE Game g SET g.gameStatus = 'ACCEPTED' WHERE g.name in ?1 AND g.gameStatus = 'NEW' AND g.banned = false")
+    @Query("UPDATE Game g SET g.status = 'ACCEPTED' WHERE g.name in ?1 AND g.status = 'NEW' AND g.banned = false")
     void acceptGames(String... gamesToAcceptUniqueNames);
 
     @Modifying
-    @Query("UPDATE Game g SET g.gameStatus = 'NEW' WHERE g.name in ?1 AND g.gameStatus = 'ACCEPTED' AND g.banned = false")
+    @Query("UPDATE Game g SET g.status = 'NEW' WHERE g.name in ?1 AND g.status = 'ACCEPTED' AND g.banned = false")
     void cancelAcceptGames(String... gamesToCancelAcceptUniqueNames);
 }

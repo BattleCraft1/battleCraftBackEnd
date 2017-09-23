@@ -11,7 +11,9 @@ import pl.edu.pollub.battleCraft.service.services.interfaces.GameService;
 import pl.edu.pollub.battleCraft.web.jsonRequestsModels.wrappers.GetPageAndModifyDataObjectsWrapper;
 import pl.edu.pollub.battleCraft.web.jsonRequestsModels.wrappers.GetPageObjectsWrapper;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class GameController {
@@ -82,5 +84,14 @@ public class GameController {
                 .ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\""+file.getFilename()+"\"")
                 .body(file);
+    }
+
+    @GetMapping("/get/games/enums")
+    public Map<String, List<String>> getTournamentsEnums() {
+        System.out.println("get tournament enums");
+        List<String> gamesStatus = gameService.getAllGamesStatus();
+        Map<String, List<String>> enums = new HashMap<>();
+        enums.put("gamesStatus", gamesStatus);
+        return enums;
     }
 }

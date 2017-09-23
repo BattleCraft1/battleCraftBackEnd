@@ -5,6 +5,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import pl.edu.pollub.battleCraft.data.entities.Game.enums.GameStatus;
 import pl.edu.pollub.battleCraft.data.repositories.extensions.ExtendedGameRepository;
 import pl.edu.pollub.battleCraft.data.repositories.helpers.searchSpecyficators.SearchCriteria;
 import pl.edu.pollub.battleCraft.service.services.helpers.file.interfaces.FileService;
@@ -65,5 +66,10 @@ public class GameServiceImpl implements GameService {
     public Resource getGameRules(String gameName) {
         return fileService.loadAsResource(new StringBuilder(DEFAULT_GAME_RULES_DIRECTORY_NAME)
                         .append("/").append(gameName).append(".pdf").toString());
+    }
+
+    @Override
+    public List<String> getAllGamesStatus() {
+        return GameStatus.getNames();
     }
 }

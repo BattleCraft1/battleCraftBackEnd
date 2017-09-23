@@ -8,9 +8,12 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.SimpleExpression;
 import org.hibernate.transform.AliasToEntityMapResultTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 import pl.edu.pollub.battleCraft.data.repositories.helpers.page.implementations.PaginatorImpl;
 import pl.edu.pollub.battleCraft.data.repositories.helpers.page.interfaces.Paginator;
 import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.Field;
@@ -29,7 +32,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Component
-@Transactional
+@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class GetPageAssistantImpl implements GetPageAssistant {
     @PersistenceContext
     private EntityManager entityManager;

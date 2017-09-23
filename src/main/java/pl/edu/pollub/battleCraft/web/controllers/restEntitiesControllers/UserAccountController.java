@@ -111,9 +111,9 @@ public class UserAccountController {
         return enums;
     }
 
-    @GetMapping("/get/user/{userName}/avatar")
-    public ResponseEntity<byte[]> getUserAvatar(@PathVariable String userName) throws IOException {
-        byte[] image = userAccountService.getUserAvatar(userName);
+    @GetMapping("/get/user/{name}/avatar")
+    public ResponseEntity<byte[]> getUserAvatar(@PathVariable String name) throws IOException {
+        byte[] image = userAccountService.getUserAvatar(name);
         return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(image);
     }
 }
