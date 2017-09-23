@@ -82,6 +82,7 @@ public class GameController {
         Resource file = gameService.getGameRules(gameName);
         return ResponseEntity
                 .ok()
+                .contentType(MediaType.APPLICATION_PDF)
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\""+file.getFilename()+"\"")
                 .body(file);
     }
