@@ -16,12 +16,15 @@ public interface FileService {
 
     Path load(String filename);
 
+    byte[] loadFileAsByteArray(String filename) throws IOException;
+
     Resource loadAsResource(String filename);
 
     void delete(Path path) throws IOException;
 
-    Path findFileByRelatedEntityName(String entityName,String entityRelatedFilesDirectoryName)
-            throws FileSearchedByRelatedEntityNameNotFound;
+    void deleteFilesReletedWithEntities(String direcotryName,String... entitiesUniqueNames);
+
+    Path findFileByRelatedEntityName(String entityName, String entityRelatedFilesDirectoryName) throws FileSearchedByRelatedEntityNameNotFound;
 
     Path getRootLocation();
 }

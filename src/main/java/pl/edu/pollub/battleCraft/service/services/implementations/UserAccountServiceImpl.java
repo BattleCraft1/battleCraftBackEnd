@@ -15,7 +15,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.List;
 
 @Service
@@ -63,16 +62,7 @@ public class UserAccountServiceImpl implements UserAccountService {
     @Override
     public void deleteUsersAccounts(String... usersToDeleteUniqueNames) throws IOException {
         userAccountRepository.deleteUsersAccounts(usersToDeleteUniqueNames);
-        for(String usersToDeleteUniqueName:usersToDeleteUniqueNames){
-            try {
-                Path userAvatarFile =
-                        fileService.findFileByRelatedEntityName(usersToDeleteUniqueName,DEFAULT_USER_AVATARS_DIRECTORY_NAME);
-                fileService.delete(userAvatarFile);
-            }
-            catch (Exception e){
-                e.printStackTrace();
-            }
-        }
+        fileService.deleteFilesReletedWithEntities(DEFAULT_USER_AVATARS_DIRECTORY_NAME,usersToDeleteUniqueNames);
     }
 
     @Override

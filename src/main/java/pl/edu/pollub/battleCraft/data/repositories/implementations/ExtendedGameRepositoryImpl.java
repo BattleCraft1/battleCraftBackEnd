@@ -53,6 +53,9 @@ public class ExtendedGameRepositoryImpl implements ExtendedGameRepository{
 
     @Override
     public void deleteGames(String... gamesToDeleteUniqueNames) {
+        gameRepository.deleteParticipationInTournamentsOfGames(gamesToDeleteUniqueNames);
+        gameRepository.deleteOrganizationOfTournamentsOfGames(gamesToDeleteUniqueNames);
+        gameRepository.deleteTournamentsOfGames(gamesToDeleteUniqueNames);
         gameRepository.deleteGames(gamesToDeleteUniqueNames);
     }
 

@@ -11,6 +11,7 @@ import pl.edu.pollub.battleCraft.data.repositories.helpers.searchSpecyficators.S
 import pl.edu.pollub.battleCraft.service.services.helpers.file.interfaces.FileService;
 import pl.edu.pollub.battleCraft.service.services.interfaces.GameService;
 
+import java.nio.file.Path;
 import java.util.List;
 
 @Service
@@ -50,6 +51,7 @@ public class GameServiceImpl implements GameService {
     @Override
     public void deleteGames(String... gamesToDeleteUniqueNames) {
         gameRepository.deleteGames(gamesToDeleteUniqueNames);
+        fileService.deleteFilesReletedWithEntities(DEFAULT_GAME_RULES_DIRECTORY_NAME,gamesToDeleteUniqueNames);
     }
 
     @Override

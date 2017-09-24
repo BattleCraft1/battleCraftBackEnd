@@ -89,7 +89,7 @@ public class ExtendedUserAccountRepositoryImpl implements ExtendedUserAccountRep
     public void deleteUsersAccounts(String... usersAccountsToDeleteUniqueNames) {
         playerRepository.deleteParticipationInTournaments(usersAccountsToDeleteUniqueNames);
         organiserRepository.deleteOrganizationOfTournaments(usersAccountsToDeleteUniqueNames);
-        organiserRepository.deleteGameCreation(usersAccountsToDeleteUniqueNames);
+        organiserRepository.deleteCreationOfGames(usersAccountsToDeleteUniqueNames);
         userAccountRepository.deleteRelatedAddress(usersAccountsToDeleteUniqueNames);
         userAccountRepository.deleteUserAccounts(usersAccountsToDeleteUniqueNames);
     }

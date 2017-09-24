@@ -6,7 +6,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import pl.edu.pollub.battleCraft.data.entities.Address.Address;
 import pl.edu.pollub.battleCraft.data.entities.User.UserAccount;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.enums.UserType;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.players.relationships.Participation;
@@ -49,7 +48,7 @@ public class Player extends UserAccount {
         this.setEmail(userAccount.getEmail());
         this.setPassword(userAccount.getPassword());
         this.setPhoneNumber(userAccount.getPhoneNumber());
-        this.changeAddress(userAccount.getAddress());
+        this.changeAddress(userAccount.getAddress().clone());
     }
 
     public void addParticipation(Participation participation) {

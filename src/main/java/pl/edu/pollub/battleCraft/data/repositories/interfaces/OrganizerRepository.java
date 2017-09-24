@@ -23,5 +23,5 @@ public interface OrganizerRepository extends JpaRepository<Organizer, Long> {
 
     @Modifying
     @Query("UPDATE Game g SET g.creator = null WHERE (SELECT og.name FROM Organizer og WHERE og.banned = true AND og.id=g.creator) IN ?1")
-    void deleteGameCreation(String... playersToDeleteUniqueNames);
+    void deleteCreationOfGames(String... playersToDeleteUniqueNames);
 }
