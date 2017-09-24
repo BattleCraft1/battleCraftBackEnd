@@ -52,7 +52,7 @@ public class Organizer extends Player {
         this.setPassword(player.getPassword());
         this.setPhoneNumber(player.getPhoneNumber());
         this.chooseParticipatedTournaments(
-                player.getParticipatedTournaments().stream().map(participation -> participation.clone()).collect(Collectors.toList()));
+                player.getParticipatedTournaments().stream().map(Participation::clone).collect(Collectors.toList()));
         this.changeAddress(player.getAddress().clone());
     }
 

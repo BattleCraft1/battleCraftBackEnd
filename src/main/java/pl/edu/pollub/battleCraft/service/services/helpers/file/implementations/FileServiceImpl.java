@@ -75,6 +75,11 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
+    public byte[] loadFileAsByteArray(String filename) throws IOException {
+        return Files.readAllBytes(this.load(filename));
+    }
+
+    @Override
     public void deleteAll() {
         FileSystemUtils.deleteRecursively(rootLocation.toFile());
 
@@ -84,8 +89,22 @@ public class FileServiceImpl implements FileService {
     public void delete(Path path) throws IOException {
         if (Files.exists(path))
             Files.delete(path);
+        else
+            throw new StorageFileNotFoundException("file of path: " + path.getFileName() + " not exist");
+    }
 
-        throw new StorageFileNotFoundException("file of path: " + path.getFileName() + " not exist");
+    @Override
+    public void deleteFilesReletedWithEntities(String direcotryName,String... entitiesUniqueNames){
+        for(String entitiesUniqueName:entitiesUniqueNames){
+            try {
+                Path gameRulesFile =
+                        this.findFileByRelatedEntityName(entitiesUniqueName,direcotryName);
+                this.delete(gameRulesFile);
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -97,6 +116,7 @@ public class FileServiceImpl implements FileService {
         }
     }
 
+    @Override
     public Path findFileByRelatedEntityName(String entityName, String entityRelatedFilesDirectoryName)
             throws FileSearchedByRelatedEntityNameNotFound {
         String entityRelatedFilesDirectoryPath =
