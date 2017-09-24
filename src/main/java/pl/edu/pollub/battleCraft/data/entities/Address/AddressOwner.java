@@ -3,9 +3,11 @@ package pl.edu.pollub.battleCraft.data.entities.Address;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
+import pl.edu.pollub.battleCraft.data.entities.User.subClasses.players.relationships.Participation;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
@@ -21,7 +23,7 @@ public abstract class AddressOwner{
     @JsonIgnore
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn
     private Address address;
 

@@ -10,6 +10,7 @@ import pl.edu.pollub.battleCraft.data.entities.User.subClasses.organizers.Organi
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -34,12 +35,15 @@ public class Game{
     private List<Tournament> tournaments = new ArrayList<>();
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private Organizer creator;
 
     @Enumerated(EnumType.STRING)
-    private GameStatus gameStatus;
+    private GameStatus status;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateOfCreation;
 
     @Formula("(select count(*) from tournament t where t.game_id = id)")
     private int tournamentsNumber;
@@ -53,8 +57,9 @@ public class Game{
     public Game(String name, Organizer creator){
         this.name = name;
         this.creator = creator;
-        this.gameStatus = GameStatus.NEW;
+        this.status = GameStatus.NEW;
         this.banned = false;
+        this.dateOfCreation = new Date();
     }
 
     private void setTournaments(List<Tournament> tournaments){

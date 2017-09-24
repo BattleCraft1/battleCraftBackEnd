@@ -73,7 +73,6 @@ public class UserAccountServiceImpl implements UserAccountService {
                 e.printStackTrace();
             }
         }
-
     }
 
     @Override
@@ -102,11 +101,11 @@ public class UserAccountServiceImpl implements UserAccountService {
     }
 
     @Override
-    public byte[] getUserAvatar(String userName) throws IOException {
+    public byte[] getUserAvatar(String name) throws IOException {
         File userAvatarFile;
         BufferedImage userAvatar;
         try{
-            userAvatarFile = fileService.findFileByRelatedEntityName(userName,DEFAULT_USER_AVATARS_DIRECTORY_NAME).toFile();
+            userAvatarFile = fileService.findFileByRelatedEntityName(name,DEFAULT_USER_AVATARS_DIRECTORY_NAME).toFile();
             userAvatar =imageService.resizeImageFromFile(userAvatarFile, DEFAULT_USER_AVATAR_DIMENSION);
 
             return imageService.convertBufferedImageToByteArray(userAvatar);

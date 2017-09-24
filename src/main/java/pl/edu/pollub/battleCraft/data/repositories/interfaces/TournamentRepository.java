@@ -14,7 +14,7 @@ import javax.transaction.Transactional;
 public interface TournamentRepository extends JpaRepository<Tournament, Long> {
     @Modifying
     @Query("DELETE FROM Participation p WHERE (SELECT t.name FROM Tournament t WHERE t.banned = true AND t.id=p.tournament) IN ?1")
-    void deleteParticipationOfTournaments(String... tournamentsToDeleteUniqueNames);
+    void deleteParticipationInTournaments(String... tournamentsToDeleteUniqueNames);
 
     @Modifying
     @Query("DELETE FROM Organization o WHERE (SELECT t.name FROM Tournament t WHERE t.banned = true AND t.id=o.tournament) IN ?1")
@@ -33,10 +33,10 @@ public interface TournamentRepository extends JpaRepository<Tournament, Long> {
     void banTournaments(String... tournamentsToBanUniqueNames);
 
     @Modifying
-    @Query("UPDATE Tournament t SET t.tournamentStatus = 'ACCEPTED' WHERE t.name in ?1 AND t.tournamentStatus = 'NEW' AND t.banned = false")
+    @Query("UPDATE Tournament t SET t.status = 'ACCEPTED' WHERE t.name in ?1 AND t.status = 'NEW' AND t.banned = false")
     void acceptTournaments(String... tournamentsToAcceptUniqueNames);
 
     @Modifying
-    @Query("UPDATE Tournament t SET t.tournamentStatus = 'NEW' WHERE t.name in ?1 AND t.tournamentStatus = 'ACCEPTED' AND t.banned = false")
+    @Query("UPDATE Tournament t SET t.status = 'NEW' WHERE t.name in ?1 AND t.status = 'ACCEPTED' AND t.banned = false")
     void cancelAcceptTournaments(String... tournamentsToCancelAcceptUniqueNames);
 }

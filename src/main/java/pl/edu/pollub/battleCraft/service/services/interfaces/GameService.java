@@ -23,4 +23,6 @@ public interface GameService {
     void cancelAcceptGames(String... gamesToDeleteUniqueNames);
 
     Resource getGameRules(String gameName);
+
+    List<String> getAllGamesStatus();
 }

@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
-import pl.edu.pollub.battleCraft.data.entities.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.data.entities.User.UserAccount;
+import pl.edu.pollub.battleCraft.data.entities.User.subClasses.enums.UserType;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.organizers.Organizer;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.players.Player;
 import pl.edu.pollub.battleCraft.data.repositories.extensions.ExtendedUserAccountRepository;
@@ -16,8 +16,6 @@ import pl.edu.pollub.battleCraft.data.repositories.interfaces.OrganizerRepositor
 import pl.edu.pollub.battleCraft.data.repositories.interfaces.PlayerRepository;
 import pl.edu.pollub.battleCraft.data.repositories.interfaces.UserAccountRepository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,14 +43,14 @@ public class ExtendedUserAccountRepositoryImpl implements ExtendedUserAccountRep
     public Page getPageOfUserAccounts(List<SearchCriteria> searchCriteria, Pageable requestedPage) {
         return getPageAssistant
                 .select(
+                        new Field("firstname", "firstname"),
+                        new Field("lastname", "lastname"),
                         new Field("name", "name"),
-                        new Field("surname", "surname"),
-                        new Field("username", "username"),
                         new Field("email", "email"),
                         new Field("phoneNumber", "phoneNumber"),
-                        new Field("city", "city"),
+                        new Field("address.city", "city"),
                         new Field("province.location", "province"),
-                        new Field("userType", "userType"),
+                        new Field("status", "status"),
                         new Field("banned", "banned")
                 )
                 .createAliases(
@@ -79,15 +77,20 @@ public class ExtendedUserAccountRepositoryImpl implements ExtendedUserAccountRep
     @Override
     public void acceptUsersAccounts(String... usersAccountsToAcceptUniqueNames) {
         List<UserAccount> userAccountsToAccept =
-                userAccountRepository.findAllUsersAccountsByUsername(usersAccountsToAcceptUniqueNames);
-        List<Player> acceptedUserAccounts = this.advanceUsersToPlayers(userAccountsToAccept);
+                userAccountRepository.findAllUsersAccountsByName(usersAccountsToAcceptUniqueNames);
+        userAccountRepository.deleteRelatedAddress(usersAccountsToAcceptUniqueNames);
         userAccountRepository.delete(userAccountsToAccept);
-        userAccountRepository.save(acceptedUserAccounts);
+        List<Player> acceptedUserAccounts = this.advanceUsersToPlayers(userAccountsToAccept);
+        playerRepository.save(acceptedUserAccounts);
     }
 
 
     @Override
     public void deleteUsersAccounts(String... usersAccountsToDeleteUniqueNames) {
+        playerRepository.deleteParticipationInTournaments(usersAccountsToDeleteUniqueNames);
+        organiserRepository.deleteOrganizationOfTournaments(usersAccountsToDeleteUniqueNames);
+        organiserRepository.deleteGameCreation(usersAccountsToDeleteUniqueNames);
+        userAccountRepository.deleteRelatedAddress(usersAccountsToDeleteUniqueNames);
         userAccountRepository.deleteUserAccounts(usersAccountsToDeleteUniqueNames);
     }
 
@@ -99,22 +102,25 @@ public class ExtendedUserAccountRepositoryImpl implements ExtendedUserAccountRep
     @Override
     public void advancePlayersToOrganizer(String... playersToAdvanceToOrganizersUniqueNames) {
         List<Player> playersToAdvance =
-                playerRepository.findAllPlayersByUsername(playersToAdvanceToOrganizersUniqueNames);
-        List<Organizer> organizers = this.advancePlayersToOrganizers(playersToAdvance);
+                playerRepository.findAllPlayersByName(playersToAdvanceToOrganizersUniqueNames);
+        playerRepository.deleteParticipationInTournaments(playersToAdvanceToOrganizersUniqueNames);
+        userAccountRepository.deleteRelatedAddress(playersToAdvanceToOrganizersUniqueNames);
         playerRepository.delete(playersToAdvance);
+        List<Organizer> organizers = this.advancePlayersToOrganizers(playersToAdvance);
         organiserRepository.save(organizers);
     }
 
     @Override
     public void degradeOrganizerToPlayers(String... organizerToDegradeToPlayersUniqueNames) {
-        organiserRepository.degradeOrganizerToPlayers(organizerToDegradeToPlayersUniqueNames);
+        organiserRepository.degradeOrganizersToPlayers(organizerToDegradeToPlayersUniqueNames);
     }
 
     private List<Player> advanceUsersToPlayers(List<UserAccount> userAccounts){
         List<Player> players = new ArrayList<>();
         userAccounts.forEach(
                 userAccount -> {
-                    players.add(new Player(userAccount));
+                    if(userAccount.getStatus()==UserType.NEW)
+                        players.add(new Player(userAccount));
                 }
         );
         return players;
@@ -124,7 +130,8 @@ public class ExtendedUserAccountRepositoryImpl implements ExtendedUserAccountRep
         List<Organizer> organizers = new ArrayList<>();
         players.forEach(
                 player -> {
-                    organizers.add(new Organizer(player));
+                    if(player.getStatus()==UserType.ACCEPTED)
+                        organizers.add(new Organizer(player));
                 }
         );
         return organizers;

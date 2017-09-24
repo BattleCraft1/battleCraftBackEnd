@@ -15,18 +15,22 @@ import java.util.List;
 @Transactional
 public interface PlayerRepository extends JpaRepository<Player, Long> {
     @Modifying
-    @Query("UPDATE Player p SET p.banned = false WHERE p.username in ?1")
+    @Query("UPDATE Player p SET p.banned = false WHERE p.name in ?1")
     void unlockUserAccounts(String... playersToBanUniqueNames);
 
     @Modifying
-    @Query("UPDATE Player p SET p.banned = true WHERE p.username in ?1")
+    @Query("UPDATE Player p SET p.banned = true WHERE p.name in ?1")
     void banUserAccounts(String... playersToBanUniqueNames);
 
     @Modifying
     @Query("UPDATE Player p " +
-            "SET p.userType = 'NEW' WHERE p.username in ?1")
+            "SET p.status = 'NEW' WHERE p.name in ?1")
     void cancelAcceptUsersAccounts(String... playersToCancelAcceptUniqueNames);
 
-    @Query("SELECT p FROM Player p WHERE type(p) = Player AND p.userType = 'PLAYER' AND p.username in ?1")
-    List<Player> findAllPlayersByUsername(String... playersToAdvanceToOrganizersUniqueNames);
+    @Query("SELECT p FROM Player p WHERE p.status = 'ACCEPTED' AND p.name in ?1")
+    List<Player> findAllPlayersByName(String... playersToAdvanceToOrganizersUniqueNames);
+
+    @Modifying
+    @Query("DELETE FROM Participation p WHERE (SELECT pl.name FROM Player pl WHERE pl.banned = true AND pl.id=p.player) IN ?1")
+    void deleteParticipationInTournaments(String... playersToDeleteUniqueNames);
 }
