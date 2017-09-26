@@ -6,9 +6,11 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.Formula;
 import pl.edu.pollub.battleCraft.data.entities.User.UserAccount;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.enums.UserType;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.players.relationships.Participation;
+import pl.edu.pollub.battleCraft.data.entities.User.subClasses.players.relationships.Play;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -27,6 +29,10 @@ public class Player extends UserAccount {
     @JsonIgnore
     @OneToMany(orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, mappedBy = "player")
     private List<Participation> participatedTournaments = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, mappedBy = "player")
+    private List<Play> plays = new ArrayList<>();
 
     private boolean banned;
 

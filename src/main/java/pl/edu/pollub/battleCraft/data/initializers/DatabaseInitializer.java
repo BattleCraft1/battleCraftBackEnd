@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import pl.edu.pollub.battleCraft.data.entities.Address.Address;
 import pl.edu.pollub.battleCraft.data.entities.Address.Province;
 import pl.edu.pollub.battleCraft.data.entities.Game.Game;
+import pl.edu.pollub.battleCraft.data.entities.Game.enums.GameStatus;
 import pl.edu.pollub.battleCraft.data.entities.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.data.entities.User.UserAccount;
 import pl.edu.pollub.battleCraft.data.entities.User.UserBuilder;
@@ -138,11 +139,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
 
 
         Game testGame1 = testUser8.createGame("Warhammer");
-        Game testGame2 = testUser9.createGame("Star wars");
-        Game testGame3 = testUser10.createGame("Warhammer 40k");
-        Game testGame4 = testUser7.createGame("Cyber punk");
-        Game testGame5 = testUser8.createGame("Heroes");
-        Game testGame6 = testUser9.createGame("Lord of the rings");
+        testGame1.setStatus(GameStatus.ACCEPTED);
 
         try {
             Tournament testTournament1 = testUser7
@@ -150,17 +147,17 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
                     .with(testUser8)
                     .in(testAddress11)
                     .withGame( testGame1)
-                    .startAt(format.parse("08-01-2017 13:05:00"))
-                    .endingIn(format.parse("09-01-2017 14:05:00"))
+                    .startAt(format.parse("08-01-2018 13:05:00"))
+                    .endingIn(format.parse("09-01-2018 14:05:00"))
                     .inviteParticipants(testUser1,testUser2,testUser3,testUser4)
                     .finishOrganize();
 
             Tournament testTournament2 = testUser10
                     .startOrganizeTournament("Tournament2", 4,7)
                     .in(testAddress12)
-                    .withGame( testGame2)
+                    .withGame( testGame1)
                     .startAt(format.parse("09-02-2018 14:11:00"))
-                    .endingIn(format.parse("11-02-2017 14:05:00"))
+                    .endingIn(format.parse("11-02-2018 14:05:00"))
                     .inviteParticipants(testUser2,testUser3,testUser5,testUser9)
                     .finishOrganize();
 
@@ -168,16 +165,16 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
                     .startOrganizeTournament("Tournament3", 3,5)
                     .with(testUser9)
                     .in(testAddress13)
-                    .withGame( testGame3)
-                    .startAt(format.parse("12-03-2017 15:15:00"))
-                    .endingIn(format.parse("12-03-2017 16:05:00"))
+                    .withGame( testGame1)
+                    .startAt(format.parse("12-03-2018 15:15:00"))
+                    .endingIn(format.parse("12-03-2018 16:05:00"))
                     .inviteParticipants(testUser1,testUser3,testUser5,testUser7)
                     .finishOrganize();
 
             Tournament testTournament4 = testUser10
                     .startOrganizeTournament("Tournament4",  5,8)
                     .in(testAddress14)
-                    .withGame( testGame4)
+                    .withGame( testGame1)
                     .startAt(format.parse("25-04-2018 16:25:00"))
                     .endingIn(format.parse("27-04-2018 16:05:00"))
                     .inviteParticipants(testUser2,testUser4,testUser6,testUser8)
@@ -188,8 +185,8 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
                     .startOrganizeTournament("Tournament5", 4,8)
                     .with(testUser7)
                     .in(testAddress15)
-                    .withGame( testGame5)
-                    .startAt(format.parse("13-05-2017 11:24:00"))
+                    .withGame( testGame1)
+                    .startAt(format.parse("13-05-2018 11:24:00"))
                     .endingIn(format.parse("15-05-2018 16:05:00"))
                     .inviteParticipants(testUser5,testUser10)
                     .finishOrganize();
@@ -198,9 +195,9 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
                     .startOrganizeTournament("Tournament6", 3,6)
                     .with(testUser9)
                     .in(testAddress16)
-                    .withGame( testGame6)
+                    .withGame( testGame1)
                     .startAt(format.parse("11-11-2018 10:13:00"))
-                    .endingIn(format.parse("15-11-2018 10:13:00"))
+                    .endingIn(format.parse("13-11-2018 10:13:00"))
                     .inviteParticipants(testUser5,testUser10,testUser1,testUser2)
                     .finishOrganize();
 
@@ -208,8 +205,8 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
                     .startOrganizeTournament("Tournament7", 2,4)
                     .in(testAddress17)
                     .withGame( testGame1)
-                    .startAt(format.parse("01-12-2017 11:06:00"))
-                    .endingIn(format.parse("02-12-2017 11:06:00"))
+                    .startAt(format.parse("01-12-2018 11:06:00"))
+                    .endingIn(format.parse("02-12-2018 11:06:00"))
                     .inviteParticipants(testUser10,testUser1,testUser3,testUser5)
                     .finishOrganize();
 
@@ -217,7 +214,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
                     .startOrganizeTournament("Tournament8", 10,18)
                     .with(testUser8)
                     .in(testAddress18)
-                    .withGame( testGame2)
+                    .withGame( testGame1)
                     .startAt(format.parse("02-06-2018 12:12:00"))
                     .endingIn(format.parse("03-06-2018 12:12:00"))
                     .inviteParticipants(testUser1,testUser2,testUser5,testUser6)
@@ -226,9 +223,9 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
             Tournament testTournament9 = testUser9
                     .startOrganizeTournament("Tournament9", 4,8)
                     .in(testAddress19)
-                    .withGame( testGame3)
-                    .startAt(format.parse("13-07-2017 17:17:00"))
-                    .endingIn(format.parse("16-07-2017 17:17:00"))
+                    .withGame( testGame1)
+                    .startAt(format.parse("13-07-2018 17:17:00"))
+                    .endingIn(format.parse("16-07-2018 17:17:00"))
                     .inviteParticipants(testUser10,testUser8)
                     .finishOrganize();
 
@@ -236,9 +233,9 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
                     .startOrganizeTournament("Tournament10", 3,5)
                     .with(testUser8)
                     .in(testAddress20)
-                    .withGame( testGame4)
+                    .withGame( testGame1)
                     .startAt(format.parse("26-08-2018 18:05:00"))
-                    .endingIn(format.parse("26-08-2018 18:05:00"))
+                    .endingIn(format.parse("26-08-2018 18:06:00"))
                     .inviteParticipants(testUser10,testUser7,testUser6,testUser2)
                     .finishOrganize();
 

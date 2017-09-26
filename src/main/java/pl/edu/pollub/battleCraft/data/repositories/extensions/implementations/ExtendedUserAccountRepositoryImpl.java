@@ -1,5 +1,6 @@
-package pl.edu.pollub.battleCraft.data.repositories.implementations;
+package pl.edu.pollub.battleCraft.data.repositories.extensions.implementations;
 
+import org.hibernate.criterion.Projections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,8 +9,9 @@ import pl.edu.pollub.battleCraft.data.entities.User.UserAccount;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.enums.UserType;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.organizers.Organizer;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.players.Player;
-import pl.edu.pollub.battleCraft.data.repositories.extensions.ExtendedUserAccountRepository;
-import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.Field;
+import pl.edu.pollub.battleCraft.data.repositories.extensions.interfaces.ExtendedUserAccountRepository;
+import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.field.Alias;
+import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.field.Field;
 import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.interfaces.GetPageAssistant;
 import pl.edu.pollub.battleCraft.data.repositories.helpers.searchSpecyficators.SearchCriteria;
 import pl.edu.pollub.battleCraft.data.repositories.interfaces.OrganizerRepository;
@@ -43,19 +45,19 @@ public class ExtendedUserAccountRepositoryImpl implements ExtendedUserAccountRep
     public Page getPageOfUserAccounts(List<SearchCriteria> searchCriteria, Pageable requestedPage) {
         return getPageAssistant
                 .select(
-                        new Field("firstname", "firstname"),
-                        new Field("lastname", "lastname"),
-                        new Field("name", "name"),
-                        new Field("email", "email"),
-                        new Field("phoneNumber", "phoneNumber"),
-                        new Field("address.city", "city"),
-                        new Field("province.location", "province"),
-                        new Field("status", "status"),
-                        new Field("banned", "banned")
+                        new Field("firstname", "firstname", Projections::property),
+                        new Field("lastname", "lastname", Projections::property),
+                        new Field("name", "name", Projections::property),
+                        new Field("email", "email", Projections::property),
+                        new Field("phoneNumber", "phoneNumber", Projections::property),
+                        new Field("address.city", "city", Projections::property),
+                        new Field("province.location", "province", Projections::property),
+                        new Field("status", "status", Projections::property),
+                        new Field("banned", "banned", Projections::property)
                 )
                 .createAliases(
-                        new Field("address", "address"),
-                        new Field("address.province", "province")
+                        new Alias("address", "address"),
+                        new Alias("address.province", "province")
                 )
                 .from(UserAccount.class)
                 .where(searchCriteria)

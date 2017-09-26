@@ -8,14 +8,22 @@ import lombok.Setter;
 import lombok.ToString;
 import pl.edu.pollub.battleCraft.data.entities.Address.Address;
 import pl.edu.pollub.battleCraft.data.entities.Game.Game;
+import pl.edu.pollub.battleCraft.data.entities.Game.enums.GameStatus;
 import pl.edu.pollub.battleCraft.data.entities.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.enums.UserType;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.organizers.relationships.Organization;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.players.Player;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.players.relationships.Participation;
+import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentCreation.GameNotAcceptedException;
+import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentCreation.NotPossibleEndDate;
+import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentCreation.OutdatedStartDate;
+import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentCreation.TimeOfTournamentIsLong;
 
 import javax.persistence.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,6 +50,8 @@ public class Organizer extends Player {
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "creator")
     private List<Game> createdGames = new ArrayList<>();
+
+    private DateFormat format = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
 
     public Organizer(Player player){
         this();
@@ -84,7 +94,6 @@ public class Organizer extends Player {
     @Transient
     public Organizer with(Organizer... coOrganisers){
         tournamentInOrganisation.addOrganizers(coOrganisers);
-
         return this;
     }
 
@@ -98,6 +107,8 @@ public class Organizer extends Player {
     @JsonIgnore
     @Transient
     public Organizer withGame(Game game){
+        if(game.getStatus()!= GameStatus.ACCEPTED)
+            throw new GameNotAcceptedException(game.getName());
         tournamentInOrganisation.chooseGame(game);
         return this;
     }
@@ -105,6 +116,10 @@ public class Organizer extends Player {
     @JsonIgnore
     @Transient
     public Organizer startAt(Date startDate) {
+        if(startDate.before(new Date())){
+
+            throw new OutdatedStartDate(format.format(startDate));
+        }
         tournamentInOrganisation.setDateOfStart(startDate);
         return this;
     }
@@ -112,6 +127,17 @@ public class Organizer extends Player {
     @JsonIgnore
     @Transient
     public Organizer endingIn(Date endDate) {
+        Date startDate = tournamentInOrganisation.getDateOfStart();
+        if(endDate.before(startDate)){
+            throw new NotPossibleEndDate(format.format(startDate));
+        }
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(startDate);
+        calendar.add(Calendar.DATE,3);
+        Date maxEndDate = calendar.getTime();
+        if(endDate.after(maxEndDate)){
+            throw new TimeOfTournamentIsLong();
+        }
         tournamentInOrganisation.setDateOfEnd(endDate);
         return this;
     }

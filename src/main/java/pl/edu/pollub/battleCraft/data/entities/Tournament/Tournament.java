@@ -9,6 +9,7 @@ import lombok.ToString;
 import org.hibernate.annotations.Formula;
 import pl.edu.pollub.battleCraft.data.entities.Address.AddressOwner;
 import pl.edu.pollub.battleCraft.data.entities.Game.Game;
+import pl.edu.pollub.battleCraft.data.entities.Tour.Tour;
 import pl.edu.pollub.battleCraft.data.entities.Tournament.enums.TournamentClass;
 import pl.edu.pollub.battleCraft.data.entities.Tournament.enums.TournamentStatus;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.organizers.Organizer;
@@ -76,6 +77,10 @@ public class Tournament extends AddressOwner{
     @JsonIgnore
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "tournament")
     private List<Organization> organizers = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "tournament")
+    private List<Tour> tours = new ArrayList<>();
 
     @Formula("(select count(*) from participation p where p.tournament_id = id)")
     private int playersNumber;

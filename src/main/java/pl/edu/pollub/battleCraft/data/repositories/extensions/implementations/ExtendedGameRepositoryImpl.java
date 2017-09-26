@@ -1,12 +1,14 @@
-package pl.edu.pollub.battleCraft.data.repositories.implementations;
+package pl.edu.pollub.battleCraft.data.repositories.extensions.implementations;
 
+import org.hibernate.criterion.Projections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import pl.edu.pollub.battleCraft.data.entities.Game.Game;
-import pl.edu.pollub.battleCraft.data.repositories.extensions.ExtendedGameRepository;
-import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.Field;
+import pl.edu.pollub.battleCraft.data.repositories.extensions.interfaces.ExtendedGameRepository;
+import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.field.Alias;
+import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.field.Field;
 import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.interfaces.GetPageAssistant;
 import pl.edu.pollub.battleCraft.data.repositories.helpers.searchSpecyficators.SearchCriteria;
 import pl.edu.pollub.battleCraft.data.repositories.interfaces.GameRepository;
@@ -30,15 +32,15 @@ public class ExtendedGameRepositoryImpl implements ExtendedGameRepository{
     public Page getPageOfGames(List<SearchCriteria> searchCriteria, Pageable requestedPage) {
         return getPageAssistant
                 .select(
-                        new Field("name", "name"),
-                        new Field("tournamentsNumber", "tournamentsNumber"),
-                        new Field("creator.name", "creatorName"),
-                        new Field("status", "status"),
-                        new Field("banned", "banned"),
-                        new Field("dateOfCreation", "dateOfCreation")
+                        new Field("name", "name", Projections::property),
+                        new Field("tournamentsNumber", "tournamentsNumber", Projections::property),
+                        new Field("creator.name", "creatorName", Projections::property),
+                        new Field("status", "status", Projections::property),
+                        new Field("banned", "banned", Projections::property),
+                        new Field("dateOfCreation", "dateOfCreation", Projections::property)
                 )
                 .createAliases(
-                        new Field("creator", "creator")
+                        new Alias("creator", "creator")
                 )
                 .from(Game.class)
                 .where(searchCriteria)
