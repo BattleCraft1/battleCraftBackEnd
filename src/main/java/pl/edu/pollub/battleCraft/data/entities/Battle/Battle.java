@@ -20,6 +20,10 @@ import java.util.List;
 @ToString
 public class Battle {
 
+    public Battle(int tableNumber){
+        this.tableNumber = tableNumber;
+    }
+
     @Id
     @GeneratedValue
     @JsonIgnore

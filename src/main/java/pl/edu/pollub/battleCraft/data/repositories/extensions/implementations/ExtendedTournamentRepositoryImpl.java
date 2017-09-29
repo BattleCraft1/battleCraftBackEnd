@@ -1,6 +1,5 @@
 package pl.edu.pollub.battleCraft.data.repositories.extensions.implementations;
 
-import org.hibernate.criterion.Projections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,17 +31,17 @@ public class ExtendedTournamentRepositoryImpl implements ExtendedTournamentRepos
     public Page getPageOfTournaments(List<SearchCriteria> searchCriteria, Pageable requestedPage) {
         return getPageAssistant
                 .select(
-                        new Field("name", "name", Projections::property),
-                        new Field("playersNumber", "playersNumber", Projections::property),
-                        new Field("freeSlots", "freeSlots", Projections::property),
-                        new Field("maxPlayers", "maxPlayers", Projections::property),
-                        new Field("dateOfStart", "dateOfStart", Projections::property),
-                        new Field("dateOfEnd", "dateOfEnd", Projections::property),
-                        new Field("address.city", "city", Projections::property),
-                        new Field("province.location", "province", Projections::property),
-                        new Field("game.name", "game", Projections::property),
-                        new Field("status", "status", Projections::property),
-                        new Field("banned", "banned", Projections::property)
+                        new Field("name", "name"),
+                        new Field("playersNumber", "playersNumber"),
+                        new Field("freeSlots", "freeSlots"),
+                        new Field("maxPlayers", "maxPlayers"),
+                        new Field("dateOfStart", "dateOfStart"),
+                        new Field("dateOfEnd", "dateOfEnd"),
+                        new Field("address.city", "city"),
+                        new Field("province.location", "province"),
+                        new Field("game.name", "game"),
+                        new Field("status", "status"),
+                        new Field("banned", "banned")
                 )
                 .createAliases(
                         new Alias("participants", "participants"),

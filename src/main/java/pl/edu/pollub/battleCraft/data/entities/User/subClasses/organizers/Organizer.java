@@ -10,14 +10,17 @@ import pl.edu.pollub.battleCraft.data.entities.Address.Address;
 import pl.edu.pollub.battleCraft.data.entities.Game.Game;
 import pl.edu.pollub.battleCraft.data.entities.Game.enums.GameStatus;
 import pl.edu.pollub.battleCraft.data.entities.Tournament.Tournament;
+import pl.edu.pollub.battleCraft.data.entities.Tournament.subClasses.tournamentWithProgression.TournamentWithProgression;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.enums.UserType;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.organizers.relationships.Organization;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.players.Player;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.players.relationships.Participation;
-import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentCreation.GameNotAcceptedException;
-import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentCreation.NotPossibleEndDate;
-import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentCreation.OutdatedStartDate;
-import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentCreation.TimeOfTournamentIsLong;
+import pl.edu.pollub.battleCraft.data.entities.User.subClasses.players.relationships.Play;
+import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentOrganization.GameNotAcceptedException;
+import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentOrganization.NotPossibleEndDate;
+import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentOrganization.OutdatedStartDate;
+import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentOrganization.TimeOfTournamentIsLong;
+import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentPrograssion.YouDidNotOrganizedTournamentWithThisName;
 
 import javax.persistence.*;
 import java.text.DateFormat;
@@ -155,6 +158,13 @@ public class Organizer extends Player {
         return tournamentInOrganisation;
     }
 
+    @JsonIgnore
+    @Transient
+    public TournamentWithProgression startTournament(String tournamentToStartName,int toursNumber){
+        Tournament tournamentToStart = this.findOrganizedTournamentByName(tournamentToStartName);
+        return new TournamentWithProgression(tournamentToStart,toursNumber);
+    }
+
     public void addOrganization(Organization organization) {
         this.organizedTournaments.add(organization);
     }
@@ -165,5 +175,12 @@ public class Organizer extends Player {
 
     private void setCreatedGames(List<Game> createdGames){
         this.createdGames = createdGames;
+    }
+
+    private Tournament findOrganizedTournamentByName(String tournamentName){
+        return   organizedTournaments.stream()
+                .map(Organization::getTournament)
+                .filter(tournament -> tournament.getName().equals(tournamentName))
+                .findFirst().orElseThrow(() -> new YouDidNotOrganizedTournamentWithThisName(tournamentName));
     }
 }

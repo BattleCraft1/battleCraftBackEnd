@@ -45,15 +45,15 @@ public class ExtendedUserAccountRepositoryImpl implements ExtendedUserAccountRep
     public Page getPageOfUserAccounts(List<SearchCriteria> searchCriteria, Pageable requestedPage) {
         return getPageAssistant
                 .select(
-                        new Field("firstname", "firstname", Projections::property),
-                        new Field("lastname", "lastname", Projections::property),
-                        new Field("name", "name", Projections::property),
-                        new Field("email", "email", Projections::property),
-                        new Field("phoneNumber", "phoneNumber", Projections::property),
-                        new Field("address.city", "city", Projections::property),
-                        new Field("province.location", "province", Projections::property),
-                        new Field("status", "status", Projections::property),
-                        new Field("banned", "banned", Projections::property)
+                        new Field("firstname", "firstname"),
+                        new Field("lastname", "lastname"),
+                        new Field("name", "name"),
+                        new Field("email", "email"),
+                        new Field("phoneNumber", "phoneNumber"),
+                        new Field("address.city", "city"),
+                        new Field("province.location", "province"),
+                        new Field("status", "status"),
+                        new Field("banned", "banned")
                 )
                 .createAliases(
                         new Alias("address", "address"),

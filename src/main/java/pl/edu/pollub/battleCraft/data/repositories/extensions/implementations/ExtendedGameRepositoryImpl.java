@@ -32,12 +32,12 @@ public class ExtendedGameRepositoryImpl implements ExtendedGameRepository{
     public Page getPageOfGames(List<SearchCriteria> searchCriteria, Pageable requestedPage) {
         return getPageAssistant
                 .select(
-                        new Field("name", "name", Projections::property),
-                        new Field("tournamentsNumber", "tournamentsNumber", Projections::property),
-                        new Field("creator.name", "creatorName", Projections::property),
-                        new Field("status", "status", Projections::property),
-                        new Field("banned", "banned", Projections::property),
-                        new Field("dateOfCreation", "dateOfCreation", Projections::property)
+                        new Field("name", "name"),
+                        new Field("tournamentsNumber", "tournamentsNumber"),
+                        new Field("creator.name", "creatorName"),
+                        new Field("status", "status"),
+                        new Field("banned", "banned"),
+                        new Field("dateOfCreation", "dateOfCreation")
                 )
                 .createAliases(
                         new Alias("creator", "creator")

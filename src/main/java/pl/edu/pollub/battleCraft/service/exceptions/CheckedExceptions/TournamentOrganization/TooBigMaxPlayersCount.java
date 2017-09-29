@@ -1,4 +1,4 @@
-package pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentCreation;
+package pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentOrganization;
 
 public class TooBigMaxPlayersCount extends RuntimeException{
     public TooBigMaxPlayersCount(int maxPlayers,int tablesCount){

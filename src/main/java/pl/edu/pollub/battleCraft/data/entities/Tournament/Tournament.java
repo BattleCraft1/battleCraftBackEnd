@@ -9,15 +9,14 @@ import lombok.ToString;
 import org.hibernate.annotations.Formula;
 import pl.edu.pollub.battleCraft.data.entities.Address.AddressOwner;
 import pl.edu.pollub.battleCraft.data.entities.Game.Game;
-import pl.edu.pollub.battleCraft.data.entities.Tour.Tour;
 import pl.edu.pollub.battleCraft.data.entities.Tournament.enums.TournamentClass;
 import pl.edu.pollub.battleCraft.data.entities.Tournament.enums.TournamentStatus;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.organizers.Organizer;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.organizers.relationships.Organization;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.players.Player;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.players.relationships.Participation;
-import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentCreation.TooBigMaxPlayersCount;
-import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentCreation.TooManyInvitedParticipants;
+import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentOrganization.TooBigMaxPlayersCount;
+import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentOrganization.TooManyInvitedParticipants;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -32,6 +31,7 @@ import java.util.stream.Collectors;
 @Setter
 @EqualsAndHashCode(callSuper = true)
 @ToString
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Tournament extends AddressOwner{
     public Tournament() {
         super();
@@ -77,10 +77,6 @@ public class Tournament extends AddressOwner{
     @JsonIgnore
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "tournament")
     private List<Organization> organizers = new ArrayList<>();
-
-    @JsonIgnore
-    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "tournament")
-    private List<Tour> tours = new ArrayList<>();
 
     @Formula("(select count(*) from participation p where p.tournament_id = id)")
     private int playersNumber;
@@ -131,31 +127,31 @@ public class Tournament extends AddressOwner{
             this.tournamentClass = TournamentClass.MASTER;
     }
 
-    private void setMaxPlayers(int maxPlayers){
+    protected void setMaxPlayers(int maxPlayers){
         this.maxPlayers = maxPlayers;
     }
 
-    private void setGame(Game game){
+    protected void setGame(Game game){
         this.game = game;
     }
 
-    private void setTournamentClass(TournamentClass tournamentClass){
+    protected void setTournamentClass(TournamentClass tournamentClass){
         this.tournamentClass = tournamentClass;
     }
 
-    private void setParticipants(List<Participation> participants){
+    protected void setParticipants(List<Participation> participants){
         this.participants = participants;
     }
 
-    private void setOrganizers(List<Organization> organizers){
+    protected void setOrganizers(List<Organization> organizers){
         this.organizers = organizers;
     }
 
-    private void setPlayersNumber(int playersNumber) {
+    protected void setPlayersNumber(int playersNumber) {
         this.playersNumber = playersNumber;
     }
 
-    private void setFreeSlots(int freeSlots) {
+    protected void setFreeSlots(int freeSlots) {
         this.freeSlots = freeSlots;
     }
 }

@@ -30,8 +30,8 @@ public class RankingRepositoryImpl implements RankingRepository{
     public Page getPageOfRanking(List<SearchCriteria> searchCriteria, Pageable requestedPage) {
         return getPageAssistant
                 .select(
-                        new Field("name", "playerName", Projections::property),
-                        new Field("email", "playerEmail",Projections::property),
+                        new Field("name", "playerName"),
+                        new Field("email", "playerEmail"),
                         new Field("participatedTournaments.id", "participatedTournamentsNumber",Projections::countDistinct),
                         new Field("plays.id", "numberOfBattles",Projections::countDistinct),
                         new Field("plays.points", "battlesPoints",Projections::sum)
