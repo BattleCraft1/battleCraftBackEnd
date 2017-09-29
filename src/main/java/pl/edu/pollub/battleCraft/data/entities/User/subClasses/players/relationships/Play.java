@@ -31,4 +31,9 @@ public class Play {
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "battle_id")
     private Battle battle;
+
+    public Play(Player player,Battle battle){
+        this.player = player;
+        this.battle = battle;
+    }
 }

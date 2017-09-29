@@ -13,6 +13,7 @@ import pl.edu.pollub.battleCraft.data.entities.Tournament.enums.TournamentStatus
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.players.Player;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.players.relationships.Participation;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.players.relationships.Play;
+import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentPrograssion.prepareFirstTour.ThisPlayerHaveBattleInCurrentTour;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -64,29 +65,49 @@ public class TournamentWithProgression extends Tournament{
 
     @JsonIgnore
     @Transient
-    public void randomizePlayersOnTable(int tableNumber){
+    public void randomizePlayersOnTableInFirstTour(int tableNumber){
         List<Player> playersWithoutBattle = this.getPlayersWithoutBattle();
-        currentTour.randomizePlayersOnTable(tableNumber,playersWithoutBattle);
+        currentTour.randomizePlayersOnTableInFirstTour(tableNumber,playersWithoutBattle);
     }
 
     @JsonIgnore
     @Transient
-    public void setPlayersOnTable(int tableNumber, Player firstPlayer, Player secondPlayer){
+    public void setPlayersOnTableInFirstTour(int tableNumber, Player firstPlayer, Player secondPlayer){
+        List<Player> playersWithoutBattle = this.getPlayersWithoutBattle();
+        if(!playersWithoutBattle.contains(secondPlayer))
+            throw new ThisPlayerHaveBattleInCurrentTour(secondPlayer.getName());
+        else if(!playersWithoutBattle.contains(firstPlayer))
+            throw new ThisPlayerHaveBattleInCurrentTour(firstPlayer.getName());
+
+        currentTour.setPlayersOnTableInFirstTour(tableNumber,firstPlayer,secondPlayer);
+    }
+
+    @JsonIgnore
+    @Transient
+    public void prepareNextTour(){
+        currentTour.checkIfAllBattlesAreFinished()
+
 
     }
 
     @JsonIgnore
     @Transient
-    private List<Player> getPlayersWithoutBattle(){
-        List<Player> allPlayersOfTournament = new ArrayList<>();
-        allPlayersOfTournament.addAll(this.getParticipants().stream().map(Participation::getPlayer).collect(Collectors.toList()));
-        return allPlayersOfTournament.stream().filter(player -> !this.tours.stream()
-                                .flatMap(tour -> tour.getBattles().stream())
-                                .collect(Collectors.toList()).stream()
-                                .flatMap(battle -> battle.getPlays().stream())
-                                .collect(Collectors.toList()).stream()
-                                .map(Play::getPlayer).collect(Collectors.toList()).contains(player))
-                                .collect(Collectors.toList());
+    public void setPointsOnTable(int tableNumber, int pointsForFirstPlayer){
+        currentTour.setPointsOnTable(tableNumber, pointsForFirstPlayer);
+    }
+
+    @JsonIgnore
+    @Transient
+    public List<Player> getPlayersWithoutBattle(){
+        List<Player> playersWithoutBattle = new ArrayList<>();
+        playersWithoutBattle.addAll(this.getParticipants().stream().map(Participation::getPlayer).collect(Collectors.toList()));
+        List<Battle> allBattlesInCurrentTour = this.currentTour.getBattles();
+        List<Player> allPlayersWhoHaveBattleInCurrentTour =
+                allBattlesInCurrentTour.stream()
+                        .flatMap(battle -> battle.getPlayers().stream())
+                        .map(Play::getPlayer).collect(Collectors.toList());
+        playersWithoutBattle.removeAll(allPlayersWhoHaveBattleInCurrentTour);
+        return playersWithoutBattle;
     }
 
     public void addTour(Tour tour){

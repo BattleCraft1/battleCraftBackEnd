@@ -15,12 +15,11 @@ import pl.edu.pollub.battleCraft.data.entities.User.subClasses.enums.UserType;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.organizers.relationships.Organization;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.players.Player;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.players.relationships.Participation;
-import pl.edu.pollub.battleCraft.data.entities.User.subClasses.players.relationships.Play;
 import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentOrganization.GameNotAcceptedException;
 import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentOrganization.NotPossibleEndDate;
 import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentOrganization.OutdatedStartDate;
 import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentOrganization.TimeOfTournamentIsLong;
-import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentPrograssion.YouDidNotOrganizedTournamentWithThisName;
+import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentPrograssion.prepareFirstTour.YouDidNotOrganizedTournamentWithThisName;
 
 import javax.persistence.*;
 import java.text.DateFormat;

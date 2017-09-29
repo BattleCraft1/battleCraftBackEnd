@@ -1,4 +1,4 @@
-package pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentPrograssion;
+package pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentPrograssion.prepareFirstTour;
 
 public class YouDidNotOrganizedTournamentWithThisName extends RuntimeException{
     public YouDidNotOrganizedTournamentWithThisName(String tournamentName){
