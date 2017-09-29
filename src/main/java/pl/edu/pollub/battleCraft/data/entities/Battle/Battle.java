@@ -22,6 +22,8 @@ import java.util.List;
 @ToString
 public class Battle {
 
+    private final int NUMBER_OF_POINTS_FOR_ALONE_PLAYER = 17;
+
     public Battle(int tableNumber){
         this.tableNumber = tableNumber;
     }
@@ -44,8 +46,20 @@ public class Battle {
     @JsonIgnore
     @Transient
     public void setPoints(int points){
-        players.get(0).setPoints(points);
-        players.get(1).setPoints(20 - points);
+        this.getFirstPlay().setPoints(points);
+        this.getSecondPlay().setPoints(20 - points);
+    }
+
+    @JsonIgnore
+    @Transient
+    public Play getFirstPlay(){
+        return players.get(0);
+    }
+
+    @JsonIgnore
+    @Transient
+    public Play getSecondPlay(){
+        return players.get(1);
     }
 
     public void setTour(Tour tour){
@@ -68,6 +82,13 @@ public class Battle {
 
     public void addPlayersByOneSide(Play firstPlayer, Play secondPlayer){
         this.players.addAll(Arrays.asList(firstPlayer,secondPlayer));
+    }
+
+    public void addAlonePlayer(Player player){
+        Play play = new Play(player,this);
+        play.setPoints(NUMBER_OF_POINTS_FOR_ALONE_PLAYER);
+        this.players.add(play);
+        player.addBattlesByOneSide(play);
     }
 
     public void setTourByOneSide(Tour tour){

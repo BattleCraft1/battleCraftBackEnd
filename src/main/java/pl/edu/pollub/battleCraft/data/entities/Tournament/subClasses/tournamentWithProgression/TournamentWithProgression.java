@@ -79,15 +79,17 @@ public class TournamentWithProgression extends Tournament{
         else if(!playersWithoutBattle.contains(firstPlayer))
             throw new ThisPlayerHaveBattleInCurrentTour(firstPlayer.getName());
 
-        currentTour.setPlayersOnTableInFirstTour(tableNumber,firstPlayer,secondPlayer);
+        currentTour.setPlayersOnTable(tableNumber,firstPlayer,secondPlayer);
     }
 
     @JsonIgnore
     @Transient
     public void prepareNextTour(){
-        currentTour.checkIfAllBattlesAreFinished()
-
-
+        currentTour.checkIfAllBattlesAreFinished();
+        int indexOfCurrentTour = this.getTours().indexOf(currentTour);
+        Tour previousTour = currentTour;
+        currentTour = this.getTours().get(indexOfCurrentTour+1);
+        currentTour.setBattlesOnTablesByPointsNumbersFromPreviousTour(previousTour);
     }
 
     @JsonIgnore
@@ -110,6 +112,12 @@ public class TournamentWithProgression extends Tournament{
         return playersWithoutBattle;
     }
 
+    @JsonIgnore
+    @Transient
+    public Player getAlonePlayer() {
+        return this.getPlayersWithoutBattle().get(0);
+    }
+
     public void addTour(Tour tour){
         this.tours.add(tour);
         tour.setTournamentByOneSide(this);
@@ -118,5 +126,6 @@ public class TournamentWithProgression extends Tournament{
     public void addTourByOneSide(Tour tour){
         this.tours.add(tour);
     }
+
 
 }
