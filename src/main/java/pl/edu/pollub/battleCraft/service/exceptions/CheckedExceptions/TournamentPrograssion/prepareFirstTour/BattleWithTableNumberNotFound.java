@@ -1,4 +1,4 @@
-package pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentPrograssion.start;
+package pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentPrograssion.prepareFirstTour;
 
 public class BattleWithTableNumberNotFound extends RuntimeException {
     public BattleWithTableNumberNotFound(int tableNumber){

@@ -19,7 +19,8 @@ import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.Tournament
 import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentOrganization.NotPossibleEndDate;
 import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentOrganization.OutdatedStartDate;
 import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentOrganization.TimeOfTournamentIsLong;
-import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentPrograssion.prepareFirstTour.YouDidNotOrganizedTournamentWithThisName;
+import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentPrograssion.start.ThisTournamentIsNotStarted;
+import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentPrograssion.start.YouDidNotOrganizeTournamentWithThisName;
 
 import javax.persistence.*;
 import java.text.DateFormat;
@@ -42,19 +43,6 @@ public class Organizer extends Player {
         super(UserType.ORGANIZER);
     }
 
-    @Transient
-    private Tournament tournamentInOrganisation;
-
-    @JsonIgnore
-    @OneToMany(orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, mappedBy = "organizer")
-    private List<Organization> organizedTournaments = new ArrayList<>();
-
-    @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "creator")
-    private List<Game> createdGames = new ArrayList<>();
-
-    private DateFormat format = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
-
     public Organizer(Player player){
         this();
         this.setFirstname(player.getFirstname());
@@ -68,12 +56,24 @@ public class Organizer extends Player {
         this.changeAddress(player.getAddress().clone());
     }
 
+    @Transient
+    private Tournament tournamentInOrganisation;
+
+    @JsonIgnore
+    @OneToMany(orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, mappedBy = "organizer")
+    private List<Organization> organizedTournaments = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "creator")
+    private List<Game> createdGames = new ArrayList<>();
+
+    private DateFormat format = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+
     private void chooseParticipatedTournaments(List<Participation> participatedTournaments) {
         participatedTournaments.forEach(participation -> participation.setPlayer(this));
         this.setParticipatedTournaments(participatedTournaments);
     }
 
-    @Transient
     public Game createGame(String name){
         Game createdGame = new Game(name,this);
         createdGames.add(createdGame);
@@ -82,7 +82,6 @@ public class Organizer extends Player {
     }
 
     @JsonIgnore
-    @Transient
     public Organizer startOrganizeTournament(String name, int tablesCount, int maxPlayers){
         tournamentInOrganisation = new Tournament();
         tournamentInOrganisation.setName(name);
@@ -93,21 +92,18 @@ public class Organizer extends Player {
     }
 
     @JsonIgnore
-    @Transient
     public Organizer with(Organizer... coOrganisers){
         tournamentInOrganisation.addOrganizers(coOrganisers);
         return this;
     }
 
     @JsonIgnore
-    @Transient
     public Organizer in(Address address){
         tournamentInOrganisation.changeAddress(address);
         return this;
     }
 
     @JsonIgnore
-    @Transient
     public Organizer withGame(Game game){
         if(game.getStatus()!= GameStatus.ACCEPTED)
             throw new GameNotAcceptedException(game.getName());
@@ -116,7 +112,6 @@ public class Organizer extends Player {
     }
 
     @JsonIgnore
-    @Transient
     public Organizer startAt(Date startDate) {
         if(startDate.before(new Date())){
 
@@ -127,7 +122,6 @@ public class Organizer extends Player {
     }
 
     @JsonIgnore
-    @Transient
     public Organizer endingIn(Date endDate) {
         Date startDate = tournamentInOrganisation.getDateOfStart();
         if(endDate.before(startDate)){
@@ -145,27 +139,71 @@ public class Organizer extends Player {
     }
 
     @JsonIgnore
-    @Transient
     public Organizer inviteParticipants(Player... participants) {
         tournamentInOrganisation.addParticipants(participants);
         return this;
     }
 
     @JsonIgnore
-    @Transient
     public Tournament finishOrganize(){
         return tournamentInOrganisation;
     }
 
-    @JsonIgnore
-    @Transient
-    public TournamentWithProgression startTournament(String tournamentToStartName,int toursNumber){
+    public Tournament startTournament(String tournamentToStartName,int toursNumber){
         Tournament tournamentToStart = this.findOrganizedTournamentByName(tournamentToStartName);
         return new TournamentWithProgression(tournamentToStart,toursNumber);
     }
 
+    public void setRandomPlayersOnTableInFirstTour(String tournamentName,int tableNumber){
+        TournamentWithProgression tournamentWithProgression = this.findStartedTournamentByName(tournamentName);
+        tournamentWithProgression.setRandomPlayersOnTableInFirstTour(tableNumber);
+    }
+
+    public void setPlayersOnTableInFirstTour(String tournamentName,int tableNumber, Player firstPlayer, Player secondPlayer){
+        TournamentWithProgression tournamentWithProgression = this.findStartedTournamentByName(tournamentName);
+        tournamentWithProgression.setPlayersOnTableInFirstTour(tableNumber,firstPlayer,secondPlayer);
+    }
+
+    public void setPointsOnTable(String tournamentName, int tableNumber, int pointsForFirstPlayer) {
+        TournamentWithProgression tournamentWithProgression = this.findStartedTournamentByName(tournamentName);
+        tournamentWithProgression.setPointsOnTable(tableNumber,pointsForFirstPlayer);
+    }
+
+    public void prepareNextTour(String tournamentName) {
+        TournamentWithProgression tournamentWithProgression = this.findStartedTournamentByName(tournamentName);
+        tournamentWithProgression.prepareNextTour();
+    }
+
+    public void finishTournament(String tournamentName) {
+        TournamentWithProgression tournamentToFinish = this.findStartedTournamentByName(tournamentName);
+        tournamentToFinish.finishTournament();
+    }
+
+    @JsonIgnore
+    private TournamentWithProgression findStartedTournamentByName(String tournamentName){
+        return this.castTournamentToTournamentWithProgression(this.findOrganizedTournamentByName(tournamentName));
+    }
+
+    @JsonIgnore
+    private TournamentWithProgression castTournamentToTournamentWithProgression(Tournament tournament){
+        if(tournament instanceof TournamentWithProgression)
+            return (TournamentWithProgression) tournament;
+        else
+            throw new ThisTournamentIsNotStarted(tournament.getName());
+    }
+
     public void addOrganization(Organization organization) {
+        this.deleteOrganizationWithTheSameTournamentName(organization.getTournament().getName());
         this.organizedTournaments.add(organization);
+    }
+
+    public void deleteOrganizationWithTheSameTournamentName(String tournamentName){
+        Organization organization = this.organizedTournaments.stream()
+                .filter(participation1 -> participation1.getTournament().getName().equals(tournamentName))
+                .findFirst().orElse(null);
+        if(organization!=null){
+            this.organizedTournaments.remove(organization);
+        }
     }
 
     private void setOrganizedTournaments(List<Organization> organizedTournaments){
@@ -180,6 +218,7 @@ public class Organizer extends Player {
         return   organizedTournaments.stream()
                 .map(Organization::getTournament)
                 .filter(tournament -> tournament.getName().equals(tournamentName))
-                .findFirst().orElseThrow(() -> new YouDidNotOrganizedTournamentWithThisName(tournamentName));
+                .findFirst().orElseThrow(() -> new YouDidNotOrganizeTournamentWithThisName(tournamentName));
     }
+
 }

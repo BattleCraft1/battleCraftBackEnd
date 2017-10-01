@@ -127,7 +127,7 @@ public class Tournament extends AddressOwner{
             this.tournamentClass = TournamentClass.MASTER;
     }
 
-    protected void setMaxPlayers(int maxPlayers){
+    private void setMaxPlayers(int maxPlayers){
         this.maxPlayers = maxPlayers;
     }
 
@@ -139,19 +139,19 @@ public class Tournament extends AddressOwner{
         this.tournamentClass = tournamentClass;
     }
 
-    protected void setParticipants(List<Participation> participants){
+    private void setParticipants(List<Participation> participants){
         this.participants = participants;
     }
 
-    protected void setOrganizers(List<Organization> organizers){
+    private void setOrganizers(List<Organization> organizers){
         this.organizers = organizers;
     }
 
-    protected void setPlayersNumber(int playersNumber) {
+    private void setPlayersNumber(int playersNumber) {
         this.playersNumber = playersNumber;
     }
 
-    protected void setFreeSlots(int freeSlots) {
+    private void setFreeSlots(int freeSlots) {
         this.freeSlots = freeSlots;
     }
 }

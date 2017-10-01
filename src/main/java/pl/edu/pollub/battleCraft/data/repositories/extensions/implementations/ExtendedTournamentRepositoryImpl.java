@@ -64,6 +64,11 @@ public class ExtendedTournamentRepositoryImpl implements ExtendedTournamentRepos
     public void deleteTournaments(String... tournamentsToDeleteUniqueNames) {
         this.tournamentRepository.deleteParticipationInTournaments(tournamentsToDeleteUniqueNames);
         this.tournamentRepository.deleteOrganizationOfTournaments(tournamentsToDeleteUniqueNames);
+        List<Long> idsOfToursToDelete = this.tournamentRepository.selectIdsOfToursToDelete(tournamentsToDeleteUniqueNames);
+        List<Long> idsOfBattlesToDelete = this.tournamentRepository.selectIdsOfBattlesToDelete(idsOfToursToDelete);
+        this.tournamentRepository.deletePlaysOfTournaments(idsOfBattlesToDelete);
+        this.tournamentRepository.deleteBattlesOfTournaments(idsOfBattlesToDelete);
+        this.tournamentRepository.deleteToursOfTournaments(idsOfToursToDelete);
         this.tournamentRepository.deleteTournaments(tournamentsToDeleteUniqueNames);
     }
 

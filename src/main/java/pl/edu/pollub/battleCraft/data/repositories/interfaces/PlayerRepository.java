@@ -33,4 +33,8 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
     @Modifying
     @Query("DELETE FROM Participation p WHERE (SELECT pl.name FROM Player pl WHERE pl.banned = true AND pl.id=p.player) IN ?1")
     void deleteParticipationInTournaments(String... playersToDeleteUniqueNames);
+
+    @Modifying
+    @Query("DELETE FROM Play p WHERE (SELECT pl.name FROM Player pl WHERE pl.banned = true AND pl.id = p.player) IN ?1")
+    void deletePlayInTournaments(String... playersToDeleteUniqueNames);
 }

@@ -33,16 +33,16 @@ public class RankingRepositoryImpl implements RankingRepository{
                         new Field("name", "playerName"),
                         new Field("email", "playerEmail"),
                         new Field("participatedTournaments.id", "participatedTournamentsNumber",Projections::countDistinct),
-                        new Field("plays.id", "numberOfBattles",Projections::countDistinct),
-                        new Field("plays.points", "battlesPoints",Projections::sum)
+                        new Field("battles.id", "numberOfBattles",Projections::countDistinct),
+                        new Field("battles.points", "battlesPoints",Projections::sum)
                 )
                 .createAliases(
-                        new Alias("plays", "plays"),
+                        new Alias("battles", "battles"),
                         new Alias("participatedTournaments", "participatedTournaments")
                 )
                 .from(Player.class)
                 .where(searchCriteria)
-                .groupBy("id")
+                .groupBy("name","email")
                 .execute(requestedPage);
     }
 }

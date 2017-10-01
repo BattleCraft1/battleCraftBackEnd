@@ -15,6 +15,12 @@ import javax.persistence.*;
 @EqualsAndHashCode
 @ToString
 public class Participation implements Cloneable{
+
+    public Participation(Player player, Tournament tournament) {
+        this.player = player;
+        this.tournament = tournament;
+    }
+    
     @Id
     @GeneratedValue
     private Long id;
@@ -26,11 +32,6 @@ public class Participation implements Cloneable{
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "tournament_id")
     private Tournament tournament;
-
-    public Participation(Player player, Tournament tournament) {
-        this.player = player;
-        this.tournament = tournament;
-    }
 
     public Participation clone(){
         return new Participation(this.player,this.tournament);

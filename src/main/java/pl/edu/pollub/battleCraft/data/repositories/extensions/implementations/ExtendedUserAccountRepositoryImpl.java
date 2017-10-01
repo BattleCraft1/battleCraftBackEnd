@@ -90,6 +90,7 @@ public class ExtendedUserAccountRepositoryImpl implements ExtendedUserAccountRep
     @Override
     public void deleteUsersAccounts(String... usersAccountsToDeleteUniqueNames) {
         playerRepository.deleteParticipationInTournaments(usersAccountsToDeleteUniqueNames);
+        playerRepository.deletePlayInTournaments(usersAccountsToDeleteUniqueNames);
         organiserRepository.deleteOrganizationOfTournaments(usersAccountsToDeleteUniqueNames);
         organiserRepository.deleteCreationOfGames(usersAccountsToDeleteUniqueNames);
         userAccountRepository.deleteRelatedAddress(usersAccountsToDeleteUniqueNames);

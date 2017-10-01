@@ -28,16 +28,6 @@ import java.util.Map;
 @ToString
 public class Player extends UserAccount {
 
-    @JsonIgnore
-    @OneToMany(orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, mappedBy = "player")
-    private List<Participation> participatedTournaments = new ArrayList<>();
-
-    @JsonIgnore
-    @OneToMany(orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, mappedBy = "player")
-    private List<Play> battles = new ArrayList<>();
-
-    private boolean banned;
-
     public Player() {
         super(UserType.ACCEPTED);
         this.banned = false;
@@ -59,8 +49,28 @@ public class Player extends UserAccount {
         this.changeAddress(userAccount.getAddress().clone());
     }
 
+    @JsonIgnore
+    @OneToMany(orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, mappedBy = "player")
+    private List<Participation> participatedTournaments = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, mappedBy = "player")
+    private List<Play> battles = new ArrayList<>();
+
+    private boolean banned;
+
     public void addParticipation(Participation participation) {
+        this.deleteParticipationWithTheSameTournamentName(participation.getTournament().getName());
         this.participatedTournaments.add(participation);
+    }
+
+    private void deleteParticipationWithTheSameTournamentName(String tournamentName){
+        Participation participation = this.participatedTournaments.stream()
+                .filter(participation1 -> participation1.getTournament().getName().equals(tournamentName))
+                .findFirst().orElse(null);
+        if(participation!=null){
+            this.participatedTournaments.remove(participation);
+        }
     }
 
     protected void setParticipatedTournaments(List<Participation> participatedTournaments){

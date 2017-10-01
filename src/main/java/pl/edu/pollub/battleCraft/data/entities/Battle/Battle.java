@@ -22,10 +22,12 @@ import java.util.List;
 @ToString
 public class Battle {
 
+    @Transient
     private final int NUMBER_OF_POINTS_FOR_ALONE_PLAYER = 17;
 
-    public Battle(int tableNumber){
+    public Battle(Tour tour, int tableNumber){
         this.tableNumber = tableNumber;
+        this.setTour(tour);
     }
 
     @Id
@@ -43,21 +45,17 @@ public class Battle {
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "battle")
     private List<Play> players = new ArrayList<>();
 
-    @JsonIgnore
-    @Transient
     public void setPoints(int points){
         this.getFirstPlay().setPoints(points);
         this.getSecondPlay().setPoints(20 - points);
     }
 
     @JsonIgnore
-    @Transient
     public Play getFirstPlay(){
         return players.get(0);
     }
 
     @JsonIgnore
-    @Transient
     public Play getSecondPlay(){
         return players.get(1);
     }

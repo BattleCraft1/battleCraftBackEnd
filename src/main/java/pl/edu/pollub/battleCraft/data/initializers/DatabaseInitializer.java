@@ -9,6 +9,7 @@ import pl.edu.pollub.battleCraft.data.entities.Address.Province;
 import pl.edu.pollub.battleCraft.data.entities.Game.Game;
 import pl.edu.pollub.battleCraft.data.entities.Game.enums.GameStatus;
 import pl.edu.pollub.battleCraft.data.entities.Tournament.Tournament;
+import pl.edu.pollub.battleCraft.data.entities.Tournament.subClasses.tournamentWithProgression.TournamentWithProgression;
 import pl.edu.pollub.battleCraft.data.entities.User.UserAccount;
 import pl.edu.pollub.battleCraft.data.entities.User.UserBuilder;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.organizers.Organizer;
@@ -142,8 +143,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
         testGame1.setStatus(GameStatus.ACCEPTED);
 
         try {
-            Tournament testTournament1 = testUser7
-                    .startOrganizeTournament("Tournament1", 3,5)
+            testUser7.startOrganizeTournament("Tournament1", 3,5)
                     .with(testUser8)
                     .in(testAddress11)
                     .withGame( testGame1)
@@ -151,6 +151,16 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
                     .endingIn(format.parse("09-01-2018 14:05:00"))
                     .inviteParticipants(testUser1,testUser2,testUser3,testUser4)
                     .finishOrganize();
+
+            Tournament testTournament1 = testUser7.startTournament("Tournament1",2);
+            testUser7.setRandomPlayersOnTableInFirstTour("Tournament1",0);
+            testUser7.setRandomPlayersOnTableInFirstTour("Tournament1",1);
+            testUser7.setPointsOnTable("Tournament1",0,5);
+            testUser7.setPointsOnTable("Tournament1",1,8);
+            testUser7.prepareNextTour("Tournament1");
+            testUser7.setPointsOnTable("Tournament1",0,8);
+            testUser7.setPointsOnTable("Tournament1",1,10);
+            testUser7.finishTournament("Tournament1");
 
             Tournament testTournament2 = testUser10
                     .startOrganizeTournament("Tournament2", 4,7)
