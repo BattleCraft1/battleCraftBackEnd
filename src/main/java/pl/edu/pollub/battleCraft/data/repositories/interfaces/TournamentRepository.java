@@ -13,11 +13,11 @@ import java.util.List;
 @Transactional
 public interface TournamentRepository extends JpaRepository<Tournament, Long> {
     @Modifying
-    @Query("DELETE FROM Participation p WHERE (SELECT t.name FROM Tournament t WHERE t.banned = true AND t.id=p.tournament) IN ?1")
+    @Query("DELETE FROM Participation p WHERE (SELECT t.name FROM Tournament t WHERE t.banned = true AND t.id=p.participatedTournament) IN ?1")
     void deleteParticipationInTournaments(String... tournamentsToDeleteUniqueNames);
 
     @Modifying
-    @Query("DELETE FROM Organization o WHERE (SELECT t.name FROM Tournament t WHERE t.banned = true AND t.id=o.tournament) IN ?1")
+    @Query("DELETE FROM Organization o WHERE (SELECT t.name FROM Tournament t WHERE t.banned = true AND t.id=o.organizedTournament) IN ?1")
     void deleteOrganizationOfTournaments(String... tournamentsToDeleteUniqueNames);
 
     @Modifying

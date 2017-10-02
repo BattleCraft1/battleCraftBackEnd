@@ -16,9 +16,9 @@ import javax.persistence.*;
 @ToString
 public class Organization {
 
-    public Organization(Organizer organizer, Tournament tournament) {
+    public Organization(Organizer organizer, Tournament organizedTournament) {
         this.organizer = organizer;
-        this.tournament = tournament;
+        this.organizedTournament = organizedTournament;
     }
 
     @Id
@@ -31,5 +31,5 @@ public class Organization {
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "tournament_id")
-    private Tournament tournament;
+    private Tournament organizedTournament;
 }

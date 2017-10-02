@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.Formula;
 import pl.edu.pollub.battleCraft.data.entities.Battle.Battle;
 import pl.edu.pollub.battleCraft.data.entities.User.UserAccount;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.enums.UserType;
@@ -50,23 +51,26 @@ public class Player extends UserAccount {
     }
 
     @JsonIgnore
-    @OneToMany(orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, mappedBy = "player")
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "player")
     private List<Participation> participatedTournaments = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, mappedBy = "player")
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "player")
     private List<Play> battles = new ArrayList<>();
 
     private boolean banned;
 
+    @Formula("(select count(*) from participation p where p.tournament_id = id)")
+    private int freeSlots;
+
     public void addParticipation(Participation participation) {
-        this.deleteParticipationWithTheSameTournamentName(participation.getTournament().getName());
+        this.deleteParticipationWithTheSameTournamentName(participation.getParticipatedTournament().getName());
         this.participatedTournaments.add(participation);
     }
 
     private void deleteParticipationWithTheSameTournamentName(String tournamentName){
         Participation participation = this.participatedTournaments.stream()
-                .filter(participation1 -> participation1.getTournament().getName().equals(tournamentName))
+                .filter(participation1 -> participation1.getParticipatedTournament().getName().equals(tournamentName))
                 .findFirst().orElse(null);
         if(participation!=null){
             this.participatedTournaments.remove(participation);

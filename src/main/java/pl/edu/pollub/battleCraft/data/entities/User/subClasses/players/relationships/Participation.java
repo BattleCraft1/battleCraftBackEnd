@@ -16,9 +16,9 @@ import javax.persistence.*;
 @ToString
 public class Participation implements Cloneable{
 
-    public Participation(Player player, Tournament tournament) {
+    public Participation(Player player, Tournament participatedTournament) {
         this.player = player;
-        this.tournament = tournament;
+        this.participatedTournament = participatedTournament;
     }
     
     @Id
@@ -31,9 +31,9 @@ public class Participation implements Cloneable{
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "tournament_id")
-    private Tournament tournament;
+    private Tournament participatedTournament;
 
     public Participation clone(){
-        return new Participation(this.player,this.tournament);
+        return new Participation(this.player,this.participatedTournament);
     }
 }

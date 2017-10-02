@@ -71,11 +71,11 @@ public class Tournament extends AddressOwner{
     private boolean banned;
 
     @JsonIgnore
-    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "tournament")
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "participatedTournament")
     private List<Participation> participants = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "tournament")
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "organizedTournament")
     private List<Organization> organizers = new ArrayList<>();
 
     @Formula("(select count(*) from participation p where p.tournament_id = id)")

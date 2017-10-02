@@ -193,13 +193,13 @@ public class Organizer extends Player {
     }
 
     public void addOrganization(Organization organization) {
-        this.deleteOrganizationWithTheSameTournamentName(organization.getTournament().getName());
+        this.deleteOrganizationWithTheSameTournamentName(organization.getOrganizedTournament().getName());
         this.organizedTournaments.add(organization);
     }
 
     public void deleteOrganizationWithTheSameTournamentName(String tournamentName){
         Organization organization = this.organizedTournaments.stream()
-                .filter(participation1 -> participation1.getTournament().getName().equals(tournamentName))
+                .filter(participation1 -> participation1.getOrganizedTournament().getName().equals(tournamentName))
                 .findFirst().orElse(null);
         if(organization!=null){
             this.organizedTournaments.remove(organization);
@@ -216,7 +216,7 @@ public class Organizer extends Player {
 
     private Tournament findOrganizedTournamentByName(String tournamentName){
         return   organizedTournaments.stream()
-                .map(Organization::getTournament)
+                .map(Organization::getOrganizedTournament)
                 .filter(tournament -> tournament.getName().equals(tournamentName))
                 .findFirst().orElseThrow(() -> new YouDidNotOrganizeTournamentWithThisName(tournamentName));
     }

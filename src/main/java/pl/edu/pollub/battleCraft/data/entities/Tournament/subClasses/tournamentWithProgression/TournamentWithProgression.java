@@ -14,6 +14,7 @@ import pl.edu.pollub.battleCraft.data.entities.User.subClasses.players.relations
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.players.relationships.Play;
 import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentPrograssion.finish.TournamentCannotBeFinished;
 import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentPrograssion.prepareEveryNextTour.NotValidPointsNumber;
+import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentPrograssion.prepareEveryNextTour.ThisPlayerDoesNotParticipateToThisTournament;
 import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentPrograssion.prepareEveryNextTour.ThisTournamentIsNotInProgress;
 import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentPrograssion.prepareEveryNextTour.TournamentIsFinished;
 import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentPrograssion.prepareFirstTour.ThisPlayerHaveBattleInCurrentTour;
@@ -75,6 +76,7 @@ public class TournamentWithProgression extends Tournament{
     }
 
     public void setPlayersOnTableInFirstTour(int tableNumber, Player firstPlayer, Player secondPlayer){
+        this.checkIfPlayersParticipateToTournament(firstPlayer,secondPlayer);
         List<Player> playersWithoutBattle = this.getPlayersWithoutBattle();
         if(!playersWithoutBattle.contains(secondPlayer))
             throw new ThisPlayerHaveBattleInCurrentTour(secondPlayer.getName());
@@ -125,11 +127,23 @@ public class TournamentWithProgression extends Tournament{
                 if (!checkIfPlayersPlayedBattle(firstPlayer, secondPlayer)){
                     currentTour.setPlayersOnTable(tableNumber, firstPlayer, secondPlayer);
                     iterator.remove();
+                    iterator = players.iterator();
                     break;
                 }
             }
             tableNumber++;
         }
+    }
+
+    private void checkIfPlayersParticipateToTournament(Player... players){
+        List<Player> playersOfTournament = this.getParticipants().stream()
+                .map(Participation::getPlayer)
+                .collect(Collectors.toList());
+        Arrays.stream(players).forEach(player -> {
+            if(!playersOfTournament.contains(player))
+                throw new ThisPlayerDoesNotParticipateToThisTournament(player.getName());
+        }
+        );
     }
 
     @JsonIgnore
