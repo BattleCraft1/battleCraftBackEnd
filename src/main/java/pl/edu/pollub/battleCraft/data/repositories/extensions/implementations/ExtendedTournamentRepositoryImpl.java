@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import pl.edu.pollub.battleCraft.data.entities.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.data.repositories.extensions.interfaces.ExtendedTournamentRepository;
-import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.field.Alias;
+import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.field.Join;
 import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.field.Field;
 import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.interfaces.GetPageAssistant;
 import pl.edu.pollub.battleCraft.data.repositories.helpers.searchSpecyficators.SearchCriteria;
@@ -43,11 +43,11 @@ public class ExtendedTournamentRepositoryImpl implements ExtendedTournamentRepos
                         new Field("status", "status"),
                         new Field("banned", "banned")
                 )
-                .createAliases(
-                        new Alias("participants", "participants"),
-                        new Alias("address", "address"),
-                        new Alias("address.province", "province"),
-                        new Alias("game", "game")
+                .join(
+                        new Join("participants", "participants"),
+                        new Join("address", "address"),
+                        new Join("address.province", "province"),
+                        new Join("game", "game")
                 )
                 .from(Tournament.class)
                 .where(searchCriteria)

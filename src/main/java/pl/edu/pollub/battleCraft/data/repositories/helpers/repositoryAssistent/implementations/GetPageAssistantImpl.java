@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 import pl.edu.pollub.battleCraft.data.repositories.helpers.page.implementations.PaginatorImpl;
 import pl.edu.pollub.battleCraft.data.repositories.helpers.page.interfaces.Paginator;
-import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.field.Alias;
+import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.field.Join;
 import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.field.Field;
 import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.interfaces.GetPageAssistant;
 import pl.edu.pollub.battleCraft.data.repositories.helpers.searchSpecyficators.SearchCriteria;
@@ -43,7 +43,7 @@ public class GetPageAssistantImpl implements GetPageAssistant {
 
     private Field[] projectionFields;
     private ProjectionList projectionList = Projections.projectionList();
-    private List<Alias> aliases = new ArrayList<>();
+    private List<Join> aliases = new ArrayList<>();
     private Criteria criteria;
     private List<SimpleExpression> whereConditions = new ArrayList<>();
 
@@ -62,7 +62,7 @@ public class GetPageAssistantImpl implements GetPageAssistant {
     }
 
     @Override
-    public GetPageAssistant createAliases(Alias... aliases){
+    public GetPageAssistant join(Join... aliases){
         this.aliases.addAll(Arrays.asList(aliases));
         return this;
     }

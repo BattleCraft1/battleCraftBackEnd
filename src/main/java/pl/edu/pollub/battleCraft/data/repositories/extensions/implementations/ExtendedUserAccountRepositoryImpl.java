@@ -1,6 +1,5 @@
 package pl.edu.pollub.battleCraft.data.repositories.extensions.implementations;
 
-import org.hibernate.criterion.Projections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,7 +9,7 @@ import pl.edu.pollub.battleCraft.data.entities.User.subClasses.enums.UserType;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.organizers.Organizer;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.players.Player;
 import pl.edu.pollub.battleCraft.data.repositories.extensions.interfaces.ExtendedUserAccountRepository;
-import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.field.Alias;
+import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.field.Join;
 import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.field.Field;
 import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.interfaces.GetPageAssistant;
 import pl.edu.pollub.battleCraft.data.repositories.helpers.searchSpecyficators.SearchCriteria;
@@ -55,9 +54,9 @@ public class ExtendedUserAccountRepositoryImpl implements ExtendedUserAccountRep
                         new Field("status", "status"),
                         new Field("banned", "banned")
                 )
-                .createAliases(
-                        new Alias("address", "address"),
-                        new Alias("address.province", "province")
+                .join(
+                        new Join("address", "address"),
+                        new Join("address.province", "province")
                 )
                 .from(UserAccount.class)
                 .where(searchCriteria)

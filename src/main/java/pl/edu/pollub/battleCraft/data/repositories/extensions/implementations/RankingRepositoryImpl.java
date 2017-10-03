@@ -5,10 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
-import pl.edu.pollub.battleCraft.data.entities.User.UserAccount;
-import pl.edu.pollub.battleCraft.data.entities.User.subClasses.players.Player;
+import pl.edu.pollub.battleCraft.data.entities.Battle.Battle;
 import pl.edu.pollub.battleCraft.data.repositories.extensions.interfaces.RankingRepository;
-import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.field.Alias;
+import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.field.Join;
 import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.field.Field;
 import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.interfaces.GetPageAssistant;
 import pl.edu.pollub.battleCraft.data.repositories.helpers.searchSpecyficators.SearchCriteria;
@@ -31,23 +30,25 @@ public class RankingRepositoryImpl implements RankingRepository{
     public Page getPageOfRanking(List<SearchCriteria> searchCriteria, Pageable requestedPage) {
         return getPageAssistant
                 .select(
-                        new Field("name", "playerName"),
-                        new Field("email", "playerEmail"),
-                        new Field("participatedTournament.id", "participatedTournamentsNumber",Projections::countDistinct),
-                        new Field("battles.id", "numberOfBattles",Projections::countDistinct),
-                        new Field("battles.points", "points", Projections::sum)
+                        new Field("player.name", "name"),
+                        new Field("address.city", "city"),
+                        new Field("province.location", "province"),
+                        new Field("tournament.id", "numberOfTournaments",Projections::countDistinct),
+                        new Field("id", "numberOfBattles",Projections::countDistinct),
+                        new Field("players.points", "points", Projections::sum)
                 )
-                .createAliases(
-                        new Alias("battles", "battles"),
-                        new Alias("battles.battle", "battle"),
-                        new Alias("battle.tour", "tour"),
-                        new Alias("tour.tournament", "tournament"),
-                        new Alias( "participatedTournaments", "participatedTournaments"),
-                        new Alias( "participatedTournaments.participatedTournament", "participatedTournament")
+                .join(
+                        new Join( "players", "players"),
+                        new Join( "players.player", "player"),
+                        new Join("player.address", "address"),
+                        new Join("address.province", "province"),
+                        new Join( "tour", "tour"),
+                        new Join( "tour.tournament", "tournament"),
+                        new Join( "tournament.game", "game")
                 )
-                .from(Player.class)
+                .from(Battle.class)
                 .where(searchCriteria)
-                .groupBy("id","name","email")
+                .groupBy("player.id","player.name","player.email","address.city", "province.location")
                 .execute(requestedPage);
     }
 }
