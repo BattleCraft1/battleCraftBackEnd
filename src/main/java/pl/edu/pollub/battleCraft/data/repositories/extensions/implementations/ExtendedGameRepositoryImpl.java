@@ -1,12 +1,13 @@
-package pl.edu.pollub.battleCraft.data.repositories.implementations;
+package pl.edu.pollub.battleCraft.data.repositories.extensions.implementations;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import pl.edu.pollub.battleCraft.data.entities.Game.Game;
-import pl.edu.pollub.battleCraft.data.repositories.extensions.ExtendedGameRepository;
-import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.Field;
+import pl.edu.pollub.battleCraft.data.repositories.extensions.interfaces.ExtendedGameRepository;
+import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.field.Join;
+import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.field.Field;
 import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.interfaces.GetPageAssistant;
 import pl.edu.pollub.battleCraft.data.repositories.helpers.searchSpecyficators.SearchCriteria;
 import pl.edu.pollub.battleCraft.data.repositories.interfaces.GameRepository;
@@ -37,8 +38,8 @@ public class ExtendedGameRepositoryImpl implements ExtendedGameRepository{
                         new Field("banned", "banned"),
                         new Field("dateOfCreation", "dateOfCreation")
                 )
-                .createAliases(
-                        new Field("creator", "creator")
+                .join(
+                        new Join("creator", "creator")
                 )
                 .from(Game.class)
                 .where(searchCriteria)

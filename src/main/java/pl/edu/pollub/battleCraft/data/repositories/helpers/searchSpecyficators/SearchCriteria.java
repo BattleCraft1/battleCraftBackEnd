@@ -2,6 +2,7 @@ package pl.edu.pollub.battleCraft.data.repositories.helpers.searchSpecyficators;
 
 import lombok.*;
 
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Root;
 import java.text.DateFormat;
@@ -22,10 +23,15 @@ public class SearchCriteria {
     private Object value;
 
     private Path getPath(Root root) {
-        Path path = root.get(keys.get(0));
-        for (int i = 1; i < keys.size(); i++)
-            path = path.get(keys.get(i));
-        return path;
+        if(keys.size()==1){
+            return root.get(keys.get(0));
+        }
+        else {
+            Join path = root.join(keys.get(0));
+            for (int i = 1; i < keys.size() - 1; i++)
+                path = path.join(keys.get(i));
+            return path.get(keys.get(keys.size()-1));
+        }
     }
 
     private Class getType(Root root){

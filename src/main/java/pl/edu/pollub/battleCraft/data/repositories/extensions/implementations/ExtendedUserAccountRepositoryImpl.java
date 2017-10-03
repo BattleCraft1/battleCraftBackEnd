@@ -1,4 +1,4 @@
-package pl.edu.pollub.battleCraft.data.repositories.implementations;
+package pl.edu.pollub.battleCraft.data.repositories.extensions.implementations;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -8,8 +8,9 @@ import pl.edu.pollub.battleCraft.data.entities.User.UserAccount;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.enums.UserType;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.organizers.Organizer;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.players.Player;
-import pl.edu.pollub.battleCraft.data.repositories.extensions.ExtendedUserAccountRepository;
-import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.Field;
+import pl.edu.pollub.battleCraft.data.repositories.extensions.interfaces.ExtendedUserAccountRepository;
+import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.field.Join;
+import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.field.Field;
 import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.interfaces.GetPageAssistant;
 import pl.edu.pollub.battleCraft.data.repositories.helpers.searchSpecyficators.SearchCriteria;
 import pl.edu.pollub.battleCraft.data.repositories.interfaces.OrganizerRepository;
@@ -53,9 +54,9 @@ public class ExtendedUserAccountRepositoryImpl implements ExtendedUserAccountRep
                         new Field("status", "status"),
                         new Field("banned", "banned")
                 )
-                .createAliases(
-                        new Field("address", "address"),
-                        new Field("address.province", "province")
+                .join(
+                        new Join("address", "address"),
+                        new Join("address.province", "province")
                 )
                 .from(UserAccount.class)
                 .where(searchCriteria)
@@ -88,6 +89,7 @@ public class ExtendedUserAccountRepositoryImpl implements ExtendedUserAccountRep
     @Override
     public void deleteUsersAccounts(String... usersAccountsToDeleteUniqueNames) {
         playerRepository.deleteParticipationInTournaments(usersAccountsToDeleteUniqueNames);
+        playerRepository.deletePlayInTournaments(usersAccountsToDeleteUniqueNames);
         organiserRepository.deleteOrganizationOfTournaments(usersAccountsToDeleteUniqueNames);
         organiserRepository.deleteCreationOfGames(usersAccountsToDeleteUniqueNames);
         userAccountRepository.deleteRelatedAddress(usersAccountsToDeleteUniqueNames);

@@ -15,8 +15,8 @@ import pl.edu.pollub.battleCraft.data.entities.User.subClasses.organizers.Organi
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.organizers.relationships.Organization;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.players.Player;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.players.relationships.Participation;
-import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentCreation.TooBigMaxPlayersCount;
-import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentCreation.TooManyInvitedParticipants;
+import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentOrganization.TooBigMaxPlayersCount;
+import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.TournamentOrganization.TooManyInvitedParticipants;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 @Setter
 @EqualsAndHashCode(callSuper = true)
 @ToString
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Tournament extends AddressOwner{
     public Tournament() {
         super();
@@ -70,11 +71,11 @@ public class Tournament extends AddressOwner{
     private boolean banned;
 
     @JsonIgnore
-    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "tournament")
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "participatedTournament")
     private List<Participation> participants = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "tournament")
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "organizedTournament")
     private List<Organization> organizers = new ArrayList<>();
 
     @Formula("(select count(*) from participation p where p.tournament_id = id)")
@@ -130,11 +131,11 @@ public class Tournament extends AddressOwner{
         this.maxPlayers = maxPlayers;
     }
 
-    private void setGame(Game game){
+    protected void setGame(Game game){
         this.game = game;
     }
 
-    private void setTournamentClass(TournamentClass tournamentClass){
+    protected void setTournamentClass(TournamentClass tournamentClass){
         this.tournamentClass = tournamentClass;
     }
 

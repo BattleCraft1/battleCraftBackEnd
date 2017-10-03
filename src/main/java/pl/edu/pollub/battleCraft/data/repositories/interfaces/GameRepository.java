@@ -41,10 +41,10 @@ public interface GameRepository extends JpaRepository<Game, Long> {
     void deleteTournamentsOfGames(String... gamesToDeleteUniqueNames);
 
     @Modifying
-    @Query("DELETE FROM Participation p WHERE p.tournament in (SELECT t.id FROM Tournament t WHERE t.game in (SELECT g.id FROM Game g WHERE g.name in ?1))")
+    @Query("DELETE FROM Participation p WHERE p.participatedTournament in (SELECT t.id FROM Tournament t WHERE t.game in (SELECT g.id FROM Game g WHERE g.name in ?1))")
     void deleteParticipationInTournamentsOfGames(String... gamesToDeleteUniqueNames);
 
     @Modifying
-    @Query("DELETE FROM Organization o WHERE o.tournament in (SELECT t.id FROM Tournament t WHERE t.game in (SELECT g.id FROM Game g WHERE g.name in ?1))")
+    @Query("DELETE FROM Organization o WHERE o.organizedTournament in (SELECT t.id FROM Tournament t WHERE t.game in (SELECT g.id FROM Game g WHERE g.name in ?1))")
     void deleteOrganizationOfTournamentsOfGames(String... gamesToDeleteUniqueNames);
 }

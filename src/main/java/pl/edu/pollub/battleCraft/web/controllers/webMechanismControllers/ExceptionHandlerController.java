@@ -21,7 +21,7 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
     protected ResponseEntity<String> handleInternalException(Exception ex, WebRequest req) {
         System.out.println("exception: " + ex.getMessage());
         ex.printStackTrace();
-        return new ResponseEntity<>("There are not recognized problems on the server side. Please contact with administrator.", HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>("There are unrecognized problems on the server side. Please contact with administrator.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(value = {PageNotFoundException.class, StorageFileNotFoundException.class, AnyEntityNotFoundException.class})

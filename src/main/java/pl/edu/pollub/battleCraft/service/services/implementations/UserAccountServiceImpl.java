@@ -5,7 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import pl.edu.pollub.battleCraft.data.entities.User.subClasses.enums.UserType;
-import pl.edu.pollub.battleCraft.data.repositories.extensions.ExtendedUserAccountRepository;
+import pl.edu.pollub.battleCraft.data.repositories.extensions.interfaces.ExtendedUserAccountRepository;
 import pl.edu.pollub.battleCraft.data.repositories.helpers.searchSpecyficators.SearchCriteria;
 import pl.edu.pollub.battleCraft.service.services.helpers.file.implementations.FileServiceImpl;
 import pl.edu.pollub.battleCraft.service.services.helpers.image.interfaces.ImageService;

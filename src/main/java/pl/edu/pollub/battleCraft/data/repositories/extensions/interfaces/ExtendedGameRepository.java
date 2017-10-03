@@ -1,4 +1,4 @@
-package pl.edu.pollub.battleCraft.data.repositories.extensions;
+package pl.edu.pollub.battleCraft.data.repositories.extensions.interfaces;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -1,12 +1,13 @@
-package pl.edu.pollub.battleCraft.data.repositories.implementations;
+package pl.edu.pollub.battleCraft.data.repositories.extensions.implementations;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import pl.edu.pollub.battleCraft.data.entities.Tournament.Tournament;
-import pl.edu.pollub.battleCraft.data.repositories.extensions.ExtendedTournamentRepository;
-import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.Field;
+import pl.edu.pollub.battleCraft.data.repositories.extensions.interfaces.ExtendedTournamentRepository;
+import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.field.Join;
+import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.field.Field;
 import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.interfaces.GetPageAssistant;
 import pl.edu.pollub.battleCraft.data.repositories.helpers.searchSpecyficators.SearchCriteria;
 import pl.edu.pollub.battleCraft.data.repositories.interfaces.TournamentRepository;
@@ -42,11 +43,11 @@ public class ExtendedTournamentRepositoryImpl implements ExtendedTournamentRepos
                         new Field("status", "status"),
                         new Field("banned", "banned")
                 )
-                .createAliases(
-                        new Field("participants", "participants"),
-                        new Field("address", "address"),
-                        new Field("address.province", "province"),
-                        new Field("game", "game")
+                .join(
+                        new Join("participants", "participants"),
+                        new Join("address", "address"),
+                        new Join("address.province", "province"),
+                        new Join("game", "game")
                 )
                 .from(Tournament.class)
                 .where(searchCriteria)
@@ -63,6 +64,11 @@ public class ExtendedTournamentRepositoryImpl implements ExtendedTournamentRepos
     public void deleteTournaments(String... tournamentsToDeleteUniqueNames) {
         this.tournamentRepository.deleteParticipationInTournaments(tournamentsToDeleteUniqueNames);
         this.tournamentRepository.deleteOrganizationOfTournaments(tournamentsToDeleteUniqueNames);
+        List<Long> idsOfToursToDelete = this.tournamentRepository.selectIdsOfToursToDelete(tournamentsToDeleteUniqueNames);
+        List<Long> idsOfBattlesToDelete = this.tournamentRepository.selectIdsOfBattlesToDelete(idsOfToursToDelete);
+        this.tournamentRepository.deletePlaysOfTournaments(idsOfBattlesToDelete);
+        this.tournamentRepository.deleteBattlesOfTournaments(idsOfBattlesToDelete);
+        this.tournamentRepository.deleteToursOfTournaments(idsOfToursToDelete);
         this.tournamentRepository.deleteTournaments(tournamentsToDeleteUniqueNames);
     }
 

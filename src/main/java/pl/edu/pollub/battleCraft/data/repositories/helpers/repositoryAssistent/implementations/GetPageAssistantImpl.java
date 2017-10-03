@@ -16,7 +16,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 import pl.edu.pollub.battleCraft.data.repositories.helpers.page.implementations.PaginatorImpl;
 import pl.edu.pollub.battleCraft.data.repositories.helpers.page.interfaces.Paginator;
-import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.Field;
+import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.field.Join;
+import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.field.Field;
 import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.interfaces.GetPageAssistant;
 import pl.edu.pollub.battleCraft.data.repositories.helpers.searchSpecyficators.SearchCriteria;
 import pl.edu.pollub.battleCraft.service.exceptions.CheckedExceptions.PageOfEntities.AnyEntityNotFoundException;
@@ -26,7 +27,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -43,7 +43,7 @@ public class GetPageAssistantImpl implements GetPageAssistant {
 
     private Field[] projectionFields;
     private ProjectionList projectionList = Projections.projectionList();
-    private List<Field> aliases = new ArrayList<>();
+    private List<Join> aliases = new ArrayList<>();
     private Criteria criteria;
     private List<SimpleExpression> whereConditions = new ArrayList<>();
 
@@ -62,8 +62,8 @@ public class GetPageAssistantImpl implements GetPageAssistant {
     }
 
     @Override
-    public GetPageAssistant createAliases(Field... fields){
-        aliases.addAll(Arrays.asList(fields));
+    public GetPageAssistant join(Join... aliases){
+        this.aliases.addAll(Arrays.asList(aliases));
         return this;
     }
 
@@ -78,7 +78,7 @@ public class GetPageAssistantImpl implements GetPageAssistant {
         this.root = criteriaQuery.from(entityClass);
         this.criteria = this.hibernateSession.createCriteria(entityClass, this.transactionId);
         Arrays.stream(projectionFields).forEach(
-                field -> projectionList.add(Projections.property(getFieldFullName(field.name)),field.value)
+                field -> projectionList.add(field.operation.apply(getFieldFullName(field.name)),field.value)
         );
         return this;
     }

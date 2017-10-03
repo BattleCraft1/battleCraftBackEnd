@@ -21,6 +21,13 @@ import java.util.List;
 @EqualsAndHashCode
 @ToString
 public class Game{
+    public Game(String name, Organizer creator){
+        this.name = name;
+        this.creator = creator;
+        this.status = GameStatus.NEW;
+        this.banned = false;
+        this.dateOfCreation = new Date();
+    }
 
     @Id
     @GeneratedValue
@@ -51,15 +58,16 @@ public class Game{
     private boolean banned;
 
     public void addTournamentByOneSide(Tournament tournament) {
+        this.deleteTournamentWithTheSameName(tournament.getName());
         this.tournaments.add(tournament);
     }
 
-    public Game(String name, Organizer creator){
-        this.name = name;
-        this.creator = creator;
-        this.status = GameStatus.NEW;
-        this.banned = false;
-        this.dateOfCreation = new Date();
+    private void deleteTournamentWithTheSameName(String tournamentName){
+        Tournament tournamentToDelete = this.tournaments.stream()
+                .filter(tournament -> tournament.getName().equals(tournamentName))
+                .findFirst().orElse(null);
+        if(tournamentToDelete!=null)
+            this.tournaments.remove(tournamentToDelete);
     }
 
     private void setTournaments(List<Tournament> tournaments){

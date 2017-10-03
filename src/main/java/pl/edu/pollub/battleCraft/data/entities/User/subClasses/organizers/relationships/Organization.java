@@ -15,6 +15,12 @@ import javax.persistence.*;
 @EqualsAndHashCode
 @ToString
 public class Organization {
+
+    public Organization(Organizer organizer, Tournament organizedTournament) {
+        this.organizer = organizer;
+        this.organizedTournament = organizedTournament;
+    }
+
     @Id
     @GeneratedValue
     private Long id;
@@ -25,10 +31,5 @@ public class Organization {
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "tournament_id")
-    private Tournament tournament;
-
-    public Organization(Organizer organizer, Tournament tournament) {
-        this.organizer = organizer;
-        this.tournament = tournament;
-    }
+    private Tournament organizedTournament;
 }
