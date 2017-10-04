@@ -11,6 +11,8 @@ import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.f
 import pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.interfaces.GetPageAssistant;
 import pl.edu.pollub.battleCraft.data.repositories.helpers.searchSpecyficators.SearchCriteria;
 import pl.edu.pollub.battleCraft.data.repositories.interfaces.GameRepository;
+import pl.edu.pollub.battleCraft.data.repositories.interfaces.OrganizerRepository;
+import pl.edu.pollub.battleCraft.data.repositories.interfaces.TournamentRepository;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -18,11 +20,16 @@ import java.util.List;
 @Component
 public class ExtendedGameRepositoryImpl implements ExtendedGameRepository{
     private final GameRepository gameRepository;
+    private final TournamentRepository tournamentRepository;
+    private final OrganizerRepository organizerRepository;
     private final GetPageAssistant getPageAssistant;
 
     @Autowired
-    public ExtendedGameRepositoryImpl(GameRepository gameRepository, GetPageAssistant getPageAssistant) {
+    public ExtendedGameRepositoryImpl(GameRepository gameRepository, TournamentRepository tournamentRepository,
+                                      OrganizerRepository organizerRepository, GetPageAssistant getPageAssistant) {
         this.gameRepository = gameRepository;
+        this.tournamentRepository = tournamentRepository;
+        this.organizerRepository = organizerRepository;
         this.getPageAssistant = getPageAssistant;
     }
 
@@ -44,35 +51,44 @@ public class ExtendedGameRepositoryImpl implements ExtendedGameRepository{
                 .from(Game.class)
                 .where(searchCriteria)
                 .groupBy("creator.name","id")
-                .execute(requestedPage);
+                .execute("id",requestedPage);
     }
 
     @Override
     public void banGames(String... gamesToBanUniqueNames) {
-        gameRepository.banGames(gamesToBanUniqueNames);
+        gameRepository.banGamesByUniqueNames(gamesToBanUniqueNames);
     }
 
     @Override
     public void deleteGames(String... gamesToDeleteUniqueNames) {
-        gameRepository.deleteParticipationInTournamentsOfGames(gamesToDeleteUniqueNames);
-        gameRepository.deleteOrganizationOfTournamentsOfGames(gamesToDeleteUniqueNames);
-        gameRepository.deleteTournamentsOfGames(gamesToDeleteUniqueNames);
-        gameRepository.deleteGames(gamesToDeleteUniqueNames);
+        List<Long> tournamentsToDeleteIds =
+                tournamentRepository.selectTournamentsIdsByGameUniqueNames(gamesToDeleteUniqueNames);
+        List<Long> idsOfOrganizers = this.organizerRepository.selectIdsOfOrganizersByTournamentsIds(tournamentsToDeleteIds);
+        this.organizerRepository.deleteCreationOfGamesByOrganizersIds(idsOfOrganizers);
+        this.tournamentRepository.deleteParticipationByTournamentsIds(tournamentsToDeleteIds);
+        this.tournamentRepository.deleteOrganizationByTournamentsIds(tournamentsToDeleteIds);
+        List<Long> idsOfToursToDelete = this.tournamentRepository.selectIdsOfToursToDeleteByTournamentsIds(tournamentsToDeleteIds);
+        List<Long> idsOfBattlesToDelete = this.tournamentRepository.selectIdsOfBattlesToDeleteByToursIds(idsOfToursToDelete);
+        this.tournamentRepository.deletePlaysByBattlesIds(idsOfBattlesToDelete);
+        this.tournamentRepository.deleteBattlesByIds(idsOfBattlesToDelete);
+        this.tournamentRepository.deleteToursByIds(idsOfToursToDelete);
+        this.tournamentRepository.deleteTournamentsByIds(tournamentsToDeleteIds);
+        gameRepository.deleteGamesByUniqueNames(gamesToDeleteUniqueNames);
     }
 
     @Override
     public void unlockGames(String... gamesToUnlockUniqueNames) {
-        gameRepository.unlockGames(gamesToUnlockUniqueNames);
+        gameRepository.unlockGamesByUniqueNames(gamesToUnlockUniqueNames);
     }
 
     @Override
     public void acceptGames(String... gamesToAcceptUniqueNames) {
-        gameRepository.acceptGames(gamesToAcceptUniqueNames);
+        gameRepository.acceptGamesByUniqueNames(gamesToAcceptUniqueNames);
     }
 
     @Override
     public void cancelAcceptGames(String... gamesToCancelAcceptUniqueNames) {
-        gameRepository.cancelAcceptGames(gamesToCancelAcceptUniqueNames);
+        gameRepository.cancelAcceptGamesUniqueNames(gamesToCancelAcceptUniqueNames);
     }
 
     @Override

@@ -49,6 +49,6 @@ public class RankingRepositoryImpl implements RankingRepository{
                 .from(Battle.class)
                 .where(searchCriteria)
                 .groupBy("player.id","player.name","player.email","address.city", "province.location")
-                .execute(requestedPage);
+                .execute("player.name",requestedPage);
     }
 }

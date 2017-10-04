@@ -18,33 +18,21 @@ public interface GameRepository extends JpaRepository<Game, Long> {
 
     @Modifying
     @Query("DELETE FROM Game g WHERE g.banned = true AND g.name in ?1")
-    void deleteGames(String... gamesToDeleteUniqueNames);
+    void deleteGamesByUniqueNames(String... gamesToDeleteUniqueNames);
 
     @Modifying
     @Query("UPDATE Game g SET g.banned = false WHERE g.name in ?1")
-    void unlockGames(String... gamesToBanUniqueNames);
+    void unlockGamesByUniqueNames(String... gamesToBanUniqueNames);
 
     @Modifying
     @Query("UPDATE Game g SET g.banned = true WHERE g.name in ?1")
-    void banGames(String... gamesToBanUniqueNames);
+    void banGamesByUniqueNames(String... gamesToBanUniqueNames);
 
     @Modifying
     @Query("UPDATE Game g SET g.status = 'ACCEPTED' WHERE g.name in ?1 AND g.status = 'NEW' AND g.banned = false")
-    void acceptGames(String... gamesToAcceptUniqueNames);
+    void acceptGamesByUniqueNames(String... gamesToAcceptUniqueNames);
 
     @Modifying
     @Query("UPDATE Game g SET g.status = 'NEW' WHERE g.name in ?1 AND g.status = 'ACCEPTED' AND g.banned = false")
-    void cancelAcceptGames(String... gamesToCancelAcceptUniqueNames);
-
-    @Modifying
-    @Query("DELETE FROM Tournament t WHERE t.game in (SELECT g.id FROM Game g WHERE g.name in ?1)")
-    void deleteTournamentsOfGames(String... gamesToDeleteUniqueNames);
-
-    @Modifying
-    @Query("DELETE FROM Participation p WHERE p.participatedTournament in (SELECT t.id FROM Tournament t WHERE t.game in (SELECT g.id FROM Game g WHERE g.name in ?1))")
-    void deleteParticipationInTournamentsOfGames(String... gamesToDeleteUniqueNames);
-
-    @Modifying
-    @Query("DELETE FROM Organization o WHERE o.organizedTournament in (SELECT t.id FROM Tournament t WHERE t.game in (SELECT g.id FROM Game g WHERE g.name in ?1))")
-    void deleteOrganizationOfTournamentsOfGames(String... gamesToDeleteUniqueNames);
+    void cancelAcceptGamesUniqueNames(String... gamesToCancelAcceptUniqueNames);
 }

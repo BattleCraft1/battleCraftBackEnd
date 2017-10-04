@@ -14,5 +14,5 @@ public interface GetPageAssistant {
     GetPageAssistant from(Class entityClass);
     GetPageAssistant where(List<SearchCriteria> searchCriteria);
     GetPageAssistant groupBy(String... groupByFileds);
-    Page execute(Pageable requestedPage);
+    Page execute(String countProperty,Pageable requestedPage);
 }

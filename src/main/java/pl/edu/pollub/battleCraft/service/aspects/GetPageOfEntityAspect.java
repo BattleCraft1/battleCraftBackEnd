@@ -28,7 +28,7 @@ public class GetPageOfEntityAspect {
             throw new IllegalAccessException("Your page must have less than 10 elements");
     }
 
-    @AfterReturning(pointcut = "execution(* pl.edu.pollub.battleCraft.data.repositories.extensions.*Repository.*(..)) " +
+    @AfterReturning(pointcut = "execution(* pl.edu.pollub.battleCraft.data.repositories.extensions.implementations.*RepositoryImpl.*(..)) " +
             "&& args(searchCriteria,pageRequest)", returning = "fetchedPage",
             argNames = "searchCriteria,pageRequest,fetchedPage")
     public void checkPageContent(List<SearchCriteria> searchCriteria,
