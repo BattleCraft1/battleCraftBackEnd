@@ -82,6 +82,7 @@ public class GetPageAssistantImpl implements GetPageAssistant {
 
     @Override
     public GetPageAssistant where(List<SearchCriteria> searchCriteria){
+        joins.forEach(join -> criteria.createAlias(getFieldFullName(join.name),join.value));
         searchCriteria.forEach((condition) -> {
             String fieldName = condition.getName();
             Object fieldValue = condition.getValue(root);
@@ -104,7 +105,6 @@ public class GetPageAssistantImpl implements GetPageAssistant {
         Arrays.stream(groupByFields).forEach(
                 field -> projectionList.add(Projections.groupProperty(getFieldFullName(field)))
         );
-        joins.forEach(alias -> criteria.createAlias(getFieldFullName(alias.name),alias.value));
         this.criteria.setProjection(projectionList).setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
         return this;
     }
@@ -122,7 +122,7 @@ public class GetPageAssistantImpl implements GetPageAssistant {
         this.transactionId = new StringBuilder(transactionId).append("Count").toString();
         Criteria criteriaCount = hibernateSession.createCriteria(entityClass,transactionId);
         criteriaCount.setProjection(Projections.countDistinct(getFieldFullName(countProperty)));
-        joins.forEach(alias -> criteriaCount.createAlias(getFieldFullName(alias.name),alias.value));
+        joins.forEach(join -> criteriaCount.createAlias(getFieldFullName(join.name),join.value));
         whereConditions.forEach(
                 criteriaCount::add
         );

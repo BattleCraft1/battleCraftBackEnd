@@ -31,8 +31,8 @@ public class RankingRepositoryImpl implements RankingRepository{
         return getPageAssistant
                 .select(
                         new Field("player.name", "name"),
-                        new Field("address.city", "city"),
-                        new Field("province.location", "province"),
+                        new Field("playerAddress.city", "city"),
+                        new Field("playerProvince.location", "province"),
                         new Field("tournament.id", "numberOfTournaments",Projections::countDistinct),
                         new Field("id", "numberOfBattles",Projections::countDistinct),
                         new Field("players.points", "points", Projections::sum)
@@ -40,15 +40,17 @@ public class RankingRepositoryImpl implements RankingRepository{
                 .join(
                         new Join( "players", "players"),
                         new Join( "players.player", "player"),
-                        new Join("player.address", "address"),
-                        new Join("address.province", "province"),
+                        new Join("player.address", "playerAddress"),
+                        new Join("playerAddress.province", "playerProvince"),
                         new Join( "tour", "tour"),
                         new Join( "tour.tournament", "tournament"),
+                        new Join( "tournament.address", "address"),
+                        new Join( "address.province", "province"),
                         new Join( "tournament.game", "game")
                 )
                 .from(Battle.class)
                 .where(searchCriteria)
-                .groupBy("player.id","player.name","player.email","address.city", "province.location")
+                .groupBy("player.id","player.name","player.email","playerAddress.city", "playerProvince.location")
                 .execute("player.name",requestedPage);
     }
 }
