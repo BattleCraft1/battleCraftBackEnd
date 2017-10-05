@@ -61,25 +61,24 @@ public class ExtendedUserAccountRepositoryImpl implements ExtendedUserAccountRep
                 .from(UserAccount.class)
                 .where(searchCriteria)
                 .groupBy("id", "banned", "address.city", "province.location")
-                .execute(requestedPage);
+                .execute("id",requestedPage);
     }
 
     @Override
     public void banUsersAccounts(String... usersAccountsToBanUniqueNames) {
-        playerRepository.banUserAccounts(usersAccountsToBanUniqueNames);
+        playerRepository.banUserAccountsByUniqueNames(usersAccountsToBanUniqueNames);
     }
 
 
     @Override
     public void unlockUsersAccounts(String... usersAccountsToUnlockUniqueNames) {
-        playerRepository.unlockUserAccounts(usersAccountsToUnlockUniqueNames);
+        playerRepository.unlockUserAccountsByUniqueNames(usersAccountsToUnlockUniqueNames);
     }
 
     @Override
     public void acceptUsersAccounts(String... usersAccountsToAcceptUniqueNames) {
         List<UserAccount> userAccountsToAccept =
-                userAccountRepository.findAllUsersAccountsByName(usersAccountsToAcceptUniqueNames);
-        userAccountRepository.deleteRelatedAddress(usersAccountsToAcceptUniqueNames);
+                userAccountRepository.findAllUsersAccountsByUniqueName(usersAccountsToAcceptUniqueNames);
         userAccountRepository.delete(userAccountsToAccept);
         List<Player> acceptedUserAccounts = this.advanceUsersToPlayers(userAccountsToAccept);
         playerRepository.save(acceptedUserAccounts);
@@ -88,25 +87,24 @@ public class ExtendedUserAccountRepositoryImpl implements ExtendedUserAccountRep
 
     @Override
     public void deleteUsersAccounts(String... usersAccountsToDeleteUniqueNames) {
-        playerRepository.deleteParticipationInTournaments(usersAccountsToDeleteUniqueNames);
-        playerRepository.deletePlayInTournaments(usersAccountsToDeleteUniqueNames);
-        organiserRepository.deleteOrganizationOfTournaments(usersAccountsToDeleteUniqueNames);
-        organiserRepository.deleteCreationOfGames(usersAccountsToDeleteUniqueNames);
-        userAccountRepository.deleteRelatedAddress(usersAccountsToDeleteUniqueNames);
-        userAccountRepository.deleteUserAccounts(usersAccountsToDeleteUniqueNames);
+        List<Long> idsUsersToDelete = userAccountRepository.selectIdsOfUsersToDelete(usersAccountsToDeleteUniqueNames);
+        playerRepository.deleteParticipationByPlayersIds(idsUsersToDelete);
+        playerRepository.deletePlayByPlayersIds(idsUsersToDelete);
+        organiserRepository.deleteOrganizationByIds(idsUsersToDelete);
+        organiserRepository.deleteCreationOfGamesByOrganizersIds(idsUsersToDelete);
+        userAccountRepository.deleteUsersAccountsByIds(idsUsersToDelete);
+        userAccountRepository.deleteRelatedAddress(idsUsersToDelete);
     }
 
     @Override
     public void cancelAcceptUsersAccounts(String... usersAccountsToCancelAcceptUniqueNames) {
-        playerRepository.cancelAcceptUsersAccounts(usersAccountsToCancelAcceptUniqueNames);
+        playerRepository.cancelAcceptationOfUsersAccountsByUniqueNames(usersAccountsToCancelAcceptUniqueNames);
     }
 
     @Override
     public void advancePlayersToOrganizer(String... playersToAdvanceToOrganizersUniqueNames) {
         List<Player> playersToAdvance =
                 playerRepository.findAllPlayersByName(playersToAdvanceToOrganizersUniqueNames);
-        playerRepository.deleteParticipationInTournaments(playersToAdvanceToOrganizersUniqueNames);
-        userAccountRepository.deleteRelatedAddress(playersToAdvanceToOrganizersUniqueNames);
         playerRepository.delete(playersToAdvance);
         List<Organizer> organizers = this.advancePlayersToOrganizers(playersToAdvance);
         organiserRepository.save(organizers);
@@ -114,7 +112,7 @@ public class ExtendedUserAccountRepositoryImpl implements ExtendedUserAccountRep
 
     @Override
     public void degradeOrganizerToPlayers(String... organizerToDegradeToPlayersUniqueNames) {
-        organiserRepository.degradeOrganizersToPlayers(organizerToDegradeToPlayersUniqueNames);
+        organiserRepository.degradeOrganizersToPlayersByPlayersUniqueNames(organizerToDegradeToPlayersUniqueNames);
     }
 
     private List<Player> advanceUsersToPlayers(List<UserAccount> userAccounts){

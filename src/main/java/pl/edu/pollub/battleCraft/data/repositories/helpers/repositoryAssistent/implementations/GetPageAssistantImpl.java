@@ -2,10 +2,7 @@ package pl.edu.pollub.battleCraft.data.repositories.helpers.repositoryAssistent.
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.criterion.ProjectionList;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
-import org.hibernate.criterion.SimpleExpression;
+import org.hibernate.criterion.*;
 import org.hibernate.transform.AliasToEntityMapResultTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -43,7 +40,7 @@ public class GetPageAssistantImpl implements GetPageAssistant {
 
     private Field[] projectionFields;
     private ProjectionList projectionList = Projections.projectionList();
-    private List<Join> aliases = new ArrayList<>();
+    private List<Join> joins = new ArrayList<>();
     private Criteria criteria;
     private List<SimpleExpression> whereConditions = new ArrayList<>();
 
@@ -63,7 +60,7 @@ public class GetPageAssistantImpl implements GetPageAssistant {
 
     @Override
     public GetPageAssistant join(Join... aliases){
-        this.aliases.addAll(Arrays.asList(aliases));
+        this.joins.addAll(Arrays.asList(aliases));
         return this;
     }
 
@@ -85,6 +82,7 @@ public class GetPageAssistantImpl implements GetPageAssistant {
 
     @Override
     public GetPageAssistant where(List<SearchCriteria> searchCriteria){
+        joins.forEach(join -> criteria.createAlias(getFieldFullName(join.name),join.value));
         searchCriteria.forEach((condition) -> {
             String fieldName = condition.getName();
             Object fieldValue = condition.getValue(root);
@@ -107,25 +105,24 @@ public class GetPageAssistantImpl implements GetPageAssistant {
         Arrays.stream(groupByFields).forEach(
                 field -> projectionList.add(Projections.groupProperty(getFieldFullName(field)))
         );
-        aliases.forEach(alias -> criteria.createAlias(getFieldFullName(alias.name),alias.value));
         this.criteria.setProjection(projectionList).setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
         return this;
     }
 
     @Override
-    public Page execute(Pageable requestedPage){
+    public Page execute(String countProperty,Pageable requestedPage){
         whereConditions.forEach(
                 whereCondition -> criteria.add(whereCondition)
         );
-        Long count = this.count();
+        Long count = this.count(countProperty);
         return this.paginator.createPage(count,criteria,requestedPage);
     }
 
-    private Long count(){
+    private Long count(String countProperty){
         this.transactionId = new StringBuilder(transactionId).append("Count").toString();
         Criteria criteriaCount = hibernateSession.createCriteria(entityClass,transactionId);
-        criteriaCount.setProjection(Projections.countDistinct(getFieldFullName("id")));
-        aliases.forEach(alias -> criteriaCount.createAlias(getFieldFullName(alias.name),alias.value));
+        criteriaCount.setProjection(Projections.countDistinct(getFieldFullName(countProperty)));
+        joins.forEach(join -> criteriaCount.createAlias(getFieldFullName(join.name),join.value));
         whereConditions.forEach(
                 criteriaCount::add
         );

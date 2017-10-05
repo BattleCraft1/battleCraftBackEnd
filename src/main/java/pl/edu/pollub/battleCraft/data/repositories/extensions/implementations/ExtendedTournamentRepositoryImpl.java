@@ -52,38 +52,38 @@ public class ExtendedTournamentRepositoryImpl implements ExtendedTournamentRepos
                 .from(Tournament.class)
                 .where(searchCriteria)
                 .groupBy("id", "address.city", "province.location", "game.name")
-                .execute(requestedPage);
+                .execute("id",requestedPage);
     }
 
     @Override
     public void banTournaments(String... tournamentsToBanUniqueNames) {
-        this.tournamentRepository.banTournaments(tournamentsToBanUniqueNames);
+        this.tournamentRepository.banTournamentsByUniqueNames(tournamentsToBanUniqueNames);
     }
 
     @Override
     public void deleteTournaments(String... tournamentsToDeleteUniqueNames) {
-        this.tournamentRepository.deleteParticipationInTournaments(tournamentsToDeleteUniqueNames);
-        this.tournamentRepository.deleteOrganizationOfTournaments(tournamentsToDeleteUniqueNames);
-        List<Long> idsOfToursToDelete = this.tournamentRepository.selectIdsOfToursToDelete(tournamentsToDeleteUniqueNames);
-        List<Long> idsOfBattlesToDelete = this.tournamentRepository.selectIdsOfBattlesToDelete(idsOfToursToDelete);
-        this.tournamentRepository.deletePlaysOfTournaments(idsOfBattlesToDelete);
-        this.tournamentRepository.deleteBattlesOfTournaments(idsOfBattlesToDelete);
-        this.tournamentRepository.deleteToursOfTournaments(idsOfToursToDelete);
-        this.tournamentRepository.deleteTournaments(tournamentsToDeleteUniqueNames);
+        this.tournamentRepository.deleteParticipationByTournamentsUniqueNames(tournamentsToDeleteUniqueNames);
+        this.tournamentRepository.deleteOrganizationByTournamentsUniqueNames(tournamentsToDeleteUniqueNames);
+        List<Long> idsOfToursToDelete = this.tournamentRepository.selectIdsOfToursToDeleteByTournamentsUniqueNames(tournamentsToDeleteUniqueNames);
+        List<Long> idsOfBattlesToDelete = this.tournamentRepository.selectIdsOfBattlesToDeleteByToursIds(idsOfToursToDelete);
+        this.tournamentRepository.deletePlaysByBattlesIds(idsOfBattlesToDelete);
+        this.tournamentRepository.deleteBattlesByIds(idsOfBattlesToDelete);
+        this.tournamentRepository.deleteToursByIds(idsOfToursToDelete);
+        this.tournamentRepository.deleteTournamentsByUniqueNames(tournamentsToDeleteUniqueNames);
     }
 
     @Override
     public void unlockTournaments(String... tournamentsToBanUniqueNames) {
-        this.tournamentRepository.unlockTournaments(tournamentsToBanUniqueNames);
+        this.tournamentRepository.unlockTournamentsByUniqueNames(tournamentsToBanUniqueNames);
     }
 
     @Override
     public void acceptTournaments(String... tournamentsToAcceptUniqueNames) {
-        this.tournamentRepository.acceptTournaments(tournamentsToAcceptUniqueNames);
+        this.tournamentRepository.acceptTournamentsByUniqueNames(tournamentsToAcceptUniqueNames);
     }
 
     @Override
     public void cancelAcceptTournaments(String... tournamentsToCancelAcceptUniqueNames) {
-        this.tournamentRepository.cancelAcceptTournaments(tournamentsToCancelAcceptUniqueNames);
+        this.tournamentRepository.cancelAcceptTournamentsByUniqueNames(tournamentsToCancelAcceptUniqueNames);
     }
 }
