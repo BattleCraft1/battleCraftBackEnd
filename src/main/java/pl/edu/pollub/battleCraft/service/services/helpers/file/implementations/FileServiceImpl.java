@@ -121,9 +121,9 @@ public class FileServiceImpl implements FileService {
             throws FileSearchedByRelatedEntityNameNotFound {
         String entityRelatedFilesDirectoryPath =
                 new StringBuilder(this.getRootLocation().toString())
-                        .append("\\")
+                        .append("/")
                         .append(entityRelatedFilesDirectoryName)
-                        .append("\\").toString();
+                        .append("/").toString();
         File entityRelatedFilesDirectory = new File(entityRelatedFilesDirectoryPath);
         File[] files = entityRelatedFilesDirectory
                 .listFiles((dir,name) -> Objects.equals(name.substring(0, name.indexOf(".")), entityName));
@@ -137,5 +137,13 @@ public class FileServiceImpl implements FileService {
         else{
             throw new FileSearchedByRelatedEntityNameNotFound(entityName);
         }
+    }
+
+    @Override
+    public String getFileExtension(File file) {
+        String fileName = file.getName();
+        if(fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0)
+            return fileName.substring(fileName.lastIndexOf(".")+1);
+        else return "";
     }
 }

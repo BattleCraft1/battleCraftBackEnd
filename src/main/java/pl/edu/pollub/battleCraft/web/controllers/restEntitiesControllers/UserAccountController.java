@@ -112,8 +112,14 @@ public class UserAccountController {
     }
 
     @GetMapping("/get/user/{name}/avatar")
-    public ResponseEntity<byte[]> getUserAvatar(@PathVariable String name) throws IOException {
-        byte[] image = userAccountService.getUserAvatar(name);
+    public ResponseEntity<byte[]> getUserAvatarWeb(@PathVariable String name) throws IOException {
+        byte[] image = userAccountService.getUserAvatarWeb(name);
+        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(image);
+    }
+
+    @GetMapping("/get/user/{name}/avatar/mobile")
+    public ResponseEntity<byte[]> getUserAvatarMobile(@PathVariable String name) throws IOException {
+        byte[] image = userAccountService.getUserAvatarMobile(name);
         return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(image);
     }
 }
