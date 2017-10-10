@@ -7,5 +7,5 @@ import java.io.IOException;
 
 public interface ImageService {
     BufferedImage resizeImageFromFile(File imageFile, Dimension boundary) throws IOException;
-    byte[] convertBufferedImageToByteArray(BufferedImage bufferedImage) throws IOException;
+    byte[] convertBufferedImageToByteArray(BufferedImage bufferedImage,String extension) throws IOException;
 }

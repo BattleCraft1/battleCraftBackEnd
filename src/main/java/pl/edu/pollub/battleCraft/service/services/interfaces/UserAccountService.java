@@ -26,5 +26,7 @@ public interface UserAccountService {
 
     List<String> getAllUserTypes();
 
-    byte[] getUserAvatar(String userId) throws IOException;
+    byte[] getUserAvatarWeb(String userId) throws IOException;
+
+    byte[] getUserAvatarMobile(String userId) throws IOException;
 }

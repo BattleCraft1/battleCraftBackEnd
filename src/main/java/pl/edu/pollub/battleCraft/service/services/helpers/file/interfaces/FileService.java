@@ -4,10 +4,13 @@ import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 import pl.edu.pollub.battleCraft.service.exceptions.UnCheckedExceptions.File.FileSearchedByRelatedEntityNameNotFound;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
 public interface FileService {
+    String getFileExtension(File file);
+
     void init();
 
     void store(MultipartFile file, String name, String fileType);

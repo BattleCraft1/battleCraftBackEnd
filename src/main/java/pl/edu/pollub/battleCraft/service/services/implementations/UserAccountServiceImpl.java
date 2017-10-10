@@ -25,14 +25,19 @@ public class UserAccountServiceImpl implements UserAccountService {
 
     private final ImageService imageService;
 
-    private final int DEFAULT_USER_AVATAR_SIZE = 30;
+    private final int DEFAULT_USER_AVATAR_SIZE_FOR_WEB = 30;
+
+    private final int DEFAULT_USER_AVATAR_SIZE_FOR_MOBILE = 70;
 
     private final String DEFAULT_USER_AVATARS_DIRECTORY_NAME = "usersAvatars";
 
-    private final String DEFAULT_USER_AVATAR_FILE_PATH = DEFAULT_USER_AVATARS_DIRECTORY_NAME+"/default.jpg";
+    private final String DEFAULT_USER_AVATAR_FILE_PATH = "usersAvatars/default.jpg";
 
-    private final Dimension DEFAULT_USER_AVATAR_DIMENSION =
-            new Dimension(this.DEFAULT_USER_AVATAR_SIZE,this.DEFAULT_USER_AVATAR_SIZE);
+    private final Dimension DEFAULT_USER_AVATAR_DIMENSION_FOR_WEB =
+            new Dimension(this.DEFAULT_USER_AVATAR_SIZE_FOR_WEB,this.DEFAULT_USER_AVATAR_SIZE_FOR_WEB);
+
+    private final Dimension DEFAULT_USER_AVATAR_DIMENSION_FOR_MOBILE =
+            new Dimension(this.DEFAULT_USER_AVATAR_SIZE_FOR_MOBILE,this.DEFAULT_USER_AVATAR_SIZE_FOR_MOBILE);
 
     @Autowired
     public UserAccountServiceImpl(ExtendedUserAccountRepository userAccountRepository,
@@ -91,21 +96,32 @@ public class UserAccountServiceImpl implements UserAccountService {
     }
 
     @Override
-    public byte[] getUserAvatar(String name) throws IOException {
+    public byte[] getUserAvatarWeb(String name)  throws IOException {
+        return this.getUserAvatar(name,this.DEFAULT_USER_AVATAR_DIMENSION_FOR_WEB);
+    }
+
+    @Override
+    public byte[] getUserAvatarMobile(String name)  throws IOException {
+        return this.getUserAvatar(name,this.DEFAULT_USER_AVATAR_DIMENSION_FOR_MOBILE);
+    }
+
+    private byte[] getUserAvatar(String name, Dimension dimension) throws IOException {
         File userAvatarFile;
         BufferedImage userAvatar;
+        String fileExtension;
         try{
             userAvatarFile = fileService.findFileByRelatedEntityName(name,DEFAULT_USER_AVATARS_DIRECTORY_NAME).toFile();
-            userAvatar =imageService.resizeImageFromFile(userAvatarFile, DEFAULT_USER_AVATAR_DIMENSION);
-
-            return imageService.convertBufferedImageToByteArray(userAvatar);
+            userAvatar =imageService.resizeImageFromFile(userAvatarFile, dimension);
+            fileExtension = fileService.getFileExtension(userAvatarFile);
+            return imageService.convertBufferedImageToByteArray(userAvatar,fileExtension);
 
         }
         catch (Exception exception) {
+            exception.printStackTrace();
             userAvatarFile = fileService.load(DEFAULT_USER_AVATAR_FILE_PATH).toFile();
-            userAvatar =imageService.resizeImageFromFile(userAvatarFile, DEFAULT_USER_AVATAR_DIMENSION);
-
-            return imageService.convertBufferedImageToByteArray(userAvatar);
+            userAvatar =imageService.resizeImageFromFile(userAvatarFile, dimension);
+            fileExtension = fileService.getFileExtension(userAvatarFile);
+            return imageService.convertBufferedImageToByteArray(userAvatar,fileExtension);
         }
     }
 }

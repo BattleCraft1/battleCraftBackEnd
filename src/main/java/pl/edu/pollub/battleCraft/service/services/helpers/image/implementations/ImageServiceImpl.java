@@ -23,9 +23,9 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public byte[] convertBufferedImageToByteArray(BufferedImage bufferedImage) throws IOException {
+    public byte[] convertBufferedImageToByteArray(BufferedImage bufferedImage, String extension) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write( bufferedImage, "jpg", baos );
+        ImageIO.write( bufferedImage, extension, baos );
         baos.flush();
         byte[] imageInByte = baos.toByteArray();
         baos.close();
