@@ -5,15 +5,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public enum Province{
-    Lubelskie("lubelskie"),
-    Dolnoslaskie("dolnośląskie"),
-    Malopolskie("małopolskie"),
-    Slaskie("śląskie"),
-    Zachodniopomorskie("zachodiopomorskie"),
-    Wielkopolskie("wielkopolskie"),
-    Opolskie("opolskie"),
-    Lodzkie("łódzkie"),
-    Podlaskie("podlaskie");
+    lubelskie("lubelskie"),
+    dolnośląskie("dolnośląskie"),
+    małopolskie("małopolskie"),
+    śląskie("śląskie"),
+    zachodiopomorskie("zachodiopomorskie"),
+    wielkopolskie("wielkopolskie"),
+    opolskie("opolskie"),
+    łódzkie("łódzkie"),
+    podlaskie("podlaskie");
 
     String location;
 
