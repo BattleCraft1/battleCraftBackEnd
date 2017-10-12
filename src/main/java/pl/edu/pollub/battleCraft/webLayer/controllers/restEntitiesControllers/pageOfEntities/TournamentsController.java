@@ -19,7 +19,6 @@ public class TournamentsController {
     }
 
     @PostMapping(value = "/page/tournaments", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseBody
     public Page getPageOfTournaments(@RequestBody GetPageObjectsWrapper getPageObjectsWrapper) {
         System.out.println("Try to get tournaments");
         return tournamentService.getPageOfTournaments(getPageObjectsWrapper.unwrapPageRequest(),

@@ -74,6 +74,17 @@ public class Organizer extends Player {
     @JsonIgnore
     public Organizer startOrganizeTournament(String name, int tablesCount, int maxPlayers){
         tournamentInOrganisation = new Tournament();
+        return editBasicData(name,tablesCount,maxPlayers);
+    }
+
+    @JsonIgnore
+    public Organizer editOrganizedTournament(Tournament tournament, String name, int tablesCount, int maxPlayers){
+        tournamentInOrganisation = tournament;
+        return editBasicData(name,tablesCount,maxPlayers);
+    }
+
+    @JsonIgnore
+    private Organizer editBasicData(String name, int tablesCount, int maxPlayers){
         tournamentInOrganisation.setName(name);
         tournamentInOrganisation.setTablesCount(tablesCount);
         tournamentInOrganisation.initMaxPlayers(maxPlayers);

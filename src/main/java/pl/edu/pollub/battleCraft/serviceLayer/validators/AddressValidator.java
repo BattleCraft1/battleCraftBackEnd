@@ -28,26 +28,26 @@ public class AddressValidator implements Validator {
 
     private void validateProvince(String province){
         if(!Province.getNames().contains(province))
-            errors.rejectValue("province","Invalid province name");
+            errors.rejectValue("province","","Invalid province name");
     }
 
     private void validateCity(String city){
-        if(!city.matches("^[A-Z][a-z0-9]{39}$"))
-            errors.rejectValue("city","City must start with big letter and have between 1 and 40 chars");
+        if(!city.matches("^[A-Z][a-zzżźćńółęąśŻŹĆĄŚĘŁÓŃ0-9]{1,39}$"))
+            errors.rejectValue("city","","City must start with big letter and have between 2 and 40 chars");
     }
 
     private void validateStreet(String street){
-        if(!street.matches("^[0-9a-zA-Z. ]{39}$"))
-            errors.rejectValue("street","Street and have between 1 and 40 chars");
+        if(!street.matches("^[0-9a-zzżźćńółęąśŻŹĆĄŚĘŁÓŃA-Z. ]{1,39}$"))
+            errors.rejectValue("street","","Street and have between 2 and 40 chars");
     }
 
     private void validateZipCode(String zipCode){
         if(!zipCode.matches("^\\d{2}-\\d{3}$"))
-            errors.rejectValue("zipCode","Zip code have invalid format");
+            errors.rejectValue("zipCode","","Zip code have invalid format");
     }
 
     private void validateDescription(String description){
         if(description.length()>100)
-            errors.rejectValue("description","Description can have only 100 chars");
+            errors.rejectValue("description","","Description can have only 100 chars");
     }
 }

@@ -50,7 +50,7 @@ public class TournamentsRepositoryImpl implements TournamentsRepository {
                 )
                 .from(Tournament.class)
                 .where(searchCriteria)
-                .groupBy("id", "address.city", "game.name")
+                .groupBy("id", "address.city", "game.name","address.province")
                 .execute("id",requestedPage);
     }
 

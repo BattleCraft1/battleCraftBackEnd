@@ -3,10 +3,7 @@ package pl.edu.pollub.battleCraft.webLayer.controllers.restEntitiesControllers.o
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.EntityValidation.EntityValidationException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.EntityNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.services.oneEnitity.implementations.TournamentServiceImpl;
@@ -22,27 +19,17 @@ public class TournamentController {
     }
 
     @PostMapping(value = "/organize/tournament", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void addTournament(@RequestBody TournamentWebDTO tournamentWebDTO, BindingResult bindingResult) throws EntityValidationException {
-        tournamentService.organizeTournament(tournamentWebDTO, bindingResult);
+    public TournamentWebDTO addTournament(@RequestBody TournamentWebDTO tournamentWebDTO, BindingResult bindingResult) throws EntityValidationException {
+        return tournamentService.organizeTournament(tournamentWebDTO, bindingResult);
     }
 
     @PostMapping(value = "/edit/tournament", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void editTournament(@RequestBody TournamentWebDTO tournamentWebDTO, BindingResult bindingResult) throws EntityValidationException {
-        tournamentService.editTournament(tournamentWebDTO, bindingResult);
+    public TournamentWebDTO editTournament(@RequestBody TournamentWebDTO tournamentWebDTO, BindingResult bindingResult) throws EntityValidationException {
+        return tournamentService.editTournament(tournamentWebDTO, bindingResult);
     }
 
-    @GetMapping(value = "/get/tournament", produces = MediaType.APPLICATION_JSON_VALUE)
-    public TournamentWebDTO getTournament(@RequestBody String tournamentUniqueName) throws EntityNotFoundException {
-        return tournamentService.getTournament(tournamentUniqueName);
-    }
-
-    @PostMapping(value = "/delete/organizator")
-    public void deleteOrganizatorFromTournament(@RequestBody String organizatorName) throws EntityNotFoundException{
-        tournamentService.deleteOrganizatorFromTournament(organizatorName);
-    }
-
-    @PostMapping(value = "/delete/participant", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void deleteParticipantFromTournament(@RequestBody String participantName) throws EntityNotFoundException{
-        tournamentService.deleteParticipantFromTournament(participantName);
+    @GetMapping(value = "/get/tournament")
+    public TournamentWebDTO getTournament(@RequestParam(value = "name") String name) throws EntityNotFoundException {
+        return tournamentService.getTournament(name);
     }
 }

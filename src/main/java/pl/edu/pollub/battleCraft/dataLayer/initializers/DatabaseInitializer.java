@@ -262,7 +262,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
                     .finishOrganize();
 
             Tournament testTournament10 = testUser9
-                    .startOrganizeTournament("Tournament10", 3,5)
+                    .startOrganizeTournament("Tournament 10", 3,5)
                     .with(testUser8)
                     .in(testAddress20)
                     .withGame( testGame1)

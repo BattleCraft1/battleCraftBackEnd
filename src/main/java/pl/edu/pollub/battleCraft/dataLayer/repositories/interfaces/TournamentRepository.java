@@ -75,4 +75,9 @@ public interface TournamentRepository extends JpaRepository<Tournament, Long> {
     @Modifying
     @Query("DELETE FROM Tournament t WHERE t.id in ?1")
     void deleteTournamentsByIds(List<Long> tournamentsToDeleteIds);
+
+    @Query("SELECT t FROM Tournament t Where t.name = ?1 and t.banned = false and (t.status = 'ACCEPTED' OR t.status = 'NEW')")
+    Tournament findTournamentbyUniqueName(String tournamentUniqueName);
+
+    Tournament findByName(String name);
 }

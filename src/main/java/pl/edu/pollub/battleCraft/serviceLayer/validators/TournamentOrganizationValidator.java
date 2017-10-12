@@ -5,6 +5,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.Validator;
 import org.springframework.validation.Errors;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Game.Game;
+import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.Tournament;
+import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.enums.TournamentStatus;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.organizers.Organizer;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.players.Player;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.EntityValidation.EntityValidationException;
@@ -33,6 +35,7 @@ public class TournamentOrganizationValidator implements Validator {
         this.errors = errors;
         TournamentWebDTO tournamentWebDTO = (TournamentWebDTO) o;
         this.validateTournamentName(tournamentWebDTO.name);
+        this.validateTournamentName(tournamentWebDTO.nameChange);
         this.validateTablesCount(tournamentWebDTO.tablesCount);
         this.validateMaxPlayers(tournamentWebDTO.maxPlayers,tournamentWebDTO.tablesCount);
         this.validateStartDate(tournamentWebDTO.dateOfStart);
@@ -41,18 +44,18 @@ public class TournamentOrganizationValidator implements Validator {
     }
 
     private void validateTournamentName(String tournamentName){
-        if(!tournamentName.matches("^[A-Z][a-z0-9]{29}$"))
-            errors.rejectValue("name","Tournament name must start with big letter and have between 1 to 30 chars");
+        if(tournamentName==null || !tournamentName.matches("^[A-Z][A-Za-zzżźćńółęąśŻŹĆĄŚĘŁÓŃ0-9 ]{1,29}$"))
+            errors.rejectValue("name","","Tournament name must start with big letter and have between 2 to 30 chars");
     }
 
     private void validateTablesCount(int tablesCount){
         if(tablesCount<1 || tablesCount>30)
-            errors.rejectValue("tablesCount","Tables count must be between 1 and 30");
+            errors.rejectValue("tablesCount","","Tables count must be between 1 and 30");
     }
 
     private void validateMaxPlayers(int maxPlayers, int tablesCount){
         if(maxPlayers>tablesCount*2)
-            errors.rejectValue("maxPlayersCount",
+            errors.rejectValue("maxPlayersCount","",
                     new StringBuilder("You cannot create tournament with ")
                     .append(maxPlayers)
                     .append(" players count because if you have ")
@@ -63,21 +66,21 @@ public class TournamentOrganizationValidator implements Validator {
     }
 
     private void validateStartDate(Date startDate){
-        if(startDate.before(new Date()))
-            errors.rejectValue("dateOfStart", new StringBuilder("you cannot start tournament at: ")
+        if(startDate==null || startDate.before(new Date()))
+            errors.rejectValue("dateOfStart","", new StringBuilder("you cannot start tournament at: ")
                     .append(startDate).append(" because this date is outdated").toString());
     }
 
     private void validateEndDate(Date startDate, Date endDate){
-        if(endDate.before(startDate)){
-            errors.rejectValue("dateOfStart", new StringBuilder("End date must be later than ").append(startDate).toString());
+        if(endDate==null || endDate.before(startDate)){
+            errors.rejectValue("dateOfStart","", new StringBuilder("End date must be later than ").append(startDate).toString());
         }
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(startDate);
         calendar.add(Calendar.DATE,3);
         Date maxEndDate = calendar.getTime();
         if(endDate.after(maxEndDate)){
-            errors.rejectValue("dateOfEnd","Duration of tournament cannnot be longer than 3 days");
+            errors.rejectValue("dateOfEnd","","Duration of tournament cannnot be longer than 3 days");
         }
     }
 
@@ -85,18 +88,26 @@ public class TournamentOrganizationValidator implements Validator {
                                           Organizer[] organizers, BindingResult bindingResult,
                                           TournamentWebDTO tournamentWebDTO) throws EntityValidationException {
         if(tournamentGame==null){
-            bindingResult.rejectValue("game", new StringBuilder("game: ").append(tournamentWebDTO.game).append(" does not exist").toString());
+            bindingResult.rejectValue("game","", new StringBuilder("game: ").append(tournamentWebDTO.game).append(" does not exist").toString());
         }
 
         if(participants.length<1 || participants.length>tournamentWebDTO.tablesCount*2)
-            bindingResult.rejectValue("participants",
+            bindingResult.rejectValue("participants","",
                     new StringBuilder("Participants count must be between 1 and ").append(tournamentWebDTO.tablesCount*2).toString());
 
-        if(organizers.length<1 || organizers.length>15)
-            bindingResult.rejectValue("organizers","count of organizers must be between 1 and 15");
+        if(organizers.length<1 || organizers.length>10)
+            bindingResult.rejectValue("organizers","","count of organizers must be between 1 and 15");
 
         if (bindingResult.hasErrors()) {
             throw new EntityValidationException("Invalid tournament data", bindingResult);
         }
+    }
+
+    public void validateDataToEditFromDatabase(Tournament tournament,Game tournamentGame, Player[] participants, Organizer[] organizers, BindingResult bindingResult, TournamentWebDTO tournamentWebDTO) {
+        if(tournament.isBanned() || (tournament.getStatus()!= TournamentStatus.ACCEPTED && tournament.getStatus()!=TournamentStatus.NEW)){
+            bindingResult.rejectValue("name","","This tournament is not accepted");
+        }
+
+        this.validateDataFromDatabase(tournamentGame,participants,organizers,bindingResult,tournamentWebDTO);
     }
 }

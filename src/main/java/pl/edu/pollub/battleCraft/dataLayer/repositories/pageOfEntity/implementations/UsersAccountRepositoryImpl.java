@@ -58,7 +58,7 @@ public class UsersAccountRepositoryImpl implements UsersAccountRepository {
                 )
                 .from(UserAccount.class)
                 .where(searchCriteria)
-                .groupBy("id", "banned", "address.city")
+                .groupBy("id", "banned", "address.city", "address.province")
                 .execute("id",requestedPage);
     }
 
