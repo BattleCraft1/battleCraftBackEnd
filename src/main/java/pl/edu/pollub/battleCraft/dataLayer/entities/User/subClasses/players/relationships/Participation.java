@@ -19,6 +19,13 @@ public class Participation implements Cloneable{
     public Participation(Player player, Tournament participatedTournament) {
         this.player = player;
         this.participatedTournament = participatedTournament;
+        this.accepted = false;
+    }
+
+    public Participation(Player player, Tournament participatedTournament, boolean accepted) {
+        this.player = player;
+        this.participatedTournament = participatedTournament;
+        this.accepted = accepted;
     }
     
     @Id
@@ -33,7 +40,9 @@ public class Participation implements Cloneable{
     @JoinColumn(name = "tournament_id")
     private Tournament participatedTournament;
 
+    private boolean accepted;
+
     public Participation clone(){
-        return new Participation(this.player,this.participatedTournament);
+        return new Participation(this.player,this.participatedTournament,this.accepted);
     }
 }

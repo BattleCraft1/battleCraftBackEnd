@@ -15,7 +15,7 @@ public class UserAccountResourcesServiceImpl implements UserAccountResourcesServ
 
     private final String DEFAULT_USER_AVATARS_DIRECTORY_NAME = "usersAvatars";
 
-    private final int DEFAULT_USER_AVATAR_SIZE_FOR_WEB = 30;
+    private final int DEFAULT_USER_AVATAR_SIZE_FOR_WEB = 40;
 
     private final int DEFAULT_USER_AVATAR_SIZE_FOR_MOBILE = 70;
 
@@ -59,7 +59,6 @@ public class UserAccountResourcesServiceImpl implements UserAccountResourcesServ
 
         }
         catch (Exception exception) {
-            exception.printStackTrace();
             userAvatarFile = fileService.load(DEFAULT_USER_AVATAR_FILE_PATH).toFile();
             userAvatar =imageService.resizeImageFromFile(userAvatarFile, dimension);
             fileExtension = fileService.getFileExtension(userAvatarFile);

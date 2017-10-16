@@ -31,7 +31,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
     private final OrganizerBuilder organizerBuilder = new OrganizerBuilder();
     private final UserBuilder userBuilder = new UserBuilder();
 
-    private DateFormat format = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+    private DateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 
     @Autowired
     public DatabaseInitializer(TournamentRepository tournamentRepository, UserAccountRepository userAccountRepository) {
@@ -247,8 +247,8 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
                     .with(testUser8)
                     .in(testAddress18)
                     .withGame( testGame1)
-                    .startAt(format.parse("02-06-2018 12:12:00"))
-                    .endingIn(format.parse("03-06-2018 12:12:00"))
+                    .startAt(format.parse("02-06-2018 13:12:00"))
+                    .endingIn(format.parse("03-06-2018 19:12:00"))
                     .inviteParticipants(testUser1,testUser2,testUser5,testUser6)
                     .finishOrganize();
 
@@ -256,8 +256,8 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
                     .startOrganizeTournament("Tournament9", 4,8)
                     .in(testAddress19)
                     .withGame( testGame1)
-                    .startAt(format.parse("13-07-2018 17:17:00"))
-                    .endingIn(format.parse("16-07-2018 17:17:00"))
+                    .startAt(format.parse("13-07-2018 08:17:00"))
+                    .endingIn(format.parse("16-07-2018 14:17:00"))
                     .inviteParticipants(testUser10,testUser8)
                     .finishOrganize();
 
@@ -266,8 +266,8 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
                     .with(testUser8)
                     .in(testAddress20)
                     .withGame( testGame1)
-                    .startAt(format.parse("26-08-2018 18:05:00"))
-                    .endingIn(format.parse("26-08-2018 18:06:00"))
+                    .startAt(format.parse("26-08-2018 10:05:00"))
+                    .endingIn(format.parse("26-08-2018 21:06:00"))
                     .inviteParticipants(testUser10,testUser7,testUser6,testUser2)
                     .finishOrganize();
 

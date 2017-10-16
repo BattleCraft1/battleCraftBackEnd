@@ -8,8 +8,11 @@ import javax.persistence.criteria.Root;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -20,7 +23,7 @@ import java.util.List;
 public class SearchCriteria {
     private List<String> keys;
     private String operation;
-    private Object value;
+    private List<Object> value;
 
     private Path getPath(Root root) {
         if(keys.size()==1){
@@ -45,14 +48,16 @@ public class SearchCriteria {
             return keys.get(keys.size() - 1);
     }
 
-    public Object getValue(Root root){
+    public List<Object> getValue(Root root){
         Class fieldType = getType(root);
         if (fieldType == Date.class) {
-            return convertValueToDate();
+            return Collections.singletonList(convertValueToDate());
         } else if (fieldType == String.class) {
-            return convertValueToString();
+            return Collections.singletonList(convertValueToString());
         } else if (fieldType.getSuperclass() == Enum.class) {
-            return convertValueToEnum(fieldType);
+            return value.stream()
+                    .map(element -> convertValueToEnum(element,fieldType))
+                    .collect(Collectors.toList());
         }
             return value;
     }
@@ -60,17 +65,17 @@ public class SearchCriteria {
     private Date convertValueToDate(){
         try {
             DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-            return format.parse(value.toString());
+            return format.parse(value.get(0).toString());
         } catch (ParseException e) {
             return new Date();
         }
     }
 
     private String convertValueToString(){
-        return new StringBuilder("%").append(value).append("%").toString();
+        return new StringBuilder("%").append(value.get(0)).append("%").toString();
     }
 
-    private Enum convertValueToEnum(Class fieldType){
+    private Enum convertValueToEnum(Object value,Class fieldType){
         return Enum.valueOf(fieldType, value.toString());
     }
 }

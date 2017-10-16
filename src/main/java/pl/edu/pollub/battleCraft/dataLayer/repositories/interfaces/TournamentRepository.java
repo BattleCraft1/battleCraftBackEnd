@@ -13,15 +13,18 @@ import java.util.List;
 @Transactional
 public interface TournamentRepository extends JpaRepository<Tournament, Long> {
     @Modifying
-    @Query("DELETE FROM Participation p WHERE (SELECT t.name FROM Tournament t WHERE t.banned = true AND t.id=p.participatedTournament) IN ?1")
+    @Query("DELETE FROM Participation p WHERE (SELECT t.name FROM Tournament t WHERE t.id=p.participatedTournament) IN ?1")
     void deleteParticipationByTournamentsUniqueNames(String... tournamentsToDeleteUniqueNames);
 
     @Modifying
-    @Query("DELETE FROM Organization o WHERE (SELECT t.name FROM Tournament t WHERE t.banned = true AND t.id=o.organizedTournament) IN ?1")
+    @Query("DELETE FROM Organization o WHERE (SELECT t.name FROM Tournament t WHERE t.id=o.organizedTournament) IN ?1")
     void deleteOrganizationByTournamentsUniqueNames(String... tournamentsToDeleteUniqueNames);
 
+    @Query("SELECT t.name FROM Tournament t WHERE t.banned = true AND t.name in ?1")
+    List<String> selectTournamentsToDeleteUniqueNames(String... tournamentsToDeleteUniqueNames);
+
     @Modifying
-    @Query("DELETE FROM Tournament t WHERE t.banned = true AND t.name in ?1")
+    @Query("DELETE FROM Tournament t WHERE t.name in ?1")
     void deleteTournamentsByUniqueNames(String... tournamentsToDeleteUniqueNames);
 
     @Modifying
@@ -32,15 +35,21 @@ public interface TournamentRepository extends JpaRepository<Tournament, Long> {
     @Query("UPDATE Tournament t SET t.banned = true WHERE t.name in ?1")
     void banTournamentsByUniqueNames(String... tournamentsToBanUniqueNames);
 
+    @Query("SELECT t.name FROM Tournament t WHERE t.name in ?1 AND t.status = 'NEW' AND t.banned = false")
+    List<String> selectTournamentsToAcceptUniqueNames(String... tournamentsToAcceptUniqueNames);
+
     @Modifying
-    @Query("UPDATE Tournament t SET t.status = 'ACCEPTED' WHERE t.name in ?1 AND t.status = 'NEW' AND t.banned = false")
+    @Query("UPDATE Tournament t SET t.status = 'ACCEPTED' WHERE t.name in ?1")
     void acceptTournamentsByUniqueNames(String... tournamentsToAcceptUniqueNames);
 
+    @Query("SELECT t.name FROM Tournament t WHERE t.name in ?1 AND t.status = 'ACCEPTED' AND t.banned = false")
+    List<String> selectTournamentsToRejectUniqueNames(String... tournamentsToRejectUniqueNames);
+
     @Modifying
-    @Query("UPDATE Tournament t SET t.status = 'NEW' WHERE t.name in ?1 AND t.status = 'ACCEPTED' AND t.banned = false")
+    @Query("UPDATE Tournament t SET t.status = 'NEW' WHERE t.name in ?1")
     void cancelAcceptTournamentsByUniqueNames(String... tournamentsToCancelAcceptUniqueNames);
 
-    @Query("SELECT t.id FROM Tour t WHERE (SELECT tr.name FROM Tournament tr WHERE tr.banned = true AND tr.id = t.tournament) IN ?1")
+    @Query("SELECT t.id FROM Tour t WHERE (SELECT tr.name FROM Tournament tr WHERE tr.id = t.tournament) IN ?1")
     List<Long> selectIdsOfToursToDeleteByTournamentsUniqueNames(String... tournamentsToDeleteUniqueNames);
 
     @Query("SELECT b.id FROM Battle b WHERE b.tour.id in ?1")
@@ -77,7 +86,7 @@ public interface TournamentRepository extends JpaRepository<Tournament, Long> {
     void deleteTournamentsByIds(List<Long> tournamentsToDeleteIds);
 
     @Query("SELECT t FROM Tournament t Where t.name = ?1 and t.banned = false and (t.status = 'ACCEPTED' OR t.status = 'NEW')")
-    Tournament findTournamentbyUniqueName(String tournamentUniqueName);
+    Tournament findTournamentToEditByUniqueName(String tournamentUniqueName);
 
     Tournament findByName(String name);
 }

@@ -6,8 +6,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import pl.edu.pollub.battleCraft.serviceLayer.services.pageOfEntities.interfaces.UsersAccountsService;
 import pl.edu.pollub.battleCraft.serviceLayer.services.resources.interfaces.UserAccountResourcesService;
-import pl.edu.pollub.battleCraft.webLayer.DTORequestObjects.Page.GetPageAndModifyDataObjectsWrapper;
-import pl.edu.pollub.battleCraft.webLayer.DTORequestObjects.Page.GetPageObjectsWrapper;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Page.GetPageAndModifyDataDTO;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Page.GetPageObjectsDTO;
 
 import java.io.IOException;
 
@@ -26,66 +26,66 @@ public class UsersController {
 
     @PostMapping(value = "/page/users", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Page getPageOfTournaments(@RequestBody GetPageObjectsWrapper getPageObjectsWrapper) {
+    public Page getPageOfTournaments(@RequestBody GetPageObjectsDTO getPageObjectsDTO) {
         System.out.println("Try to get users");
-        return userAccountService.getPageOfUserAccounts(getPageObjectsWrapper.unwrapPageRequest(),
-                getPageObjectsWrapper.getSearchCriteria());
+        return userAccountService.getPageOfUserAccounts(getPageObjectsDTO.unwrapPageRequest(),
+                getPageObjectsDTO.getSearchCriteria());
     }
 
     @PostMapping(value = "/ban/users", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Page banUsersAccounts(@RequestBody GetPageAndModifyDataObjectsWrapper getPageAndModifyDataObjectsWrapper){
-        userAccountService.banUsersAccounts(getPageAndModifyDataObjectsWrapper.getNamesOfObjectsToModify());
-        GetPageObjectsWrapper getPageObjectsWrapper = getPageAndModifyDataObjectsWrapper.getGetPageObjectsWrapper();
-        return userAccountService.getPageOfUserAccounts(getPageObjectsWrapper.unwrapPageRequest(),
-                getPageObjectsWrapper.getSearchCriteria());
+    public Page banUsersAccounts(@RequestBody GetPageAndModifyDataDTO getPageAndModifyDataDTO){
+        userAccountService.banUsersAccounts(getPageAndModifyDataDTO.getNamesOfObjectsToModify());
+        GetPageObjectsDTO getPageObjectsDTO = getPageAndModifyDataDTO.getGetPageObjectsDTO();
+        return userAccountService.getPageOfUserAccounts(getPageObjectsDTO.unwrapPageRequest(),
+                getPageObjectsDTO.getSearchCriteria());
     }
 
     @PostMapping(value = "/unlock/users", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Page unlockUsersAccounts(@RequestBody GetPageAndModifyDataObjectsWrapper getPageAndModifyDataObjectsWrapper){
-        userAccountService.unlockUsersAccounts(getPageAndModifyDataObjectsWrapper.getNamesOfObjectsToModify());
-        GetPageObjectsWrapper getPageObjectsWrapper = getPageAndModifyDataObjectsWrapper.getGetPageObjectsWrapper();
-        return userAccountService.getPageOfUserAccounts(getPageObjectsWrapper.unwrapPageRequest(),
-                getPageObjectsWrapper.getSearchCriteria());
+    public Page unlockUsersAccounts(@RequestBody GetPageAndModifyDataDTO getPageAndModifyDataDTO){
+        userAccountService.unlockUsersAccounts(getPageAndModifyDataDTO.getNamesOfObjectsToModify());
+        GetPageObjectsDTO getPageObjectsDTO = getPageAndModifyDataDTO.getGetPageObjectsDTO();
+        return userAccountService.getPageOfUserAccounts(getPageObjectsDTO.unwrapPageRequest(),
+                getPageObjectsDTO.getSearchCriteria());
     }
 
     @PostMapping(value = "/delete/users", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Page deleteUsersAccounts(@RequestBody GetPageAndModifyDataObjectsWrapper getPageAndModifyDataObjectsWrapper) throws IOException {
-        userAccountService.deleteUsersAccounts(getPageAndModifyDataObjectsWrapper.getNamesOfObjectsToModify());
-        userAccountResourcesService.deleteUsersAccountsAvatars(getPageAndModifyDataObjectsWrapper.getNamesOfObjectsToModify());
-        GetPageObjectsWrapper getPageObjectsWrapper = getPageAndModifyDataObjectsWrapper.getGetPageObjectsWrapper();
-        return userAccountService.getPageOfUserAccounts(getPageObjectsWrapper.unwrapPageRequest(),
-                getPageObjectsWrapper.getSearchCriteria());
+    public Page deleteUsersAccounts(@RequestBody GetPageAndModifyDataDTO getPageAndModifyDataDTO) throws IOException {
+        userAccountService.deleteUsersAccounts(getPageAndModifyDataDTO.getNamesOfObjectsToModify());
+        userAccountResourcesService.deleteUsersAccountsAvatars(getPageAndModifyDataDTO.getNamesOfObjectsToModify());
+        GetPageObjectsDTO getPageObjectsDTO = getPageAndModifyDataDTO.getGetPageObjectsDTO();
+        return userAccountService.getPageOfUserAccounts(getPageObjectsDTO.unwrapPageRequest(),
+                getPageObjectsDTO.getSearchCriteria());
     }
 
     @PostMapping(value = "/accept/users", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Page acceptUsersAccounts(@RequestBody GetPageAndModifyDataObjectsWrapper getPageAndModifyDataObjectsWrapper){
-        userAccountService.acceptUsersAccounts(getPageAndModifyDataObjectsWrapper.getNamesOfObjectsToModify());
-        GetPageObjectsWrapper getPageObjectsWrapper = getPageAndModifyDataObjectsWrapper.getGetPageObjectsWrapper();
-        return userAccountService.getPageOfUserAccounts(getPageObjectsWrapper.unwrapPageRequest(),
-                getPageObjectsWrapper.getSearchCriteria());
+    public Page acceptUsersAccounts(@RequestBody GetPageAndModifyDataDTO getPageAndModifyDataDTO){
+        userAccountService.acceptUsersAccounts(getPageAndModifyDataDTO.getNamesOfObjectsToModify());
+        GetPageObjectsDTO getPageObjectsDTO = getPageAndModifyDataDTO.getGetPageObjectsDTO();
+        return userAccountService.getPageOfUserAccounts(getPageObjectsDTO.unwrapPageRequest(),
+                getPageObjectsDTO.getSearchCriteria());
     }
 
     @PostMapping(value = "/cancel/accept/users", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Page cancelAcceptUsersAccounts(@RequestBody GetPageAndModifyDataObjectsWrapper getPageAndModifyDataObjectsWrapper){
-        userAccountService.cancelAcceptUsersAccounts(getPageAndModifyDataObjectsWrapper.getNamesOfObjectsToModify());
-        GetPageObjectsWrapper getPageObjectsWrapper = getPageAndModifyDataObjectsWrapper.getGetPageObjectsWrapper();
-        return userAccountService.getPageOfUserAccounts(getPageObjectsWrapper.unwrapPageRequest(),
-                getPageObjectsWrapper.getSearchCriteria());
+    public Page cancelAcceptUsersAccounts(@RequestBody GetPageAndModifyDataDTO getPageAndModifyDataDTO){
+        userAccountService.cancelAcceptUsersAccounts(getPageAndModifyDataDTO.getNamesOfObjectsToModify());
+        GetPageObjectsDTO getPageObjectsDTO = getPageAndModifyDataDTO.getGetPageObjectsDTO();
+        return userAccountService.getPageOfUserAccounts(getPageObjectsDTO.unwrapPageRequest(),
+                getPageObjectsDTO.getSearchCriteria());
     }
 
     @PostMapping(value = "/advance/players", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Page advancePlayersToOrganizer(@RequestBody GetPageAndModifyDataObjectsWrapper getPageAndModifyDataObjectsWrapper){
-        userAccountService.advancePlayersToOrganizer(getPageAndModifyDataObjectsWrapper.getNamesOfObjectsToModify());
-        GetPageObjectsWrapper getPageObjectsWrapper = getPageAndModifyDataObjectsWrapper.getGetPageObjectsWrapper();
-        return userAccountService.getPageOfUserAccounts(getPageObjectsWrapper.unwrapPageRequest(),
-                getPageObjectsWrapper.getSearchCriteria());
+    public Page advancePlayersToOrganizer(@RequestBody GetPageAndModifyDataDTO getPageAndModifyDataDTO){
+        userAccountService.advancePlayersToOrganizer(getPageAndModifyDataDTO.getNamesOfObjectsToModify());
+        GetPageObjectsDTO getPageObjectsDTO = getPageAndModifyDataDTO.getGetPageObjectsDTO();
+        return userAccountService.getPageOfUserAccounts(getPageObjectsDTO.unwrapPageRequest(),
+                getPageObjectsDTO.getSearchCriteria());
     }
 
     @PostMapping(value = "/degrade/organizers", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Page degradeOrganizerToPlayers(@RequestBody GetPageAndModifyDataObjectsWrapper getPageAndModifyDataObjectsWrapper){
-        userAccountService.degradeOrganizerToPlayers(getPageAndModifyDataObjectsWrapper.getNamesOfObjectsToModify());
-        GetPageObjectsWrapper getPageObjectsWrapper = getPageAndModifyDataObjectsWrapper.getGetPageObjectsWrapper();
-        return userAccountService.getPageOfUserAccounts(getPageObjectsWrapper.unwrapPageRequest(),
-                getPageObjectsWrapper.getSearchCriteria());
+    public Page degradeOrganizerToPlayers(@RequestBody GetPageAndModifyDataDTO getPageAndModifyDataDTO){
+        userAccountService.degradeOrganizerToPlayers(getPageAndModifyDataDTO.getNamesOfObjectsToModify());
+        GetPageObjectsDTO getPageObjectsDTO = getPageAndModifyDataDTO.getGetPageObjectsDTO();
+        return userAccountService.getPageOfUserAccounts(getPageObjectsDTO.unwrapPageRequest(),
+                getPageObjectsDTO.getSearchCriteria());
     }
 }

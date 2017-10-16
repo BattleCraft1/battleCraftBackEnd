@@ -13,6 +13,7 @@ import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.searchSpecyficat
 import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.GameRepository;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.OrganizerRepository;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.TournamentRepository;
+import pl.edu.pollub.battleCraft.dataLayer.repositories.pageOfEntity.interfaces.TournamentsRepository;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -23,14 +24,16 @@ public class GamesRepositoryImpl implements GamesRepository {
     private final TournamentRepository tournamentRepository;
     private final OrganizerRepository organizerRepository;
     private final GetPageAssistant getPageAssistant;
+    private final TournamentsRepository tournamentsRepository;
 
     @Autowired
     public GamesRepositoryImpl(GameRepository gameRepository, TournamentRepository tournamentRepository,
-                               OrganizerRepository organizerRepository, GetPageAssistant getPageAssistant) {
+                               OrganizerRepository organizerRepository, GetPageAssistant getPageAssistant, TournamentsRepository tournamentsRepository) {
         this.gameRepository = gameRepository;
         this.tournamentRepository = tournamentRepository;
         this.organizerRepository = organizerRepository;
         this.getPageAssistant = getPageAssistant;
+        this.tournamentsRepository = tournamentsRepository;
     }
 
     @Override
@@ -68,10 +71,9 @@ public class GamesRepositoryImpl implements GamesRepository {
         this.tournamentRepository.deleteParticipationByTournamentsIds(tournamentsToDeleteIds);
         this.tournamentRepository.deleteOrganizationByTournamentsIds(tournamentsToDeleteIds);
         List<Long> idsOfToursToDelete = this.tournamentRepository.selectIdsOfToursToDeleteByTournamentsIds(tournamentsToDeleteIds);
-        List<Long> idsOfBattlesToDelete = this.tournamentRepository.selectIdsOfBattlesToDeleteByToursIds(idsOfToursToDelete);
-        this.tournamentRepository.deletePlaysByBattlesIds(idsOfBattlesToDelete);
-        this.tournamentRepository.deleteBattlesByIds(idsOfBattlesToDelete);
-        this.tournamentRepository.deleteToursByIds(idsOfToursToDelete);
+        if(idsOfToursToDelete.size()>0) {
+            tournamentsRepository.deleteTournamentInProgressionRelations(idsOfToursToDelete);
+        }
         this.tournamentRepository.deleteTournamentsByIds(tournamentsToDeleteIds);
         gameRepository.deleteGamesByUniqueNames(gamesToDeleteUniqueNames);
     }

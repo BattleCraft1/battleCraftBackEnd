@@ -1,4 +1,4 @@
-package pl.edu.pollub.battleCraft.webLayer.DTORequestObjects.Page;
+package pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Page;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -13,14 +13,18 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode
 @ToString
-public class GetPageObjectsWrapper {
+public class GetPageObjectsDTO {
 
-    private PageRequestWrapper pageRequest;
+    private PageRequestDTO pageRequest;
 
     private List<SearchCriteria> searchCriteria;
 
     public PageRequest unwrapPageRequest() {
         return this.pageRequest.unwrapPageRequest();
+    }
+
+    public void setPageRequest(PageRequestDTO pageRequest){
+        this.pageRequest = pageRequest;
     }
 
 }

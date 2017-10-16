@@ -15,8 +15,11 @@ public interface GameRepository extends JpaRepository<Game, Long> {
     @Query("SELECT DISTINCT g.name from Game g")
     List<String> getAllGamesNames();
 
+    @Query("SELECT g.name FROM Game g WHERE g.banned = true AND g.name in ?1")
+    List<String> selectGamesToDeleteUniqueNames(String... gamesToDeleteUniqueNames);
+
     @Modifying
-    @Query("DELETE FROM Game g WHERE g.banned = true AND g.name in ?1")
+    @Query("DELETE FROM Game g WHERE g.name in ?1")
     void deleteGamesByUniqueNames(String... gamesToDeleteUniqueNames);
 
     @Modifying
@@ -27,12 +30,18 @@ public interface GameRepository extends JpaRepository<Game, Long> {
     @Query("UPDATE Game g SET g.banned = true WHERE g.name in ?1")
     void banGamesByUniqueNames(String... gamesToBanUniqueNames);
 
-    @Modifying
-    @Query("UPDATE Game g SET g.status = 'ACCEPTED' WHERE g.name in ?1 AND g.status = 'NEW' AND g.banned = false")
-    void acceptGamesByUniqueNames(String... gamesToAcceptUniqueNames);
+    @Query("SELECT g.name FROM Game g WHERE g.name in ?1 AND g.status = 'NEW' AND g.banned = false")
+    List<String> selectGamesToAcceptUniqueNames(String... gamesToAcceptUniqueNames);
 
     @Modifying
-    @Query("UPDATE Game g SET g.status = 'NEW' WHERE g.name in ?1 AND g.status = 'ACCEPTED' AND g.banned = false")
+    @Query("UPDATE Game g SET g.status = 'ACCEPTED' WHERE g.name in ?1")
+    void acceptGamesByUniqueNames(String... gamesToAcceptUniqueNames);
+
+    @Query("SELECT g.name FROM Game g WHERE g.name in ?1 AND g.status = 'ACCEPTED' AND g.banned = false")
+    List<String> selectGamesToRejectUniqueNames(String... gamesToCancelAcceptUniqueNames);
+
+    @Modifying
+    @Query("UPDATE Game g SET g.status = 'NEW' WHERE g.name in ?1")
     void cancelAcceptGamesUniqueNames(String... gamesToCancelAcceptUniqueNames);
 
     @Query("SELECT g from Game g WHERE g.name = ?1 and g.status = 'ACCEPTED' and g.banned = false")

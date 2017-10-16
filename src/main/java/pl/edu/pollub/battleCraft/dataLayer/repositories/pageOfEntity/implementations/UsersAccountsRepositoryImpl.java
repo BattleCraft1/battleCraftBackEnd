@@ -8,7 +8,7 @@ import pl.edu.pollub.battleCraft.dataLayer.entities.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.enums.UserType;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.organizers.Organizer;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.players.Player;
-import pl.edu.pollub.battleCraft.dataLayer.repositories.pageOfEntity.interfaces.UsersAccountRepository;
+import pl.edu.pollub.battleCraft.dataLayer.repositories.pageOfEntity.interfaces.UsersAccountsRepository;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.repositoryPageAssistent.field.Join;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.repositoryPageAssistent.field.Field;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.repositoryPageAssistent.interfaces.GetPageAssistant;
@@ -22,17 +22,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class UsersAccountRepositoryImpl implements UsersAccountRepository {
+public class UsersAccountsRepositoryImpl implements UsersAccountsRepository {
     private final GetPageAssistant getPageAssistant;
     private final UserAccountRepository userAccountRepository;
     private final PlayerRepository playerRepository;
     private final OrganizerRepository organiserRepository;
 
     @Autowired
-    public UsersAccountRepositoryImpl(GetPageAssistant getPageAssistant,
-                                      UserAccountRepository userAccountRepository,
-                                      PlayerRepository playerRepository,
-                                      OrganizerRepository organiserRepository) {
+    public UsersAccountsRepositoryImpl(GetPageAssistant getPageAssistant,
+                                       UserAccountRepository userAccountRepository,
+                                       PlayerRepository playerRepository,
+                                       OrganizerRepository organiserRepository) {
         this.getPageAssistant = getPageAssistant;
         this.playerRepository = playerRepository;
         this.organiserRepository = organiserRepository;

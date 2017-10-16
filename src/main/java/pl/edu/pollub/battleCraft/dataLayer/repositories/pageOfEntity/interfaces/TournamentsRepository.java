@@ -18,5 +18,7 @@ public interface TournamentsRepository {
 
     void acceptTournaments(String... tournamentsToAcceptUniqueNames);
 
-    void cancelAcceptTournaments(String... tournamentsToCancelAcceptUniqueNames);
+    void cancelAcceptationTournaments(String... tournamentsToCancelAcceptUniqueNames);
+
+    void deleteTournamentInProgressionRelations(List<Long> idsOfToursToDelete);
 }

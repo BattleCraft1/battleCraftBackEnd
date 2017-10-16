@@ -4,7 +4,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Address.Province;
-import pl.edu.pollub.battleCraft.webLayer.DTORequestObjects.Tournament.TournamentWebDTO;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Tournament.TournamentRequestDTO;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Tournament.TournamentResponseDTO;
 
 @Component
 public class AddressValidator implements Validator {
@@ -12,13 +13,13 @@ public class AddressValidator implements Validator {
 
     @Override
     public boolean supports(Class<?> aClass) {
-        return TournamentWebDTO.class.equals(aClass);
+        return TournamentResponseDTO.class.equals(aClass);
     }
 
     @Override
     public void validate(Object o, Errors errors) {
         this.errors = errors;
-        TournamentWebDTO tournamentWebDTO = (TournamentWebDTO) o;
+        TournamentRequestDTO tournamentWebDTO = (TournamentRequestDTO) o;
         this.validateProvince(tournamentWebDTO.province);
         this.validateCity(tournamentWebDTO.city);
         this.validateStreet(tournamentWebDTO.street);

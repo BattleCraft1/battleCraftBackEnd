@@ -6,7 +6,6 @@ import org.springframework.validation.BindingResult;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Address.Address;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Game.Game;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.Tournament;
-import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.enums.TournamentStatus;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.organizers.Organizer;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.players.Player;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.GameRepository;
@@ -17,7 +16,8 @@ import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.Entit
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.EntityValidation.EntityValidationException;
 import pl.edu.pollub.battleCraft.serviceLayer.services.oneEnitity.interfaces.TournamentService;
 import pl.edu.pollub.battleCraft.serviceLayer.validators.TournamentOrganizationValidator;
-import pl.edu.pollub.battleCraft.webLayer.DTORequestObjects.Tournament.TournamentWebDTO;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Tournament.TournamentRequestDTO;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Tournament.TournamentResponseDTO;
 
 import java.util.List;
 import java.util.Optional;
@@ -45,10 +45,10 @@ public class TournamentServiceImpl implements TournamentService{
     }
 
     @Override
-    public TournamentWebDTO organizeTournament(TournamentWebDTO tournamentWebDTO, BindingResult bindingResult) throws EntityValidationException {
+    public TournamentResponseDTO organizeTournament(TournamentRequestDTO tournamentWebDTO, BindingResult bindingResult) throws EntityValidationException {
         Organizer mockOrganizerFromSession = organizerRepository.findByName("dept2123");
 
-        Tournament tournamentExist = tournamentRepository.findTournamentbyUniqueName(tournamentWebDTO.name);
+        Tournament tournamentExist = tournamentRepository.findTournamentToEditByUniqueName(tournamentWebDTO.name);
         if(tournamentExist!=null)
             bindingResult.rejectValue("name","Tournament with this name already exist.");
 
@@ -79,13 +79,17 @@ public class TournamentServiceImpl implements TournamentService{
                 .inviteParticipants(participants)
                 .finishOrganize();
 
-        return new TournamentWebDTO(tournamentRepository.save(organizedTournament));
+        return new TournamentResponseDTO(tournamentRepository.save(organizedTournament));
     }
 
     @Override
-    public TournamentWebDTO editTournament(TournamentWebDTO tournamentWebDTO, BindingResult bindingResult) {
+    public TournamentResponseDTO editTournament(TournamentRequestDTO tournamentWebDTO, BindingResult bindingResult) {
         Tournament tournamentToEdit = Optional.ofNullable(tournamentRepository.findByName(tournamentWebDTO.name))
                         .orElseThrow(() -> new EntityNotFoundException(Tournament.class,tournamentWebDTO.name));
+
+        Tournament tournamentExist = tournamentRepository.findTournamentToEditByUniqueName(tournamentWebDTO.nameChange);
+        if(tournamentExist!=null)
+            bindingResult.rejectValue("name","Tournament with this name already exist.");
 
         Organizer mockOrganizerFromSession = organizerRepository.findByName("dept2123");
 
@@ -106,7 +110,7 @@ public class TournamentServiceImpl implements TournamentService{
                         tournamentWebDTO.nameChange,
                         tournamentWebDTO.tablesCount,
                         tournamentWebDTO.maxPlayers)
-                .with(organizers)
+                .editOrganizers(organizers)
                 .in(new Address(
                         tournamentWebDTO.province,
                         tournamentWebDTO.city,
@@ -116,18 +120,17 @@ public class TournamentServiceImpl implements TournamentService{
                 .withGame(tournamentGame)
                 .startAt(tournamentWebDTO.dateOfStart)
                 .endingIn(tournamentWebDTO.dateOfEnd)
-                .inviteParticipants(participants)
+                .editParticipants(participants)
                 .finishOrganize();
 
-        return new TournamentWebDTO(tournamentRepository.save(organizedTournament));
+        return new TournamentResponseDTO(tournamentRepository.save(organizedTournament));
     }
 
     @Override
-    public TournamentWebDTO getTournament(String tournamentUniqueName) {
-        Tournament tournamentToShow =
-                Optional.of(tournamentRepository.findTournamentbyUniqueName(tournamentUniqueName))
+    public TournamentResponseDTO getTournament(String tournamentUniqueName) {
+        Tournament tournamentToShow = Optional.ofNullable(tournamentRepository.findTournamentToEditByUniqueName(tournamentUniqueName))
                 .orElseThrow(() -> new EntityNotFoundException(Tournament.class,tournamentUniqueName));
 
-        return new TournamentWebDTO(tournamentToShow);
+        return new TournamentResponseDTO(tournamentToShow);
     }
 }

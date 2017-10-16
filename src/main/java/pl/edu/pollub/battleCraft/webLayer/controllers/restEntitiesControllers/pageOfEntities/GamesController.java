@@ -6,8 +6,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import pl.edu.pollub.battleCraft.serviceLayer.services.pageOfEntities.interfaces.GamesService;
 import pl.edu.pollub.battleCraft.serviceLayer.services.resources.interfaces.GameResourcesService;
-import pl.edu.pollub.battleCraft.webLayer.DTORequestObjects.Page.GetPageAndModifyDataObjectsWrapper;
-import pl.edu.pollub.battleCraft.webLayer.DTORequestObjects.Page.GetPageObjectsWrapper;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Page.GetPageAndModifyDataDTO;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Page.GetPageObjectsDTO;
 
 @RestController
 public class GamesController {
@@ -24,50 +24,50 @@ public class GamesController {
 
     @PostMapping(value = "/page/games", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Page getPageOfTournaments(@RequestBody GetPageObjectsWrapper getPageObjectsWrapper) {
+    public Page getPageOfTournaments(@RequestBody GetPageObjectsDTO getPageObjectsDTO) {
         System.out.println("Try to get games");
-        return gameService.getPageOfGames(getPageObjectsWrapper.unwrapPageRequest(),
-                getPageObjectsWrapper.getSearchCriteria());
+        return gameService.getPageOfGames(getPageObjectsDTO.unwrapPageRequest(),
+                getPageObjectsDTO.getSearchCriteria());
     }
 
     @PostMapping(value = "/ban/games", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Page banTournaments(@RequestBody GetPageAndModifyDataObjectsWrapper getPageAndModifyDataObjectsWrapper) {
-        gameService.banGames(getPageAndModifyDataObjectsWrapper.getNamesOfObjectsToModify());
-        GetPageObjectsWrapper getPageObjectsWrapper = getPageAndModifyDataObjectsWrapper.getGetPageObjectsWrapper();
-        return gameService.getPageOfGames(getPageObjectsWrapper.unwrapPageRequest(),
-                getPageObjectsWrapper.getSearchCriteria());
+    public Page banTournaments(@RequestBody GetPageAndModifyDataDTO getPageAndModifyDataDTO) {
+        gameService.banGames(getPageAndModifyDataDTO.getNamesOfObjectsToModify());
+        GetPageObjectsDTO getPageObjectsDTO = getPageAndModifyDataDTO.getGetPageObjectsDTO();
+        return gameService.getPageOfGames(getPageObjectsDTO.unwrapPageRequest(),
+                getPageObjectsDTO.getSearchCriteria());
     }
 
     @PostMapping(value = "/unlock/games", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Page unlockTournaments(@RequestBody GetPageAndModifyDataObjectsWrapper getPageAndModifyDataObjectsWrapper) {
-        gameService.unlockGames(getPageAndModifyDataObjectsWrapper.getNamesOfObjectsToModify());
-        GetPageObjectsWrapper getPageObjectsWrapper = getPageAndModifyDataObjectsWrapper.getGetPageObjectsWrapper();
-        return gameService.getPageOfGames(getPageObjectsWrapper.unwrapPageRequest(),
-                getPageObjectsWrapper.getSearchCriteria());
+    public Page unlockTournaments(@RequestBody GetPageAndModifyDataDTO getPageAndModifyDataDTO) {
+        gameService.unlockGames(getPageAndModifyDataDTO.getNamesOfObjectsToModify());
+        GetPageObjectsDTO getPageObjectsDTO = getPageAndModifyDataDTO.getGetPageObjectsDTO();
+        return gameService.getPageOfGames(getPageObjectsDTO.unwrapPageRequest(),
+                getPageObjectsDTO.getSearchCriteria());
     }
 
     @PostMapping(value = "/delete/games", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Page deleteTournaments(@RequestBody GetPageAndModifyDataObjectsWrapper getPageAndModifyDataObjectsWrapper) {
-        gameService.deleteGames(getPageAndModifyDataObjectsWrapper.getNamesOfObjectsToModify());
-        gameResourcesService.deleteGamesRules(getPageAndModifyDataObjectsWrapper.getNamesOfObjectsToModify());
-        GetPageObjectsWrapper getPageObjectsWrapper = getPageAndModifyDataObjectsWrapper.getGetPageObjectsWrapper();
-        return gameService.getPageOfGames(getPageObjectsWrapper.unwrapPageRequest(),
-                getPageObjectsWrapper.getSearchCriteria());
+    public Page deleteTournaments(@RequestBody GetPageAndModifyDataDTO getPageAndModifyDataDTO) {
+        gameService.deleteGames(getPageAndModifyDataDTO.getNamesOfObjectsToModify());
+        gameResourcesService.deleteGamesRules(getPageAndModifyDataDTO.getNamesOfObjectsToModify());
+        GetPageObjectsDTO getPageObjectsDTO = getPageAndModifyDataDTO.getGetPageObjectsDTO();
+        return gameService.getPageOfGames(getPageObjectsDTO.unwrapPageRequest(),
+                getPageObjectsDTO.getSearchCriteria());
     }
 
     @PostMapping(value = "/accept/games", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Page acceptTournaments(@RequestBody GetPageAndModifyDataObjectsWrapper getPageAndModifyDataObjectsWrapper) {
-        gameService.acceptGames(getPageAndModifyDataObjectsWrapper.getNamesOfObjectsToModify());
-        GetPageObjectsWrapper getPageObjectsWrapper = getPageAndModifyDataObjectsWrapper.getGetPageObjectsWrapper();
-        return gameService.getPageOfGames(getPageObjectsWrapper.unwrapPageRequest(),
-                getPageObjectsWrapper.getSearchCriteria());
+    public Page acceptTournaments(@RequestBody GetPageAndModifyDataDTO getPageAndModifyDataDTO) {
+        gameService.acceptGames(getPageAndModifyDataDTO.getNamesOfObjectsToModify());
+        GetPageObjectsDTO getPageObjectsDTO = getPageAndModifyDataDTO.getGetPageObjectsDTO();
+        return gameService.getPageOfGames(getPageObjectsDTO.unwrapPageRequest(),
+                getPageObjectsDTO.getSearchCriteria());
     }
 
     @PostMapping(value = "/cancel/accept/games", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Page cancelAcceptTournaments(@RequestBody GetPageAndModifyDataObjectsWrapper getPageAndModifyDataObjectsWrapper) {
-        gameService.cancelAcceptGames(getPageAndModifyDataObjectsWrapper.getNamesOfObjectsToModify());
-        GetPageObjectsWrapper getPageObjectsWrapper = getPageAndModifyDataObjectsWrapper.getGetPageObjectsWrapper();
-        return gameService.getPageOfGames(getPageObjectsWrapper.unwrapPageRequest(),
-                getPageObjectsWrapper.getSearchCriteria());
+    public Page cancelAcceptTournaments(@RequestBody GetPageAndModifyDataDTO getPageAndModifyDataDTO) {
+        gameService.cancelAcceptGames(getPageAndModifyDataDTO.getNamesOfObjectsToModify());
+        GetPageObjectsDTO getPageObjectsDTO = getPageAndModifyDataDTO.getGetPageObjectsDTO();
+        return gameService.getPageOfGames(getPageObjectsDTO.unwrapPageRequest(),
+                getPageObjectsDTO.getSearchCriteria());
     }
 }

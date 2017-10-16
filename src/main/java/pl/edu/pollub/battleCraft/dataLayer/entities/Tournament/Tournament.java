@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.aspectj.weaver.ast.Or;
 import org.hibernate.annotations.Formula;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Address.AddressOwner;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Game.Game;
@@ -92,6 +93,20 @@ public class Tournament extends AddressOwner{
                 .collect(Collectors.toList()));
     }
 
+    public void editOrganizers(Organizer... organizers) {
+        List<Organizer> organizersList = Arrays.asList(organizers);
+        List<Organization> filteredOrganizers = this.organizers.stream()
+                .filter(organization -> organizersList.contains(organization.getOrganizer())).collect(Collectors.toList());
+        filteredOrganizers.addAll(organizersList.stream().map(
+                organizer -> {
+                    Organization organization = new Organization(organizer, this);
+                    organizer.addOrganization(organization);
+                    return organization;
+                })
+                .collect(Collectors.toList()));
+        this.organizers = filteredOrganizers;
+    }
+
     public void chooseGame(Game game){
         this.game = game;
         game.addTournamentByOneSide(this);
@@ -105,6 +120,19 @@ public class Tournament extends AddressOwner{
                     return participation;
                 })
                 .collect(Collectors.toList());
+    }
+
+    public void editParticipants(Player... participants) {
+        List<Player> participantsList = Arrays.asList(participants);
+        List<Participation> filteredParticipants = this.participants.stream()
+                .filter(participation -> participantsList.contains(participation.getPlayer())).collect(Collectors.toList());
+        filteredParticipants.addAll(participantsList.stream()
+                .map(participant -> {
+                    Participation participation = new Participation(participant, this);
+                    participant.addParticipation(participation);
+                    return participation;
+                }).collect(Collectors.toList()));
+        this.participants = filteredParticipants;
     }
 
     public void initMaxPlayers(int maxPlayers){

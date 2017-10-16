@@ -5,7 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import pl.edu.pollub.battleCraft.serviceLayer.services.pageOfEntities.interfaces.RankingService;
-import pl.edu.pollub.battleCraft.webLayer.DTORequestObjects.Page.GetPageObjectsWrapper;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Page.GetPageObjectsDTO;
 
 @RestController
 public class RankingController {
@@ -19,9 +19,9 @@ public class RankingController {
 
     @PostMapping(value = "/page/ranking", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Page getPageOfTournaments(@RequestBody GetPageObjectsWrapper getPageObjectsWrapper) {
+    public Page getPageOfTournaments(@RequestBody GetPageObjectsDTO getPageObjectsDTO) {
         System.out.println("Try to get rankings");
-        return rankingService.getPageOfRanking(getPageObjectsWrapper.unwrapPageRequest(),
-                getPageObjectsWrapper.getSearchCriteria());
+        return rankingService.getPageOfRanking(getPageObjectsDTO.unwrapPageRequest(),
+                getPageObjectsDTO.getSearchCriteria());
     }
 }

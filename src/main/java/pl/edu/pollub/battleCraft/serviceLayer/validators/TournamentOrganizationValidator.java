@@ -10,7 +10,8 @@ import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.enums.TournamentS
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.organizers.Organizer;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.players.Player;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.EntityValidation.EntityValidationException;
-import pl.edu.pollub.battleCraft.webLayer.DTORequestObjects.Tournament.TournamentWebDTO;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Tournament.TournamentRequestDTO;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Tournament.TournamentResponseDTO;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -27,13 +28,13 @@ public class TournamentOrganizationValidator implements Validator {
 
     @Override
     public boolean supports(Class<?> aClass) {
-        return TournamentWebDTO.class.equals(aClass);
+        return TournamentResponseDTO.class.equals(aClass);
     }
 
     @Override
     public void validate(Object o, Errors errors) {
         this.errors = errors;
-        TournamentWebDTO tournamentWebDTO = (TournamentWebDTO) o;
+        TournamentRequestDTO tournamentWebDTO = (TournamentRequestDTO) o;
         this.validateTournamentName(tournamentWebDTO.name);
         this.validateTournamentName(tournamentWebDTO.nameChange);
         this.validateTablesCount(tournamentWebDTO.tablesCount);
@@ -73,7 +74,7 @@ public class TournamentOrganizationValidator implements Validator {
 
     private void validateEndDate(Date startDate, Date endDate){
         if(endDate==null || endDate.before(startDate)){
-            errors.rejectValue("dateOfStart","", new StringBuilder("End date must be later than ").append(startDate).toString());
+            errors.rejectValue("dateOfEnd","", new StringBuilder("End date must be later than ").append(startDate).toString());
         }
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(startDate);
@@ -86,7 +87,7 @@ public class TournamentOrganizationValidator implements Validator {
 
     public void validateDataFromDatabase(Game tournamentGame, Player[] participants,
                                           Organizer[] organizers, BindingResult bindingResult,
-                                          TournamentWebDTO tournamentWebDTO) throws EntityValidationException {
+                                          TournamentRequestDTO tournamentWebDTO) throws EntityValidationException {
         if(tournamentGame==null){
             bindingResult.rejectValue("game","", new StringBuilder("game: ").append(tournamentWebDTO.game).append(" does not exist").toString());
         }
@@ -103,7 +104,7 @@ public class TournamentOrganizationValidator implements Validator {
         }
     }
 
-    public void validateDataToEditFromDatabase(Tournament tournament,Game tournamentGame, Player[] participants, Organizer[] organizers, BindingResult bindingResult, TournamentWebDTO tournamentWebDTO) {
+    public void validateDataToEditFromDatabase(Tournament tournament,Game tournamentGame, Player[] participants, Organizer[] organizers, BindingResult bindingResult, TournamentRequestDTO tournamentWebDTO) {
         if(tournament.isBanned() || (tournament.getStatus()!= TournamentStatus.ACCEPTED && tournament.getStatus()!=TournamentStatus.NEW)){
             bindingResult.rejectValue("name","","This tournament is not accepted");
         }

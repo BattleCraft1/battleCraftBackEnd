@@ -1,9 +1,9 @@
-package pl.edu.pollub.battleCraft.webLayer.DTORequestObjects.Page;
+package pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Page;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
-public class PageRequestWrapper {
+public class PageRequestDTO {
 
     private int size;
 
