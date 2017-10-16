@@ -99,6 +99,12 @@ public class Organizer extends Player {
     }
 
     @JsonIgnore
+    public Organizer editOrganizers(Organizer... coOrganisers) {
+        tournamentInOrganisation.editOrganizers(coOrganisers);
+        return this;
+    }
+
+    @JsonIgnore
     public Organizer in(Address address){
         tournamentInOrganisation.changeAddress(address);
         return this;
@@ -125,6 +131,12 @@ public class Organizer extends Player {
     @JsonIgnore
     public Organizer inviteParticipants(Player... participants){
         tournamentInOrganisation.addParticipants(participants);
+        return this;
+    }
+
+    @JsonIgnore
+    public Organizer editParticipants(Player... participants) {
+        tournamentInOrganisation.editParticipants(participants);
         return this;
     }
 
@@ -204,5 +216,4 @@ public class Organizer extends Player {
                 .filter(tournament -> tournament.getName().equals(tournamentName))
                 .findFirst().orElseThrow(() -> new YouDidNotOrganizeTournamentWithThisName(tournamentName));
     }
-
 }

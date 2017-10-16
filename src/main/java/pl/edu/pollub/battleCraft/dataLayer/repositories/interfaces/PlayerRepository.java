@@ -20,11 +20,17 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
     @Query("UPDATE Player p SET p.banned = true WHERE p.name in ?1")
     void banUserAccountsByUniqueNames(String... usersToBanUniqueNames);
 
+    @Query("UPDATE Player p SET p.status = 'NEW' WHERE p.name in ?1")
+    List<String> selectUsersAccountsToRejectUniqueNames(String... usersToCancelAcceptUniqueNames);
+
     @Modifying
     @Query("UPDATE Player p SET p.status = 'NEW' WHERE p.name in ?1")
     void cancelAcceptationOfUsersAccountsByUniqueNames(String... usersToCancelAcceptUniqueNames);
 
-    @Query("SELECT p FROM Player p WHERE p.status = 'ACCEPTED' AND p.name in ?1 and p.banned = false")
+    @Query("SELECT p.name FROM Player p WHERE p.status = 'ACCEPTED' AND p.name in ?1 and p.banned = false")
+    List<String> selectUsersAccountsToAdvanceUniqueNames(String... playersNames);
+
+    @Query("SELECT p FROM Player p WHERE p.name in ?1")
     List<Player> findPlayersByUniqueName(String... playersNames);
 
     @Modifying

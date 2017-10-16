@@ -15,6 +15,7 @@ import pl.edu.pollub.battleCraft.serviceLayer.errors.FieldErrorResource;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.EntityNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.EntityValidation.EntityValidationException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.PageOfEntities.AnyEntityNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.PageOfEntities.OperaionOnDataBaseFailedException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.PageOfEntities.PageNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.File.StorageException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.File.StorageFileNotFoundException;
@@ -41,6 +42,14 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
         System.out.println("exception: "+ex.getClass().getSimpleName()+" message: " + ex.getMessage());
         ex.printStackTrace();
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(value = {OperaionOnDataBaseFailedException.class})
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    protected ResponseEntity<String> handleBadRequest(Exception ex, WebRequest req) {
+        System.out.println("exception: "+ex.getClass().getSimpleName()+" message: " + ex.getMessage());
+        ex.printStackTrace();
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(value = {EntityValidationException.class})

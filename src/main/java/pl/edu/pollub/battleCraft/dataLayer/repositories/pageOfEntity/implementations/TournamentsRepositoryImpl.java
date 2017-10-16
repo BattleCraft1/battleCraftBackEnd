@@ -64,11 +64,18 @@ public class TournamentsRepositoryImpl implements TournamentsRepository {
         this.tournamentRepository.deleteParticipationByTournamentsUniqueNames(tournamentsToDeleteUniqueNames);
         this.tournamentRepository.deleteOrganizationByTournamentsUniqueNames(tournamentsToDeleteUniqueNames);
         List<Long> idsOfToursToDelete = this.tournamentRepository.selectIdsOfToursToDeleteByTournamentsUniqueNames(tournamentsToDeleteUniqueNames);
+        if(idsOfToursToDelete.size()>0){
+            this.deleteTournamentInProgressionRelations(idsOfToursToDelete);
+        }
+        this.tournamentRepository.deleteTournamentsByUniqueNames(tournamentsToDeleteUniqueNames);
+    }
+
+    @Override
+    public void deleteTournamentInProgressionRelations(List<Long> idsOfToursToDelete){
         List<Long> idsOfBattlesToDelete = this.tournamentRepository.selectIdsOfBattlesToDeleteByToursIds(idsOfToursToDelete);
         this.tournamentRepository.deletePlaysByBattlesIds(idsOfBattlesToDelete);
         this.tournamentRepository.deleteBattlesByIds(idsOfBattlesToDelete);
         this.tournamentRepository.deleteToursByIds(idsOfToursToDelete);
-        this.tournamentRepository.deleteTournamentsByUniqueNames(tournamentsToDeleteUniqueNames);
     }
 
     @Override
@@ -82,7 +89,7 @@ public class TournamentsRepositoryImpl implements TournamentsRepository {
     }
 
     @Override
-    public void cancelAcceptTournaments(String... tournamentsToCancelAcceptUniqueNames) {
+    public void cancelAcceptationTournaments(String... tournamentsToCancelAcceptUniqueNames) {
         this.tournamentRepository.cancelAcceptTournamentsByUniqueNames(tournamentsToCancelAcceptUniqueNames);
     }
 }

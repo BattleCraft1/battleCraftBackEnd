@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.edu.pollub.battleCraft.serviceLayer.services.enums.interfaces.GameEnumsService;
 import pl.edu.pollub.battleCraft.serviceLayer.services.enums.interfaces.TournamentEnumsService;
-import pl.edu.pollub.battleCraft.serviceLayer.services.enums.interfaces.ProvinceService;
 
 import java.util.HashMap;
 import java.util.List;
@@ -15,14 +14,11 @@ import java.util.Map;
 public class TournamentEnumsController {
     private final TournamentEnumsService tournamentEnumsService;
 
-    private final ProvinceService provinceService;
-
     private final GameEnumsService gameEnumsService;
 
     @Autowired
-    public TournamentEnumsController(TournamentEnumsService tournamentEnumsService, ProvinceService provinceService, GameEnumsService gameEnumsService) {
+    public TournamentEnumsController(TournamentEnumsService tournamentEnumsService, GameEnumsService gameEnumsService) {
         this.tournamentEnumsService = tournamentEnumsService;
-        this.provinceService = provinceService;
         this.gameEnumsService = gameEnumsService;
     }
 
@@ -34,11 +30,9 @@ public class TournamentEnumsController {
     @GetMapping("/get/tournaments/enums")
     public Map<String, List<String>> getTournamentsEnums() {
         List<String> tournamentStatus = tournamentEnumsService.getAllTournamentStatus();
-        List<String> provincesNames = provinceService.getAllProvincesNames();
         List<String> gamesNames = gameEnumsService.getAllGamesNames();
         Map<String, List<String>> enums = new HashMap<>();
         enums.put("tournamentStatus", tournamentStatus);
-        enums.put("provincesNames", provincesNames);
         enums.put("gamesNames", gamesNames);
         return enums;
     }

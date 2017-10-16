@@ -6,7 +6,7 @@ import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.searchSpecyficat
 
 import java.util.List;
 
-public interface UsersAccountRepository {
+public interface UsersAccountsRepository {
     Page getPageOfUserAccounts(List<SearchCriteria> searchCriteria, Pageable requestedPage);
 
     void banUsersAccounts(String... usersAccountsToBanUniqueNames);

@@ -42,7 +42,7 @@ public class GetPageAssistantImpl implements GetPageAssistant {
     private ProjectionList projectionList = Projections.projectionList();
     private List<Join> joins = new ArrayList<>();
     private Criteria criteria;
-    private List<SimpleExpression> whereConditions = new ArrayList<>();
+    private List<Criterion> whereConditions = new ArrayList<>();
 
     private String transactionId;
     private Class entityClass;
@@ -85,16 +85,21 @@ public class GetPageAssistantImpl implements GetPageAssistant {
         joins.forEach(join -> criteria.createAlias(getFieldFullName(join.name),join.value));
         searchCriteria.forEach((condition) -> {
             String fieldName = condition.getName();
-            Object fieldValue = condition.getValue(root);
+            List<Object> fieldValue = condition.getValue(root);
             String operationOnField = condition.getOperation();
-            if(fieldValue instanceof String)
-                whereConditions.add(Restrictions.like(fieldName, fieldValue));
+            if(fieldValue.get(0) instanceof String)
+                whereConditions.add(Restrictions.like(fieldName, fieldValue.get(0)));
+            else if(fieldValue.get(0) instanceof Enum){
+                SimpleExpression[] orCriteries = fieldValue.stream().map(value -> Restrictions.eq(fieldName, value))
+                        .toArray(SimpleExpression[]::new);
+                whereConditions.add(Restrictions.or(orCriteries));
+            }
             else if (operationOnField.equalsIgnoreCase(">"))
-                whereConditions.add(Restrictions.ge(fieldName, fieldValue));
+                whereConditions.add(Restrictions.ge(fieldName, fieldValue.get(0)));
             else if (operationOnField.equalsIgnoreCase("<"))
-                whereConditions.add(Restrictions.le(fieldName, fieldValue));
+                whereConditions.add(Restrictions.le(fieldName, fieldValue.get(0)));
             else
-                whereConditions.add(Restrictions.eq(fieldName, fieldValue));
+                whereConditions.add(Restrictions.eq(fieldName, fieldValue.get(0)));
         });
 
         return this;

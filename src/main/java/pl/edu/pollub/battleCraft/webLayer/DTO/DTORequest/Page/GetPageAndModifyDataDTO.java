@@ -1,4 +1,4 @@
-package pl.edu.pollub.battleCraft.webLayer.DTORequestObjects.Page;
+package pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Page;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -10,12 +10,13 @@ import org.springframework.data.domain.PageRequest;
 @Setter
 @EqualsAndHashCode
 @ToString
-public class GetPageAndModifyDataObjectsWrapper {
+public class GetPageAndModifyDataDTO {
     private String[] namesOfObjectsToModify;
 
-    private GetPageObjectsWrapper getPageObjectsWrapper;
+    private GetPageObjectsDTO getPageObjectsDTO;
 
     public PageRequest unwrapPageRequest() {
-        return this.getPageObjectsWrapper.unwrapPageRequest();
+        return this.getPageObjectsDTO.unwrapPageRequest();
     }
+
 }
