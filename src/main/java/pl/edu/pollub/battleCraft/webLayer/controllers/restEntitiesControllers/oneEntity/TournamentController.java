@@ -12,6 +12,7 @@ import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Tournament.TournamentR
 
 @RestController
 public class TournamentController {
+
     private final TournamentServiceImpl tournamentService;
 
     @Autowired

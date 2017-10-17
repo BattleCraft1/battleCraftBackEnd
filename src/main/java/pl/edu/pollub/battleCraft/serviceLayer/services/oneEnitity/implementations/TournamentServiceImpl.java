@@ -87,9 +87,11 @@ public class TournamentServiceImpl implements TournamentService{
         Tournament tournamentToEdit = Optional.ofNullable(tournamentRepository.findByName(tournamentWebDTO.name))
                         .orElseThrow(() -> new EntityNotFoundException(Tournament.class,tournamentWebDTO.name));
 
-        Tournament tournamentExist = tournamentRepository.findTournamentToEditByUniqueName(tournamentWebDTO.nameChange);
-        if(tournamentExist!=null)
-            bindingResult.rejectValue("nameChange","","Tournament with this name already exist.");
+        if(!tournamentWebDTO.nameChange.equals(tournamentWebDTO.name)){
+            Tournament tournamentExist = tournamentRepository.findTournamentToEditByUniqueName(tournamentWebDTO.nameChange);
+            if(tournamentExist!=null)
+                bindingResult.rejectValue("nameChange","","Tournament with this name already exist.");
+        }
 
         Organizer mockOrganizerFromSession = organizerRepository.findByName("dept2123");
 

@@ -68,7 +68,7 @@ public class TournamentOrganizationValidator implements Validator {
 
     private void validateStartDate(Date startDate){
         if(startDate==null || startDate.before(new Date()))
-            errors.rejectValue("dateOfStart","", new StringBuilder("you cannot start tournament at: ")
+            errors.rejectValue("dateOfStart","", new StringBuilder("You cannot start tournament at: ")
                     .append(startDate).append(" because this date is outdated").toString());
     }
 
