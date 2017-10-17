@@ -46,7 +46,7 @@ public class TournamentOrganizationValidator implements Validator {
 
     private void validateTournamentName(String tournamentName){
         if(tournamentName==null || !tournamentName.matches("^[A-Z][A-Za-zzżźćńółęąśŻŹĆĄŚĘŁÓŃ0-9 ]{1,29}$"))
-            errors.rejectValue("name","","Tournament name must start with big letter and have between 2 to 30 chars");
+            errors.rejectValue("nameChange","","Tournament name must start with big letter and have between 2 to 30 chars");
     }
 
     private void validateTablesCount(int tablesCount){
@@ -56,7 +56,7 @@ public class TournamentOrganizationValidator implements Validator {
 
     private void validateMaxPlayers(int maxPlayers, int tablesCount){
         if(maxPlayers>tablesCount*2)
-            errors.rejectValue("maxPlayersCount","",
+            errors.rejectValue("maxPlayers","",
                     new StringBuilder("You cannot create tournament with ")
                     .append(maxPlayers)
                     .append(" players count because if you have ")
@@ -106,7 +106,7 @@ public class TournamentOrganizationValidator implements Validator {
 
     public void validateDataToEditFromDatabase(Tournament tournament,Game tournamentGame, Player[] participants, Organizer[] organizers, BindingResult bindingResult, TournamentRequestDTO tournamentWebDTO) {
         if(tournament.isBanned() || (tournament.getStatus()!= TournamentStatus.ACCEPTED && tournament.getStatus()!=TournamentStatus.NEW)){
-            bindingResult.rejectValue("name","","This tournament is not accepted");
+            bindingResult.rejectValue("nameChange","","This tournament is not accepted");
         }
 
         this.validateDataFromDatabase(tournamentGame,participants,organizers,bindingResult,tournamentWebDTO);

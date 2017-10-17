@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import pl.edu.pollub.battleCraft.serviceLayer.errors.ErrorResource;
-import pl.edu.pollub.battleCraft.serviceLayer.errors.FieldErrorResource;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.EntityNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.EntityValidation.EntityValidationException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.PageOfEntities.AnyEntityNotFoundException;
@@ -21,7 +20,9 @@ import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.File.
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.File.StorageFileNotFoundException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -56,14 +57,13 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     protected ResponseEntity<Object> handleValidationException(Exception ex, WebRequest request) {
         EntityValidationException entityValidationException = (EntityValidationException) ex;
-        List<FieldErrorResource> fieldErrorResources = new ArrayList<>();
 
         List<FieldError> fieldErrors = entityValidationException.getErrors().getFieldErrors();
-        fieldErrorResources.addAll(fieldErrors.stream()
-                .map(fieldError -> new FieldErrorResource(fieldError.getField(),fieldError.getDefaultMessage()))
-                .collect(Collectors.toList()));
 
-        ErrorResource error = new ErrorResource( entityValidationException.getMessage(),fieldErrorResources);
+        ErrorResource error = new ErrorResource( entityValidationException.getMessage(),
+                fieldErrors.stream().collect(Collectors.toMap(FieldError::getField,
+                        FieldError::getDefaultMessage))
+                );
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
