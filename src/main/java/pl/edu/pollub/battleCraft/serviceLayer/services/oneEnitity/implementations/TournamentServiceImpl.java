@@ -50,7 +50,7 @@ public class TournamentServiceImpl implements TournamentService{
 
         Tournament tournamentExist = tournamentRepository.findTournamentToEditByUniqueName(tournamentWebDTO.name);
         if(tournamentExist!=null)
-            bindingResult.rejectValue("name","Tournament with this name already exist.");
+            bindingResult.rejectValue("nameChange","","Tournament with this name already exist.");
 
         Game tournamentGame = gameRepository.findAcceptedGameByName(tournamentWebDTO.game);
         List<Player> participantsList = playerRepository.findPlayersByUniqueName(tournamentWebDTO.participants);
@@ -87,9 +87,11 @@ public class TournamentServiceImpl implements TournamentService{
         Tournament tournamentToEdit = Optional.ofNullable(tournamentRepository.findByName(tournamentWebDTO.name))
                         .orElseThrow(() -> new EntityNotFoundException(Tournament.class,tournamentWebDTO.name));
 
-        Tournament tournamentExist = tournamentRepository.findTournamentToEditByUniqueName(tournamentWebDTO.nameChange);
-        if(tournamentExist!=null)
-            bindingResult.rejectValue("name","Tournament with this name already exist.");
+        if(!tournamentWebDTO.nameChange.equals(tournamentWebDTO.name)){
+            Tournament tournamentExist = tournamentRepository.findTournamentToEditByUniqueName(tournamentWebDTO.nameChange);
+            if(tournamentExist!=null)
+                bindingResult.rejectValue("nameChange","","Tournament with this name already exist.");
+        }
 
         Organizer mockOrganizerFromSession = organizerRepository.findByName("dept2123");
 

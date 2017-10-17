@@ -33,13 +33,13 @@ public class AddressValidator implements Validator {
     }
 
     private void validateCity(String city){
-        if(!city.matches("^[A-Z][a-zzżźćńółęąśŻŹĆĄŚĘŁÓŃ0-9]{1,39}$"))
+        if(!city.matches("^[A-Z][a-ząćęłńóśźż]{1,39}$"))
             errors.rejectValue("city","","City must start with big letter and have between 2 and 40 chars");
     }
 
     private void validateStreet(String street){
-        if(!street.matches("^[0-9a-zzżźćńółęąśŻŹĆĄŚĘŁÓŃA-Z. ]{1,39}$"))
-            errors.rejectValue("street","","Street and have between 2 and 40 chars");
+        if(!street.matches("^[0-9A-ZĄĆĘŁŃÓŚŹŻ]{1}[0-9a-ząćęłńóśźż. ]{1,39}$"))
+            errors.rejectValue("street","","Street must have between 2 and 40 chars");
     }
 
     private void validateZipCode(String zipCode){
