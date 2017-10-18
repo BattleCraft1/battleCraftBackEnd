@@ -51,11 +51,11 @@ public class Player extends UserAccount {
     }
 
     @JsonIgnore
-    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "player")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true,  mappedBy = "player")
     private List<Participation> participatedTournaments = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "player")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "player")
     private List<Play> battles = new ArrayList<>();
 
     private boolean banned;

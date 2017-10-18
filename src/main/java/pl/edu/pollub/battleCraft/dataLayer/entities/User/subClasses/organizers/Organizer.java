@@ -52,7 +52,7 @@ public class Organizer extends Player {
     private Tournament tournamentInOrganisation;
 
     @JsonIgnore
-    @OneToMany(orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, mappedBy = "organizer")
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, orphanRemoval = true, mappedBy = "organizer")
     private List<Organization> organizedTournaments = new ArrayList<>();
 
     @JsonIgnore

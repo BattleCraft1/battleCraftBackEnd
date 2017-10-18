@@ -1,5 +1,6 @@
 package pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.organizers.relationships;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.organizers.Organizer;
@@ -23,7 +24,7 @@ public class Organization implements Cloneable{
         this.accepted = false;
     }
 
-    public Organization(Organizer organizer, Tournament organizedTournament,boolean accepted) {
+    private Organization(Organizer organizer, Tournament organizedTournament,boolean accepted) {
         this.organizer = organizer;
         this.organizedTournament = organizedTournament;
         this.accepted = accepted;
@@ -43,6 +44,7 @@ public class Organization implements Cloneable{
 
     private boolean accepted;
 
+    @JsonIgnore
     public Organization clone(){
         return new Organization(this.organizer,this.organizedTournament,this.accepted);
     }

@@ -9,26 +9,44 @@ import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.enums.TournamentStatus;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.organizers.Organizer;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.players.Player;
+import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.GameRepository;
+import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.OrganizerRepository;
+import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.PlayerRepository;
+import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.TournamentRepository;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.EntityNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.EntityValidation.EntityValidationException;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Tournament.TournamentRequestDTO;
-import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Tournament.TournamentResponseDTO;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 @Component
 public class TournamentOrganizationValidator implements Validator {
     private Errors errors;
 
+    private final TournamentRepository tournamentRepository;
+
     private final AddressValidator addressValidator;
 
-    public TournamentOrganizationValidator(AddressValidator addressValidator) {
+    private final OrganizerRepository organizerRepository;
+
+    private final PlayerRepository playerRepository;
+
+    private final GameRepository gameRepository;
+
+    public TournamentOrganizationValidator(TournamentRepository tournamentRepository, AddressValidator addressValidator, OrganizerRepository organizerRepository, PlayerRepository playerRepository, GameRepository gameRepository) {
+        this.tournamentRepository = tournamentRepository;
         this.addressValidator = addressValidator;
+        this.organizerRepository = organizerRepository;
+        this.playerRepository = playerRepository;
+        this.gameRepository = gameRepository;
     }
 
     @Override
     public boolean supports(Class<?> aClass) {
-        return TournamentResponseDTO.class.equals(aClass);
+        return TournamentRequestDTO.class.equals(aClass);
     }
 
     @Override
@@ -85,30 +103,49 @@ public class TournamentOrganizationValidator implements Validator {
         }
     }
 
-    public void validateDataFromDatabase(Game tournamentGame, Player[] participants,
-                                          Organizer[] organizers, BindingResult bindingResult,
-                                          TournamentRequestDTO tournamentWebDTO) throws EntityValidationException {
+    public void checkIfTournamentExist(TournamentRequestDTO tournamentWebDTO,BindingResult bindingResult){
+        Tournament tournamentExist = tournamentRepository.findTournamentToEditByUniqueName(tournamentWebDTO.nameChange);
+        if(tournamentExist!=null)
+            bindingResult.rejectValue("nameChange","","Tournament with this name already exist.");
+    }
+
+    public Tournament getValidatedTournamentToEdit(TournamentRequestDTO tournamentWebDTO,BindingResult bindingResult){
+        Tournament tournamentToEdit = Optional.ofNullable(tournamentRepository.findByName(tournamentWebDTO.name))
+                .orElseThrow(() -> new EntityNotFoundException(Tournament.class,tournamentWebDTO.name));
+        if(tournamentToEdit.isBanned() || (tournamentToEdit.getStatus()!= TournamentStatus.ACCEPTED && tournamentToEdit.getStatus()!=TournamentStatus.NEW)){
+            bindingResult.rejectValue("nameChange","","This tournament is not accepted");
+        }
+        return tournamentToEdit;
+    }
+
+    public Game getValidatedGame(TournamentRequestDTO tournamentWebDTO,BindingResult bindingResult){
+        Game tournamentGame = gameRepository.findAcceptedGameByName(tournamentWebDTO.game);
         if(tournamentGame==null){
             bindingResult.rejectValue("game","", new StringBuilder("game: ").append(tournamentWebDTO.game).append(" does not exist").toString());
         }
+        return tournamentGame;
+    }
 
+    public Player[] getValidatedParticipants(TournamentRequestDTO tournamentWebDTO,BindingResult bindingResult){
+        List<Player> participantsList = playerRepository.findPlayersByUniqueName(tournamentWebDTO.participants);
+        Player[] participants = participantsList.toArray(new Player[participantsList.size()]);
         if(participants.length<1 || participants.length>tournamentWebDTO.tablesCount*2)
             bindingResult.rejectValue("participants","",
                     new StringBuilder("Participants count must be between 1 and ").append(tournamentWebDTO.tablesCount*2).toString());
+        return participants;
+    }
 
+    public Organizer[] getValidatedOrganizers(TournamentRequestDTO tournamentWebDTO,BindingResult bindingResult){
+        List<Organizer> organizersList = organizerRepository.findOrganizersByUniqueNames(tournamentWebDTO.organizers);
+        Organizer[] organizers = organizersList.toArray(new Organizer[organizersList.size()]);
         if(organizers.length<1 || organizers.length>10)
             bindingResult.rejectValue("organizers","","count of organizers must be between 1 and 15");
+        return organizers;
+    }
 
+    public void finishValidation(BindingResult bindingResult){
         if (bindingResult.hasErrors()) {
             throw new EntityValidationException("Invalid tournament data", bindingResult);
         }
-    }
-
-    public void validateDataToEditFromDatabase(Tournament tournament,Game tournamentGame, Player[] participants, Organizer[] organizers, BindingResult bindingResult, TournamentRequestDTO tournamentWebDTO) {
-        if(tournament.isBanned() || (tournament.getStatus()!= TournamentStatus.ACCEPTED && tournament.getStatus()!=TournamentStatus.NEW)){
-            bindingResult.rejectValue("nameChange","","This tournament is not accepted");
-        }
-
-        this.validateDataFromDatabase(tournamentGame,participants,organizers,bindingResult,tournamentWebDTO);
     }
 }

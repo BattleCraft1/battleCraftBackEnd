@@ -70,11 +70,11 @@ public class Tournament extends AddressOwner{
     private boolean banned;
 
     @JsonIgnore
-    @OneToMany(orphanRemoval = true,cascade = CascadeType.ALL, mappedBy = "participatedTournament")
+    @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true, mappedBy = "participatedTournament")
     private List<Participation> participants = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(orphanRemoval = true,cascade = CascadeType.ALL, mappedBy = "organizedTournament")
+    @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true, mappedBy = "organizedTournament")
     private List<Organization> organizers = new ArrayList<>();
 
     @Formula("(select count(*) from participation p where p.tournament_id = id)")
@@ -95,7 +95,7 @@ public class Tournament extends AddressOwner{
 
     public void editOrganizers(Organizer... organizers) {
         List<Organizer> organizersList = Arrays.asList(organizers);
-        List<Organization> newOrganizers = organizersList.stream()
+        this.organizers.addAll(organizersList.stream()
                 .filter(organizer -> !this.organizers.stream()
                                         .map(Organization::getOrganizer)
                                         .collect(Collectors.toList()).contains(organizer))
@@ -103,11 +103,9 @@ public class Tournament extends AddressOwner{
                             Organization organization = new Organization(organizer, this);
                             organizer.addOrganization(organization);
                             return organization; })
-                        .collect(Collectors.toList());
-        List<Organization> oldOrganizers =this.organizers.stream()
-                .filter(organization -> organizersList.contains(organization.getOrganizer())).collect(Collectors.toList());
-        newOrganizers.addAll(oldOrganizers);
-        this.organizers = newOrganizers;
+                        .collect(Collectors.toList()));
+        this.organizers.removeAll(this.organizers.stream()
+                .filter(organization -> !organizersList.contains(organization.getOrganizer())).collect(Collectors.toList()));
     }
 
     public void chooseGame(Game game){
@@ -127,7 +125,7 @@ public class Tournament extends AddressOwner{
 
     public void editParticipants(Player... participants) {
         List<Player> participantsList = Arrays.asList(participants);
-        List<Participation> newParticipants = participantsList.stream()
+        this.participants.addAll(participantsList.stream()
                 .filter(participant -> !this.participants.stream()
                         .map(Participation::getPlayer)
                         .collect(Collectors.toList()).contains(participant))
@@ -135,11 +133,9 @@ public class Tournament extends AddressOwner{
                     Participation participation = new Participation(participant, this);
                     participant.addParticipation(participation);
                     return participation; })
-                .collect(Collectors.toList());
-        List<Participation> oldParticipants =this.participants.stream()
-                .filter(participation -> participantsList.contains(participation.getPlayer())).collect(Collectors.toList());
-        newParticipants.addAll(oldParticipants);
-        this.participants = newParticipants;
+                .collect(Collectors.toList()));
+        this.participants.removeAll(this.participants.stream()
+                .filter(participation -> !participantsList.contains(participation.getPlayer())).collect(Collectors.toList()));
     }
 
     public void initMaxPlayers(int maxPlayers){

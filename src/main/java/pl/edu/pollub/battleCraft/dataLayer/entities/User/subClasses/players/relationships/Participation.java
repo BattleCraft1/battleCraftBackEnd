@@ -22,7 +22,7 @@ public class Participation implements Cloneable{
         this.accepted = false;
     }
 
-    public Participation(Player player, Tournament participatedTournament, boolean accepted) {
+    private Participation(Player player, Tournament participatedTournament, boolean accepted) {
         this.player = player;
         this.participatedTournament = participatedTournament;
         this.accepted = accepted;
