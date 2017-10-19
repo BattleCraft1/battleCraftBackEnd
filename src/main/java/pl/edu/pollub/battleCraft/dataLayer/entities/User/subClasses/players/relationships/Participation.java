@@ -12,7 +12,7 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = "id")
 @ToString
 public class Participation implements Cloneable{
 
@@ -32,11 +32,11 @@ public class Participation implements Cloneable{
     @GeneratedValue
     private Long id;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    @ManyToOne
     @JoinColumn(name = "player_id")
     private Player player;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    @ManyToOne
     @JoinColumn(name = "tournament_id")
     private Tournament participatedTournament;
 

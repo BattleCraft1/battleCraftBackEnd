@@ -14,10 +14,7 @@ import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.players.rela
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.players.relationships.Play;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 
@@ -60,12 +57,14 @@ public class Player extends UserAccount {
 
     private boolean banned;
 
-    @Formula("(select count(*) from participation p where p.tournament_id = id)")
-    private int freeSlots;
-
     public void addParticipation(Participation participation) {
         this.deleteParticipationWithTheSameTournamentName(participation.getParticipatedTournament().getName());
         this.participatedTournaments.add(participation);
+    }
+
+    public void deleteParticipation(Participation participation){
+        if(this.participatedTournaments.contains(participation))
+            this.participatedTournaments.remove(participation);
     }
 
     private void deleteParticipationWithTheSameTournamentName(String tournamentName){

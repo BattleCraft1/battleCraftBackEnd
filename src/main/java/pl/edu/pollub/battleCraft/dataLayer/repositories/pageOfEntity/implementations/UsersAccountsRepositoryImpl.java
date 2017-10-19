@@ -50,6 +50,7 @@ public class UsersAccountsRepositoryImpl implements UsersAccountsRepository {
                         new Field("email", "email"),
                         new Field("phoneNumber", "phoneNumber"),
                         new Field("address.city", "city"),
+                        new Field("address.province", "province"),
                         new Field("status", "status"),
                         new Field("banned", "banned")
                 )

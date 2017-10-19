@@ -31,8 +31,8 @@ public class RankingRepositoryImpl implements RankingRepository{
         return getPageAssistant
                 .select(
                         new Field("player.name", "name"),
-                        new Field("playerAddress.city", "city"),
-                        new Field("playerAddress.province", "province"),
+                        new Field("playerAddress.city", "playerCity"),
+                        new Field("playerAddress.province", "playerProvince"),
                         new Field("tournament.id", "numberOfTournaments",Projections::countDistinct),
                         new Field("id", "numberOfBattles",Projections::countDistinct),
                         new Field("players.points", "points", Projections::sum)

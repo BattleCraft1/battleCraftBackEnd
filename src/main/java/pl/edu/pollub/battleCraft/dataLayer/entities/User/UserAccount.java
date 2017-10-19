@@ -12,9 +12,9 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Setter
-@Inheritance(strategy = InheritanceType.JOINED)
 @EqualsAndHashCode(callSuper = true)
 @ToString
+@Inheritance(strategy = InheritanceType.JOINED)
 public class UserAccount extends AddressOwner{
 
     public UserAccount(){

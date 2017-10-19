@@ -18,9 +18,7 @@ import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.Tourn
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.TournamentPrograssion.start.YouDidNotOrganizeTournamentWithThisName;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -52,7 +50,7 @@ public class Organizer extends Player {
     private Tournament tournamentInOrganisation;
 
     @JsonIgnore
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, orphanRemoval = true, mappedBy = "organizer")
+    @OneToMany(cascade = {CascadeType.ALL}, orphanRemoval = true, mappedBy = "organizer")
     private List<Organization> organizedTournaments = new ArrayList<>();
 
     @JsonIgnore
@@ -191,6 +189,11 @@ public class Organizer extends Player {
     public void addOrganization(Organization organization) {
         this.deleteOrganizationWithTheSameTournamentName(organization.getOrganizedTournament().getName());
         this.organizedTournaments.add(organization);
+    }
+
+    public void deleteOrganization(Organization organization){
+        if(this.organizedTournaments.contains(organization))
+        this.organizedTournaments.remove(organization);
     }
 
     public void deleteOrganizationWithTheSameTournamentName(String tournamentName){

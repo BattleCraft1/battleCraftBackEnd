@@ -17,10 +17,7 @@ import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.Entit
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.EntityValidation.EntityValidationException;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Tournament.TournamentRequestDTO;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 public class TournamentOrganizationValidator implements Validator {
@@ -109,6 +106,14 @@ public class TournamentOrganizationValidator implements Validator {
             bindingResult.rejectValue("nameChange","","Tournament with this name already exist.");
     }
 
+    public void checkIfTournamentToEditExist(TournamentRequestDTO tournamentWebDTO,BindingResult bindingResult){
+        if(!tournamentWebDTO.name.equals(tournamentWebDTO.nameChange)) {
+            Tournament tournamentExist = tournamentRepository.findTournamentToEditByUniqueName(tournamentWebDTO.nameChange);
+            if (tournamentExist != null)
+                bindingResult.rejectValue("nameChange", "", "Tournament with this name already exist.");
+        }
+    }
+
     public Tournament getValidatedTournamentToEdit(TournamentRequestDTO tournamentWebDTO,BindingResult bindingResult){
         Tournament tournamentToEdit = Optional.ofNullable(tournamentRepository.findByName(tournamentWebDTO.name))
                 .orElseThrow(() -> new EntityNotFoundException(Tournament.class,tournamentWebDTO.name));
@@ -127,20 +132,35 @@ public class TournamentOrganizationValidator implements Validator {
     }
 
     public Player[] getValidatedParticipants(TournamentRequestDTO tournamentWebDTO,BindingResult bindingResult){
+        if(tournamentWebDTO.participants.length==0)
+            return new Player[] {};
+        if(containsDuplicates(tournamentWebDTO.participants))
+            bindingResult.rejectValue("participants","","you can invite player only once");
         List<Player> participantsList = playerRepository.findPlayersByUniqueName(tournamentWebDTO.participants);
         Player[] participants = participantsList.toArray(new Player[participantsList.size()]);
-        if(participants.length<1 || participants.length>tournamentWebDTO.tablesCount*2)
+        if(participants.length>tournamentWebDTO.tablesCount*2)
             bindingResult.rejectValue("participants","",
-                    new StringBuilder("Participants count must be between 1 and ").append(tournamentWebDTO.tablesCount*2).toString());
+                    new StringBuilder("Participants count must be less than ").append(tournamentWebDTO.tablesCount*2).toString());
         return participants;
     }
 
     public Organizer[] getValidatedOrganizers(TournamentRequestDTO tournamentWebDTO,BindingResult bindingResult){
+        if(tournamentWebDTO.organizers.length==0)
+            return new Organizer[] {};
+        if(containsDuplicates(tournamentWebDTO.organizers))
+            bindingResult.rejectValue("organizers","","you can invite organizer only once");
         List<Organizer> organizersList = organizerRepository.findOrganizersByUniqueNames(tournamentWebDTO.organizers);
         Organizer[] organizers = organizersList.toArray(new Organizer[organizersList.size()]);
-        if(organizers.length<1 || organizers.length>10)
-            bindingResult.rejectValue("organizers","","count of organizers must be between 1 and 15");
+        if(organizers.length>10)
+            bindingResult.rejectValue("organizers","","count of organizers must be less than 15");
         return organizers;
+    }
+
+    private boolean containsDuplicates(String[] values){
+        Set<String> setWithoutDuplicates = new HashSet<>(Arrays.asList(values));
+        if(setWithoutDuplicates.size()<values.length)
+            return true;
+        return false;
     }
 
     public void finishValidation(BindingResult bindingResult){

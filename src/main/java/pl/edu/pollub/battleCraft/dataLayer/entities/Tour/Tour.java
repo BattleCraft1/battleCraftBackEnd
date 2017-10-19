@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = "randomGenerator")
 @ToString
 public class Tour {
 

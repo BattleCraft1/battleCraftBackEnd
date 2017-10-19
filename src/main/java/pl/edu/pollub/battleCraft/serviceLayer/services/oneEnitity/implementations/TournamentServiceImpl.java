@@ -7,10 +7,10 @@ import pl.edu.pollub.battleCraft.dataLayer.entities.Address.Address;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Game.Game;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.organizers.Organizer;
+import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.organizers.relationships.Organization;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.players.Player;
-import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.OrganizerRepository;
-import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.PlayerRepository;
-import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.TournamentRepository;
+import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.players.relationships.Participation;
+import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.*;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.EntityNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.EntityValidation.EntityValidationException;
 import pl.edu.pollub.battleCraft.serviceLayer.services.oneEnitity.interfaces.TournamentService;
@@ -18,8 +18,11 @@ import pl.edu.pollub.battleCraft.serviceLayer.validators.TournamentOrganizationV
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Tournament.TournamentRequestDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Tournament.TournamentResponseDTO;
 
-import java.util.Arrays;
+import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class TournamentServiceImpl implements TournamentService{
@@ -27,15 +30,13 @@ public class TournamentServiceImpl implements TournamentService{
 
     private final TournamentOrganizationValidator tournamentOrganizationValidator;
 
-    private final PlayerRepository playerRepository;
-
     private final OrganizerRepository organizerRepository;
 
+
     @Autowired
-    public TournamentServiceImpl(TournamentRepository tournamentRepository, TournamentOrganizationValidator tournamentOrganizationValidator, PlayerRepository playerRepository, OrganizerRepository organizerRepository) {
+    public TournamentServiceImpl(TournamentRepository tournamentRepository, TournamentOrganizationValidator tournamentOrganizationValidator, OrganizerRepository organizerRepository) {
         this.tournamentRepository = tournamentRepository;
         this.tournamentOrganizationValidator = tournamentOrganizationValidator;
-        this.playerRepository = playerRepository;
         this.organizerRepository = organizerRepository;
     }
 
@@ -68,6 +69,7 @@ public class TournamentServiceImpl implements TournamentService{
                 .inviteParticipants(participants)
                 .finishOrganize();
 
+
         return new TournamentResponseDTO(tournamentRepository.save(organizedTournament));
     }
 
@@ -79,7 +81,7 @@ public class TournamentServiceImpl implements TournamentService{
 
         Tournament tournamentToEdit = tournamentOrganizationValidator.getValidatedTournamentToEdit(tournamentWebDTO, bindingResult);
 
-        tournamentOrganizationValidator.checkIfTournamentExist(tournamentWebDTO,bindingResult);
+        tournamentOrganizationValidator.checkIfTournamentToEditExist(tournamentWebDTO,bindingResult);
         tournamentOrganizationValidator.validate(tournamentWebDTO,bindingResult);
         Game tournamentGame = tournamentOrganizationValidator.getValidatedGame(tournamentWebDTO,bindingResult);
         Organizer[] organizers = tournamentOrganizationValidator.getValidatedOrganizers(tournamentWebDTO,bindingResult);

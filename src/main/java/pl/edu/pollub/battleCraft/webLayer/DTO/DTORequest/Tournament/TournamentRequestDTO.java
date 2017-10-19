@@ -2,6 +2,7 @@ package pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Tournament;
 
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Getter
@@ -10,7 +11,7 @@ import java.util.Date;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class TournamentRequestDTO {
+public class TournamentRequestDTO{
     public String name;
     public String nameChange;
     public int tablesCount;

@@ -9,9 +9,7 @@ import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.organizers.Organizer;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity

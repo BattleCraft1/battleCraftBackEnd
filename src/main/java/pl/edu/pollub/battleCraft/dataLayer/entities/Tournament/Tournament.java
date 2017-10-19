@@ -18,10 +18,7 @@ import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.players.Play
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.players.relationships.Participation;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -105,7 +102,12 @@ public class Tournament extends AddressOwner{
                             return organization; })
                         .collect(Collectors.toList()));
         this.organizers.removeAll(this.organizers.stream()
-                .filter(organization -> !organizersList.contains(organization.getOrganizer())).collect(Collectors.toList()));
+                .filter(organization -> !organizersList.contains(organization.getOrganizer()))
+                .peek(organization -> {
+                    organization.getOrganizer().deleteOrganization(organization);
+                    organization.setOrganizedTournament(null);
+                    organization.setOrganizer(null);
+                }).collect(Collectors.toList()));
     }
 
     public void chooseGame(Game game){
@@ -135,7 +137,12 @@ public class Tournament extends AddressOwner{
                     return participation; })
                 .collect(Collectors.toList()));
         this.participants.removeAll(this.participants.stream()
-                .filter(participation -> !participantsList.contains(participation.getPlayer())).collect(Collectors.toList()));
+                .filter(participation -> !participantsList.contains(participation.getPlayer()))
+                .peek(participation -> {
+                    participation.getPlayer().deleteParticipation(participation);
+                    participation.setPlayer(null);
+                    participation.setParticipatedTournament(null);
+                }).collect(Collectors.toList()));
     }
 
     public void initMaxPlayers(int maxPlayers){
