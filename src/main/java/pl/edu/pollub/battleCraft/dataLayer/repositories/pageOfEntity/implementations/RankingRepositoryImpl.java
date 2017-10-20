@@ -7,10 +7,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Battle.Battle;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.pageOfEntity.interfaces.RankingRepository;
-import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.repositoryPageAssistent.field.Join;
-import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.repositoryPageAssistent.field.Field;
-import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.repositoryPageAssistent.interfaces.GetPageAssistant;
-import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.searchSpecyficators.SearchCriteria;
+import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.field.Join;
+import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.field.Field;
+import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.interfaces.SearchAssistant;
+import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.criteria.SearchCriteria;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -18,10 +18,10 @@ import java.util.List;
 @Component
 public class RankingRepositoryImpl implements RankingRepository{
 
-    private final GetPageAssistant getPageAssistant;
+    private final SearchAssistant getPageAssistant;
 
     @Autowired
-    public RankingRepositoryImpl(GetPageAssistant getPageAssistant) {
+    public RankingRepositoryImpl(SearchAssistant getPageAssistant) {
         this.getPageAssistant = getPageAssistant;
     }
 

@@ -1,4 +1,4 @@
-package pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.repositoryPageAssistent.field;
+package pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.field;
 
 
 import org.hibernate.criterion.Projection;

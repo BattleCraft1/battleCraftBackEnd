@@ -6,10 +6,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.pageOfEntity.interfaces.TournamentsRepository;
-import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.repositoryPageAssistent.field.Join;
-import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.repositoryPageAssistent.field.Field;
-import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.repositoryPageAssistent.interfaces.GetPageAssistant;
-import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.searchSpecyficators.SearchCriteria;
+import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.field.Join;
+import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.field.Field;
+import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.interfaces.SearchAssistant;
+import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.criteria.SearchCriteria;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.TournamentRepository;
 
 import javax.transaction.Transactional;
@@ -18,10 +18,10 @@ import java.util.List;
 @Component
 public class TournamentsRepositoryImpl implements TournamentsRepository {
     private final TournamentRepository tournamentRepository;
-    private final GetPageAssistant getPageAssistant;
+    private final SearchAssistant getPageAssistant;
 
     @Autowired
-    public TournamentsRepositoryImpl(TournamentRepository tournamentRepository, GetPageAssistant getPageAssistant) {
+    public TournamentsRepositoryImpl(TournamentRepository tournamentRepository, SearchAssistant getPageAssistant) {
         this.tournamentRepository = tournamentRepository;
         this.getPageAssistant = getPageAssistant;
     }
@@ -35,6 +35,7 @@ public class TournamentsRepositoryImpl implements TournamentsRepository {
                         new Field("playersNumber", "playersNumber"),
                         new Field("freeSlots", "freeSlots"),
                         new Field("maxPlayers", "maxPlayers"),
+                        new Field("playersOnTableCount", "playersOnTableCount"),
                         new Field("dateOfStart", "dateOfStart"),
                         new Field("dateOfEnd", "dateOfEnd"),
                         new Field("address.city", "city"),

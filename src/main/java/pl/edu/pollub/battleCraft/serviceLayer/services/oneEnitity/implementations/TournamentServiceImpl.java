@@ -1,6 +1,5 @@
 package pl.edu.pollub.battleCraft.serviceLayer.services.oneEnitity.implementations;
 
-import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
@@ -8,9 +7,7 @@ import pl.edu.pollub.battleCraft.dataLayer.entities.Address.Address;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Game.Game;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.organizers.Organizer;
-import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.organizers.relationships.Organization;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.players.Player;
-import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.players.relationships.Participation;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.*;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.EntityNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.EntityValidation.EntityValidationException;
@@ -19,14 +16,8 @@ import pl.edu.pollub.battleCraft.serviceLayer.validators.TournamentOrganizationV
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Tournament.TournamentRequestDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Tournament.TournamentResponseDTO;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class TournamentServiceImpl implements TournamentService{
@@ -35,9 +26,6 @@ public class TournamentServiceImpl implements TournamentService{
     private final TournamentOrganizationValidator tournamentOrganizationValidator;
 
     private final OrganizerRepository organizerRepository;
-
-    @PersistenceContext
-    private EntityManager entityManager;
 
     @Autowired
     public TournamentServiceImpl(TournamentRepository tournamentRepository, TournamentOrganizationValidator tournamentOrganizationValidator, OrganizerRepository organizerRepository) {
@@ -56,13 +44,14 @@ public class TournamentServiceImpl implements TournamentService{
         Game tournamentGame = tournamentOrganizationValidator.getValidatedGame(tournamentWebDTO,bindingResult);
         Organizer[] organizers = tournamentOrganizationValidator.getValidatedOrganizers(tournamentWebDTO,bindingResult);
         Player[] participants = tournamentOrganizationValidator.getValidatedParticipants(tournamentWebDTO,bindingResult);
+
         tournamentOrganizationValidator.finishValidation(bindingResult);
 
         Tournament organizedTournament = mockOrganizerFromSession
                 .startOrganizeTournament(
                         tournamentWebDTO.name,
                         tournamentWebDTO.tablesCount,
-                        tournamentWebDTO.maxPlayers)
+                        tournamentWebDTO.playersOnTableCount)
                 .with(organizers)
                 .in(new Address(
                         tournamentWebDTO.province,
@@ -76,9 +65,7 @@ public class TournamentServiceImpl implements TournamentService{
                 .inviteParticipants(participants)
                 .finishOrganize();
 
-        Session hibernateSession = (Session) entityManager.getDelegate();
-        hibernateSession.save(organizedTournament);
-        return new TournamentResponseDTO(organizedTournament);
+        return new TournamentResponseDTO(this.tournamentRepository.save(organizedTournament));
     }
 
     @Override
@@ -96,12 +83,14 @@ public class TournamentServiceImpl implements TournamentService{
         Organizer[] organizers = tournamentOrganizationValidator.getValidatedOrganizers(tournamentWebDTO,bindingResult);
         Player[] participants = tournamentOrganizationValidator.getValidatedParticipants(tournamentWebDTO,bindingResult);
 
+        tournamentOrganizationValidator.finishValidation(bindingResult);
+
         mockOrganizerFromSession
                 .editOrganizedTournament(
                         tournamentToEdit,
                         tournamentWebDTO.nameChange,
                         tournamentWebDTO.tablesCount,
-                        tournamentWebDTO.maxPlayers)
+                        tournamentWebDTO.playersOnTableCount)
                 .editOrganizers(organizers)
                 .in(new Address(
                         tournamentWebDTO.province,
@@ -115,13 +104,7 @@ public class TournamentServiceImpl implements TournamentService{
                 .editParticipants(participants)
                 .finishOrganize();
 
-        tournamentOrganizationValidator.validateWithCurrentOrganizers(bindingResult,tournamentToEdit.getOrganizers());
-        tournamentOrganizationValidator.validateWithCurrentParticipants(tournamentWebDTO,bindingResult,tournamentToEdit.getParticipants());
-        tournamentOrganizationValidator.finishValidation(bindingResult);
-
-        Session hibernateSession = (Session) entityManager.getDelegate();
-        hibernateSession.saveOrUpdate(tournamentToEdit);
-        return new TournamentResponseDTO(tournamentToEdit);
+        return new TournamentResponseDTO(this.tournamentRepository.save(tournamentToEdit));
     }
 
     @Override

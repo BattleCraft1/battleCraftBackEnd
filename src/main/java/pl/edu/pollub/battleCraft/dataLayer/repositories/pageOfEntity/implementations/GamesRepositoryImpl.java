@@ -6,10 +6,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Game.Game;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.pageOfEntity.interfaces.GamesRepository;
-import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.repositoryPageAssistent.field.Join;
-import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.repositoryPageAssistent.field.Field;
-import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.repositoryPageAssistent.interfaces.GetPageAssistant;
-import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.searchSpecyficators.SearchCriteria;
+import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.field.Join;
+import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.field.Field;
+import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.interfaces.SearchAssistant;
+import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.criteria.SearchCriteria;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.GameRepository;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.OrganizerRepository;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.TournamentRepository;
@@ -23,12 +23,12 @@ public class GamesRepositoryImpl implements GamesRepository {
     private final GameRepository gameRepository;
     private final TournamentRepository tournamentRepository;
     private final OrganizerRepository organizerRepository;
-    private final GetPageAssistant getPageAssistant;
+    private final SearchAssistant getPageAssistant;
     private final TournamentsRepository tournamentsRepository;
 
     @Autowired
     public GamesRepositoryImpl(GameRepository gameRepository, TournamentRepository tournamentRepository,
-                               OrganizerRepository organizerRepository, GetPageAssistant getPageAssistant, TournamentsRepository tournamentsRepository) {
+                               OrganizerRepository organizerRepository, SearchAssistant getPageAssistant, TournamentsRepository tournamentsRepository) {
         this.gameRepository = gameRepository;
         this.tournamentRepository = tournamentRepository;
         this.organizerRepository = organizerRepository;

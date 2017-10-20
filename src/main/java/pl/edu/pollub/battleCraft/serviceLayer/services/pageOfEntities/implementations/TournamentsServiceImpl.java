@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.TournamentRepository;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.pageOfEntity.interfaces.TournamentsRepository;
-import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.searchSpecyficators.SearchCriteria;
+import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.criteria.SearchCriteria;
 import pl.edu.pollub.battleCraft.serviceLayer.services.helpers.interfaces.UniqueNamesValidator;
 import pl.edu.pollub.battleCraft.serviceLayer.services.pageOfEntities.interfaces.TournamentsService;
 

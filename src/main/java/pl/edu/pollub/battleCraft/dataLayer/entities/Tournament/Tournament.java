@@ -6,11 +6,9 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.aspectj.weaver.ast.Or;
 import org.hibernate.annotations.Formula;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Address.AddressOwner;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Game.Game;
-import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.enums.TournamentClass;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.enums.TournamentStatus;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.organizers.Organizer;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.organizers.relationships.Organization;
@@ -43,10 +41,6 @@ public class Tournament extends AddressOwner{
     @Column(length = 30, unique = true)
     private String name;
 
-    private int maxPlayers;
-
-    private int tablesCount;
-
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateOfStart;
 
@@ -57,9 +51,6 @@ public class Tournament extends AddressOwner{
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn
     private Game game;
-
-    @Enumerated(EnumType.STRING)
-    private TournamentClass tournamentClass;
 
     @Enumerated(EnumType.STRING)
     private TournamentStatus status;
@@ -74,10 +65,17 @@ public class Tournament extends AddressOwner{
     @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true, mappedBy = "organizedTournament")
     private List<Organization> organizers = new ArrayList<>();
 
+    private int tablesCount;
+
+    private int playersOnTableCount;
+
+    @Formula("tables_count * players_on_table_count")
+    private int maxPlayers;
+
     @Formula("(select count(*) from participation p where p.tournament_id = id)")
     private int playersNumber;
 
-    @Formula("max_players-(select count(*) from participation p where p.tournament_id = id)")
+    @Formula("(tables_count * players_on_table_count)-(select count(*) from participation p where p.tournament_id = id)")
     private int freeSlots;
 
     public void addOrganizers(Organizer... organizers){
@@ -145,20 +143,7 @@ public class Tournament extends AddressOwner{
                 }).collect(Collectors.toList()));
     }
 
-    public void initMaxPlayers(int maxPlayers){
-        this.maxPlayers = maxPlayers;
-
-        if(maxPlayers<=8){
-            this.tournamentClass = TournamentClass.LOCAL;
-        }
-        else if(maxPlayers <=16){
-            this.tournamentClass = TournamentClass.CHALLENGER;
-        }
-        else
-            this.tournamentClass = TournamentClass.MASTER;
-    }
-
-    private void setMaxPlayers(int maxPlayers){
+    protected void setMaxPlayers(int maxPlayers){
         this.maxPlayers = maxPlayers;
     }
 
@@ -166,8 +151,12 @@ public class Tournament extends AddressOwner{
         this.game = game;
     }
 
-    protected void setTournamentClass(TournamentClass tournamentClass){
-        this.tournamentClass = tournamentClass;
+    protected void setPlayersNumber(int playersNumber) {
+        this.playersNumber = playersNumber;
+    }
+
+    protected void setFreeSlots(int freeSlots) {
+        this.freeSlots = freeSlots;
     }
 
     private void setParticipants(List<Participation> participants){
@@ -176,13 +165,5 @@ public class Tournament extends AddressOwner{
 
     private void setOrganizers(List<Organization> organizers){
         this.organizers = organizers;
-    }
-
-    private void setPlayersNumber(int playersNumber) {
-        this.playersNumber = playersNumber;
-    }
-
-    private void setFreeSlots(int freeSlots) {
-        this.freeSlots = freeSlots;
     }
 }

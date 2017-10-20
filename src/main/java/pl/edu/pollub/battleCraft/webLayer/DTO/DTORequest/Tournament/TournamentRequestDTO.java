@@ -15,7 +15,7 @@ public class TournamentRequestDTO{
     public String name;
     public String nameChange;
     public int tablesCount;
-    public int maxPlayers;
+    public int playersOnTableCount;
     public String game;
     public Date dateOfStart;
     public Date dateOfEnd;

@@ -8,7 +8,7 @@ import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.OrganizerRepo
 import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.PlayerRepository;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.UserAccountRepository;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.pageOfEntity.interfaces.UsersAccountsRepository;
-import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.searchSpecyficators.SearchCriteria;
+import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.criteria.SearchCriteria;
 import pl.edu.pollub.battleCraft.serviceLayer.services.helpers.interfaces.UniqueNamesValidator;
 import pl.edu.pollub.battleCraft.serviceLayer.services.pageOfEntities.interfaces.UsersAccountsService;
 

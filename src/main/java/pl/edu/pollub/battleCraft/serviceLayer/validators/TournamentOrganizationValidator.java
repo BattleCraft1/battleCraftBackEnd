@@ -8,9 +8,7 @@ import pl.edu.pollub.battleCraft.dataLayer.entities.Game.Game;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.enums.TournamentStatus;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.organizers.Organizer;
-import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.organizers.relationships.Organization;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.players.Player;
-import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.players.relationships.Participation;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.GameRepository;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.OrganizerRepository;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.PlayerRepository;
@@ -54,8 +52,8 @@ public class TournamentOrganizationValidator implements Validator {
         TournamentRequestDTO tournamentWebDTO = (TournamentRequestDTO) o;
         this.validateTournamentName(tournamentWebDTO.name);
         this.validateTournamentName(tournamentWebDTO.nameChange);
-        this.validateTablesCount(tournamentWebDTO.tablesCount);
-        this.validateMaxPlayers(tournamentWebDTO.maxPlayers,tournamentWebDTO.tablesCount);
+        this.validatePlayersOnTableCount(tournamentWebDTO.playersOnTableCount);
+        this.validateTablesCount(tournamentWebDTO.playersOnTableCount,tournamentWebDTO.tablesCount);
         this.validateStartDate(tournamentWebDTO.dateOfStart);
         this.validateEndDate(tournamentWebDTO.dateOfStart,tournamentWebDTO.dateOfEnd);
         addressValidator.validate(tournamentWebDTO,errors);
@@ -66,21 +64,21 @@ public class TournamentOrganizationValidator implements Validator {
             errors.rejectValue("nameChange","","Tournament name must start with big letter and have between 2 to 30 chars");
     }
 
-    private void validateTablesCount(int tablesCount){
-        if(tablesCount<1 || tablesCount>30)
-            errors.rejectValue("tablesCount","","Tables count must be between 1 and 30");
+    private void validateTablesCount(int playersOnTableCount, int tablesCount){
+        if(playersOnTableCount==2){
+            if(tablesCount<1 || tablesCount>30)
+                errors.rejectValue("tablesCount","","Tables count must be between 1 and 30");
+        }
+        else if(playersOnTableCount==4){
+            if(tablesCount<1 || tablesCount>15)
+                errors.rejectValue("tablesCount","","Tables count must be between 1 and 15");
+        }
     }
 
-    private void validateMaxPlayers(int maxPlayers, int tablesCount){
-        if(maxPlayers>tablesCount*2)
-            errors.rejectValue("maxPlayers","",
-                    new StringBuilder("You cannot create tournament with ")
-                    .append(maxPlayers)
-                    .append(" players count because if you have ")
-                    .append(tablesCount)
-                    .append(" you can have only ")
-                    .append(tablesCount*2)
-                    .append(" players").toString());
+    private void validatePlayersOnTableCount(int playersOnTableCount){
+        if(playersOnTableCount!=2 && playersOnTableCount!=4)
+            errors.rejectValue("playersOnTable","",
+                    new StringBuilder("You can choose only 2 or 4 players count on table").toString());
     }
 
     private void validateStartDate(Date startDate){
@@ -140,16 +138,10 @@ public class TournamentOrganizationValidator implements Validator {
             bindingResult.rejectValue("participants","","you can invite player only once");
         List<Player> participantsList = playerRepository.findPlayersByUniqueName(tournamentWebDTO.participants);
         Player[] participants = participantsList.toArray(new Player[participantsList.size()]);
-        if(participants.length>tournamentWebDTO.maxPlayers)
+        if(participants.length>tournamentWebDTO.playersOnTableCount*tournamentWebDTO.tablesCount)
             bindingResult.rejectValue("participants","",
-                    new StringBuilder("Participants count must be less than ").append(tournamentWebDTO.maxPlayers).toString());
+                    new StringBuilder("Participants count must be less than ").append(tournamentWebDTO.playersOnTableCount*tournamentWebDTO.tablesCount).toString());
         return participants;
-    }
-
-    public void validateWithCurrentParticipants(TournamentRequestDTO tournamentWebDTO,BindingResult bindingResult,List<Participation> participations){
-        if(bindingResult.getFieldError("participants") == null && participations.size()>tournamentWebDTO.maxPlayers)
-            bindingResult.rejectValue("participants","",
-                    new StringBuilder("Participants count must be less than ").append(tournamentWebDTO.maxPlayers).toString());
     }
 
     public Organizer[] getValidatedOrganizers(TournamentRequestDTO tournamentWebDTO,BindingResult bindingResult){
@@ -160,14 +152,8 @@ public class TournamentOrganizationValidator implements Validator {
         List<Organizer> organizersList = organizerRepository.findOrganizersByUniqueNames(tournamentWebDTO.organizers);
         Organizer[] organizers = organizersList.toArray(new Organizer[organizersList.size()]);
         if(organizers.length>10)
-            bindingResult.rejectValue("organizers","","count of organizers must be less than 15");
+            bindingResult.rejectValue("organizers","","Count of organizers must be less than 10");
         return organizers;
-    }
-
-
-    public void validateWithCurrentOrganizers(BindingResult bindingResult, List<Organization> organizations){
-        if(bindingResult.getFieldError("organizers") == null && organizations.size()>10)
-            bindingResult.rejectValue("organizers","","count of organizers must be less than 15");
     }
 
     private boolean containsDuplicates(String[] values){

@@ -1,4 +1,4 @@
-package pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.searchSpecyficators;
+package pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.criteria;
 
 import lombok.*;
 
@@ -8,7 +8,6 @@ import javax.persistence.criteria.Root;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;

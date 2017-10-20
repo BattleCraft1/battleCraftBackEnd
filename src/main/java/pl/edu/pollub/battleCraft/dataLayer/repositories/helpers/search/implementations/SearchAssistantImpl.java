@@ -1,10 +1,9 @@
-package pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.repositoryPageAssistent.implementations;
+package pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.implementations;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.*;
 import org.hibernate.transform.AliasToEntityMapResultTransformer;
-import org.hibernate.type.IntegerType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -14,10 +13,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.page.implementations.PaginatorImpl;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.page.interfaces.Paginator;
-import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.repositoryPageAssistent.field.Join;
-import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.repositoryPageAssistent.field.Field;
-import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.repositoryPageAssistent.interfaces.GetPageAssistant;
-import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.searchSpecyficators.SearchCriteria;
+import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.field.Join;
+import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.field.Field;
+import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.interfaces.SearchAssistant;
+import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.criteria.SearchCriteria;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.PageOfEntities.AnyEntityNotFoundException;
 
 import javax.persistence.EntityManager;
@@ -31,7 +30,7 @@ import java.util.List;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class GetPageAssistantImpl implements GetPageAssistant {
+public class SearchAssistantImpl implements SearchAssistant {
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -49,24 +48,24 @@ public class GetPageAssistantImpl implements GetPageAssistant {
     private Class entityClass;
 
     @Autowired
-    public GetPageAssistantImpl(){
+    public SearchAssistantImpl(){
 
     }
 
     @Override
-    public GetPageAssistant select(Field... fields){
+    public SearchAssistant select(Field... fields){
         this.projectionFields = fields;
         return this;
     }
 
     @Override
-    public GetPageAssistant join(Join... aliases){
+    public SearchAssistant join(Join... aliases){
         this.joins.addAll(Arrays.asList(aliases));
         return this;
     }
 
     @Override
-    public GetPageAssistant from(Class entityClass){
+    public SearchAssistant from(Class entityClass){
         this.hibernateSession = (Session) entityManager.getDelegate();
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         this.paginator = new PaginatorImpl(entityClass);
@@ -82,7 +81,7 @@ public class GetPageAssistantImpl implements GetPageAssistant {
     }
 
     @Override
-    public GetPageAssistant where(List<SearchCriteria> searchCriteria){
+    public SearchAssistant where(List<SearchCriteria> searchCriteria){
         joins.forEach(join -> criteria.createAlias(getFieldFullName(join.name),join.value));
         searchCriteria.forEach((condition) -> {
             String fieldName = condition.getName();
@@ -107,7 +106,7 @@ public class GetPageAssistantImpl implements GetPageAssistant {
     }
 
     @Override
-    public GetPageAssistant groupBy(String... groupByFields){
+    public SearchAssistant groupBy(String... groupByFields){
         Arrays.stream(groupByFields).forEach(
                 field -> projectionList.add(Projections.groupProperty(getFieldFullName(field)))
         );

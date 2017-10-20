@@ -9,10 +9,10 @@ import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.enums.UserTy
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.organizers.Organizer;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.players.Player;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.pageOfEntity.interfaces.UsersAccountsRepository;
-import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.repositoryPageAssistent.field.Join;
-import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.repositoryPageAssistent.field.Field;
-import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.repositoryPageAssistent.interfaces.GetPageAssistant;
-import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.searchSpecyficators.SearchCriteria;
+import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.field.Join;
+import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.field.Field;
+import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.interfaces.SearchAssistant;
+import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.criteria.SearchCriteria;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.OrganizerRepository;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.PlayerRepository;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.UserAccountRepository;
@@ -23,13 +23,13 @@ import java.util.List;
 
 @Component
 public class UsersAccountsRepositoryImpl implements UsersAccountsRepository {
-    private final GetPageAssistant getPageAssistant;
+    private final SearchAssistant getPageAssistant;
     private final UserAccountRepository userAccountRepository;
     private final PlayerRepository playerRepository;
     private final OrganizerRepository organiserRepository;
 
     @Autowired
-    public UsersAccountsRepositoryImpl(GetPageAssistant getPageAssistant,
+    public UsersAccountsRepositoryImpl(SearchAssistant getPageAssistant,
                                        UserAccountRepository userAccountRepository,
                                        PlayerRepository playerRepository,
                                        OrganizerRepository organiserRepository) {

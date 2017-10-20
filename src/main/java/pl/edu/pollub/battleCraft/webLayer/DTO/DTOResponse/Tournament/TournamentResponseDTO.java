@@ -2,6 +2,7 @@ package pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Tournament;
 
 import lombok.*;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.Tournament;
+import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.enums.TournamentClass;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.organizers.Organizer;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.players.Player;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Tournament.Invitation.InvitationDTO;
@@ -37,7 +38,7 @@ public class TournamentResponseDTO {
         this.name = tournament.getName();
         this.nameChange = tournament.getName();
         this.tablesCount = tournament.getTablesCount();
-        this.maxPlayers = tournament.getMaxPlayers();
+        this.playersOnTableCount = tournament.getPlayersOnTableCount();
         this.game = tournament.getGame().getName();
         this.dateOfStart = tournament.getDateOfStart();
         this.dateOfEnd = tournament.getDateOfEnd();
@@ -51,7 +52,7 @@ public class TournamentResponseDTO {
     public String name;
     public String nameChange;
     public int tablesCount;
-    public int maxPlayers;
+    public int playersOnTableCount;
     public String game;
     public Date dateOfStart;
     public Date dateOfEnd;

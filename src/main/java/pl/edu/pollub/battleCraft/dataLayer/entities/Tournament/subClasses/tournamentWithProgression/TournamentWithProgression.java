@@ -48,11 +48,12 @@ public class TournamentWithProgression extends Tournament{
         this.changeAddress(tournament.getAddress());
         this.setName(tournament.getName());
         this.setTablesCount(tournament.getTablesCount());
-        this.initMaxPlayers(tournament.getMaxPlayers());
+        this.setMaxPlayers(tournament.getMaxPlayers());
+        this.setPlayersNumber(tournament.getPlayersNumber());
         this.setDateOfEnd(tournament.getDateOfEnd());
         this.setDateOfStart(new Date());
         this.chooseGame(tournament.getGame());
-        this.setTournamentClass(tournament.getTournamentClass());
+        this.setPlayersOnTableCount(tournament.getPlayersOnTableCount());
         this.addParticipants(tournament.getParticipants().stream().map(Participation::getPlayer).toArray(Player[]::new));
         this.addOrganizers(tournament.getOrganizers().stream().map(Organization::getOrganizer).toArray(Organizer[]::new));
 
