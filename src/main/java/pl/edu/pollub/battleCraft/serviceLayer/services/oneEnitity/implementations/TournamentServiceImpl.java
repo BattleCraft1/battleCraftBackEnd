@@ -1,5 +1,6 @@
 package pl.edu.pollub.battleCraft.serviceLayer.services.oneEnitity.implementations;
 
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
@@ -18,8 +19,11 @@ import pl.edu.pollub.battleCraft.serviceLayer.validators.TournamentOrganizationV
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Tournament.TournamentRequestDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Tournament.TournamentResponseDTO;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,6 +36,8 @@ public class TournamentServiceImpl implements TournamentService{
 
     private final OrganizerRepository organizerRepository;
 
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Autowired
     public TournamentServiceImpl(TournamentRepository tournamentRepository, TournamentOrganizationValidator tournamentOrganizationValidator, OrganizerRepository organizerRepository) {
@@ -41,6 +47,7 @@ public class TournamentServiceImpl implements TournamentService{
     }
 
     @Override
+    @Transactional
     public TournamentResponseDTO organizeTournament(TournamentRequestDTO tournamentWebDTO, BindingResult bindingResult) throws EntityValidationException {
         Organizer mockOrganizerFromSession = organizerRepository.findByName("dept2123");
 
@@ -69,11 +76,13 @@ public class TournamentServiceImpl implements TournamentService{
                 .inviteParticipants(participants)
                 .finishOrganize();
 
-
-        return new TournamentResponseDTO(tournamentRepository.save(organizedTournament));
+        Session hibernateSession = (Session) entityManager.getDelegate();
+        hibernateSession.save(organizedTournament);
+        return new TournamentResponseDTO(organizedTournament);
     }
 
     @Override
+    @Transactional
     public TournamentResponseDTO editTournament(TournamentRequestDTO tournamentWebDTO, BindingResult bindingResult) {
         Organizer mockOrganizerFromSession = organizerRepository.findByName("dept2123");
 
@@ -86,9 +95,8 @@ public class TournamentServiceImpl implements TournamentService{
         Game tournamentGame = tournamentOrganizationValidator.getValidatedGame(tournamentWebDTO,bindingResult);
         Organizer[] organizers = tournamentOrganizationValidator.getValidatedOrganizers(tournamentWebDTO,bindingResult);
         Player[] participants = tournamentOrganizationValidator.getValidatedParticipants(tournamentWebDTO,bindingResult);
-        tournamentOrganizationValidator.finishValidation(bindingResult);
 
-        Tournament organizedTournament = mockOrganizerFromSession
+        mockOrganizerFromSession
                 .editOrganizedTournament(
                         tournamentToEdit,
                         tournamentWebDTO.nameChange,
@@ -107,7 +115,13 @@ public class TournamentServiceImpl implements TournamentService{
                 .editParticipants(participants)
                 .finishOrganize();
 
-        return new TournamentResponseDTO(tournamentRepository.save(organizedTournament));
+        tournamentOrganizationValidator.validateWithCurrentOrganizers(bindingResult,tournamentToEdit.getOrganizers());
+        tournamentOrganizationValidator.validateWithCurrentParticipants(tournamentWebDTO,bindingResult,tournamentToEdit.getParticipants());
+        tournamentOrganizationValidator.finishValidation(bindingResult);
+
+        Session hibernateSession = (Session) entityManager.getDelegate();
+        hibernateSession.saveOrUpdate(tournamentToEdit);
+        return new TournamentResponseDTO(tournamentToEdit);
     }
 
     @Override

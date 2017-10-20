@@ -33,7 +33,7 @@ public class AddressValidator implements Validator {
     }
 
     private void validateCity(String city){
-        if(!city.matches("^[A-Z][a-ząćęłńóśźż]{1,39}$"))
+        if(!city.matches("^[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]{1,39}$"))
             errors.rejectValue("city","","City must start with big letter and have between 2 and 40 chars");
     }
 

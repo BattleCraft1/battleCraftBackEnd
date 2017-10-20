@@ -34,11 +34,11 @@ public class Organization implements Cloneable{
     @GeneratedValue
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "organizer_id")
     private Organizer organizer;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "tournament_id")
     private Tournament organizedTournament;
 

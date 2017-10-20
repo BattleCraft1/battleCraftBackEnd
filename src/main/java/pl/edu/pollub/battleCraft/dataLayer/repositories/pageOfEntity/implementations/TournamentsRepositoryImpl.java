@@ -44,7 +44,6 @@ public class TournamentsRepositoryImpl implements TournamentsRepository {
                         new Field("banned", "banned")
                 )
                 .join(
-                        new Join("participants", "participants"),
                         new Join("address", "address"),
                         new Join("game", "game")
                 )

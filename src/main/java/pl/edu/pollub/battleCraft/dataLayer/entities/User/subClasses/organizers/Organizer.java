@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 @Entity
 @Getter
 @Setter
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true,exclude = {"tournamentInOrganisation"})
 @ToString
 public class Organizer extends Player {
     public Organizer() {
@@ -72,6 +72,7 @@ public class Organizer extends Player {
     @JsonIgnore
     public Organizer startOrganizeTournament(String name, int tablesCount, int maxPlayers){
         tournamentInOrganisation = new Tournament();
+        tournamentInOrganisation.addOrganizers(this);
         return editBasicData(name,tablesCount,maxPlayers);
     }
 
@@ -86,7 +87,6 @@ public class Organizer extends Player {
         tournamentInOrganisation.setName(name);
         tournamentInOrganisation.setTablesCount(tablesCount);
         tournamentInOrganisation.initMaxPlayers(maxPlayers);
-        tournamentInOrganisation.addOrganizers(this);
         return this;
     }
 

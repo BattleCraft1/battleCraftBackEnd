@@ -8,7 +8,9 @@ import pl.edu.pollub.battleCraft.dataLayer.entities.Game.Game;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.enums.TournamentStatus;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.organizers.Organizer;
+import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.organizers.relationships.Organization;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.players.Player;
+import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.players.relationships.Participation;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.GameRepository;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.OrganizerRepository;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.PlayerRepository;
@@ -144,6 +146,12 @@ public class TournamentOrganizationValidator implements Validator {
         return participants;
     }
 
+    public void validateWithCurrentParticipants(TournamentRequestDTO tournamentWebDTO,BindingResult bindingResult,List<Participation> participations){
+        if(participations.size()>tournamentWebDTO.tablesCount*2)
+            bindingResult.rejectValue("participants","",
+                    new StringBuilder("Participants count must be less than ").append(tournamentWebDTO.tablesCount*2).toString());
+    }
+
     public Organizer[] getValidatedOrganizers(TournamentRequestDTO tournamentWebDTO,BindingResult bindingResult){
         if(tournamentWebDTO.organizers.length==0)
             return new Organizer[] {};
@@ -154,6 +162,12 @@ public class TournamentOrganizationValidator implements Validator {
         if(organizers.length>10)
             bindingResult.rejectValue("organizers","","count of organizers must be less than 15");
         return organizers;
+    }
+
+
+    public void validateWithCurrentOrganizers(BindingResult bindingResult, List<Organization> organizations){
+        if(organizations.size()>10)
+            bindingResult.rejectValue("organizers","","count of organizers must be less than 15");
     }
 
     private boolean containsDuplicates(String[] values){
