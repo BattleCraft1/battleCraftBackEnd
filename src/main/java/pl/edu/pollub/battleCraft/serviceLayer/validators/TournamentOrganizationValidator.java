@@ -140,16 +140,16 @@ public class TournamentOrganizationValidator implements Validator {
             bindingResult.rejectValue("participants","","you can invite player only once");
         List<Player> participantsList = playerRepository.findPlayersByUniqueName(tournamentWebDTO.participants);
         Player[] participants = participantsList.toArray(new Player[participantsList.size()]);
-        if(participants.length>tournamentWebDTO.tablesCount*2)
+        if(participants.length>tournamentWebDTO.maxPlayers)
             bindingResult.rejectValue("participants","",
-                    new StringBuilder("Participants count must be less than ").append(tournamentWebDTO.tablesCount*2).toString());
+                    new StringBuilder("Participants count must be less than ").append(tournamentWebDTO.maxPlayers).toString());
         return participants;
     }
 
     public void validateWithCurrentParticipants(TournamentRequestDTO tournamentWebDTO,BindingResult bindingResult,List<Participation> participations){
-        if(participations.size()>tournamentWebDTO.tablesCount*2)
+        if(bindingResult.getFieldError("participants") == null && participations.size()>tournamentWebDTO.maxPlayers)
             bindingResult.rejectValue("participants","",
-                    new StringBuilder("Participants count must be less than ").append(tournamentWebDTO.tablesCount*2).toString());
+                    new StringBuilder("Participants count must be less than ").append(tournamentWebDTO.maxPlayers).toString());
     }
 
     public Organizer[] getValidatedOrganizers(TournamentRequestDTO tournamentWebDTO,BindingResult bindingResult){
@@ -166,7 +166,7 @@ public class TournamentOrganizationValidator implements Validator {
 
 
     public void validateWithCurrentOrganizers(BindingResult bindingResult, List<Organization> organizations){
-        if(organizations.size()>10)
+        if(bindingResult.getFieldError("organizers") == null && organizations.size()>10)
             bindingResult.rejectValue("organizers","","count of organizers must be less than 15");
     }
 
