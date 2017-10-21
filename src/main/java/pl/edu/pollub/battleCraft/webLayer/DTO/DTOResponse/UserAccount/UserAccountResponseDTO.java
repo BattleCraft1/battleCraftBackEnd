@@ -4,12 +4,14 @@ import lombok.*;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Battle.Battle;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Game.Game;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.Tournament;
+import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.enums.TournamentStatus;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.organizers.Organizer;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.players.Player;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.players.relationships.Play;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Invitation.InvitationDTO;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,23 +35,27 @@ public class UserAccountResponseDTO {
             Player player = (Player) userAccount;
             this.points = player.getBattles().stream().mapToInt(Play::getPoints).sum();
             this.numberOfBattles = player.getBattles().size();
-            this.participatedTournaments = player.getParticipatedTournaments().stream()
-                    .map(participation -> {
+            player.getParticipatedTournaments()
+                    .forEach(participation -> {
                         Tournament tournament = participation.getParticipatedTournament();
-                        return new InvitationDTO(tournament.getName(),participation.isAccepted());
-                    })
-                    .collect(Collectors.toList());
+                        if(tournament.getStatus() != TournamentStatus.IN_PROGRESS || tournament.getStatus() != TournamentStatus.FINISHED)
+                            participatedTournaments.add(new InvitationDTO(tournament.getName(),participation.isAccepted()));
+                        else
+                            finishedParticipatedTournaments.add(tournament.getName());
+                    });
         }
 
         if(userAccount instanceof Organizer){
             Organizer organizer = (Organizer) userAccount;
             this.createdGames = organizer.getCreatedGames().stream().map(Game::getName).collect(Collectors.toList());
-            this.organizedTournaments = organizer.getOrganizedTournaments().stream()
-                    .map(organization -> {
+            organizer.getOrganizedTournaments()
+                    .forEach(organization -> {
                         Tournament tournament = organization.getOrganizedTournament();
-                        return new InvitationDTO(tournament.getName(),organization.isAccepted());
-                    })
-                    .collect(Collectors.toList());
+                        if(tournament.getStatus() != TournamentStatus.IN_PROGRESS || tournament.getStatus() != TournamentStatus.FINISHED)
+                            organizedTournaments.add(new InvitationDTO(tournament.getName(),organization.isAccepted()));
+                        else
+                            finishedOrganizedTournaments.add(tournament.getName());
+                    });
         }
     }
 
@@ -62,7 +68,9 @@ public class UserAccountResponseDTO {
     public String status;
     public int points;
     public int numberOfBattles;
-    public List<InvitationDTO> participatedTournaments;
-    public List<InvitationDTO> organizedTournaments;
-    public List<String> createdGames;
+    public List<InvitationDTO> participatedTournaments = new ArrayList<>();
+    public List<String> finishedParticipatedTournaments = new ArrayList<>();
+    public List<InvitationDTO> organizedTournaments = new ArrayList<>();
+    public List<String> finishedOrganizedTournaments = new ArrayList<>();
+    public List<String> createdGames = new ArrayList<>();
 }

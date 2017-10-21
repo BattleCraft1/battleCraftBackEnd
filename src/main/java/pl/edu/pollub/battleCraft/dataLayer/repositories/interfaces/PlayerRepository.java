@@ -20,7 +20,7 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
     @Query("UPDATE Player p SET p.banned = true WHERE p.name in ?1")
     void banUserAccountsByUniqueNames(String... usersToBanUniqueNames);
 
-    @Query("UPDATE Player p SET p.status = 'NEW' WHERE p.name in ?1")
+    @Query("SELECT p FROM Player p WHERE  p.status = 'ACCEPTED' and p.name in ?1")
     List<String> selectUsersAccountsToRejectUniqueNames(String... usersToCancelAcceptUniqueNames);
 
     @Modifying
@@ -41,4 +41,6 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
     @Query("DELETE FROM Play p WHERE p.player.id IN ?1")
     void deletePlayByPlayersIds(List<Long> playersIds);
 
+    @Query("SELECT p.name FROM Player p WHERE (p.status = 'ACCEPTED' OR p.status = 'ORGANIZER') AND p.name = ?1 and p.banned = false")
+    String checkIfPlayerExist(String username);
 }

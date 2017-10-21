@@ -15,11 +15,16 @@ public class ImageServiceImpl implements ImageService {
 
     public BufferedImage resizeImageFromFile(File imageFile, Dimension boundary) throws IOException {
         BufferedImage imageToScale = ImageIO.read(imageFile);
-        Dimension dimensionToScale = this.getScaledDimension(
-                new Dimension(imageToScale.getWidth(),imageToScale.getHeight()),
-                boundary
-        );
-        return this.scaleImage(imageToScale,dimensionToScale);
+        if(imageToScale.getWidth()<boundary.getWidth() && imageToScale.getHeight()<boundary.getHeight()){
+            return imageToScale;
+        }
+        else {
+            Dimension dimensionToScale = this.getScaledDimension(
+                    new Dimension(imageToScale.getWidth(), imageToScale.getHeight()),
+                    boundary
+            );
+            return this.scaleImage(imageToScale, dimensionToScale);
+        }
     }
 
     @Override

@@ -9,6 +9,7 @@ import lombok.ToString;
 import org.hibernate.annotations.Formula;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Battle.Battle;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.Tournament;
+import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.enums.TournamentStatus;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.enums.UserType;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.players.relationships.Participation;
@@ -109,7 +110,9 @@ public class Player extends UserAccount {
                     return participation; })
                 .collect(Collectors.toList()));
         this.participatedTournaments.removeAll(this.participatedTournaments.stream()
-                .filter(participation -> !tournamentList.contains(participation.getParticipatedTournament()))
+                .filter(participation ->
+                        !tournamentList.contains(participation.getParticipatedTournament())
+                && participation.getParticipatedTournament().getStatus()==TournamentStatus.ACCEPTED)
                 .peek(participation -> {
                     participation.getPlayer().deleteParticipation(participation);
                     participation.setPlayer(null);

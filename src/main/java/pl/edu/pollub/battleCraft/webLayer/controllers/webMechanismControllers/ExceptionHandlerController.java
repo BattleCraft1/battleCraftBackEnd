@@ -19,6 +19,7 @@ import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.PageO
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.PageOfEntities.PageNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.File.StorageException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.File.StorageFileNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.UserAvatar.InvalidUserAvatarExtension;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,7 +47,7 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(value = {OperaionOnDataBaseFailedException.class})
+    @ExceptionHandler(value = {OperaionOnDataBaseFailedException.class, InvalidUserAvatarExtension.class})
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     protected ResponseEntity<String> handleBadRequest(Exception ex, WebRequest req) {
         System.out.println("exception: "+ex.getClass().getSimpleName()+" message: " + ex.getMessage());

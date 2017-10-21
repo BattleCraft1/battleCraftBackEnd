@@ -36,5 +36,5 @@ public interface UserAccountRepository extends JpaRepository<UserAccount, Long> 
     List<Long> selectIdsOfUsersToDelete(String... usersAccountsToAcceptUniqueNames);
 
     @Query("SELECT u FROM UserAccount u WHERE u.name = ?1")
-    UserAccount findUserAccountToEditByUniqueName(String userUniqueName);
+    UserAccount findUserAccountByUniqueName(String userUniqueName);
 }

@@ -13,6 +13,8 @@ import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.File.
 import pl.edu.pollub.battleCraft.serviceLayer.services.helpers.interfaces.FileService;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
@@ -39,17 +41,38 @@ public class FileServiceImpl implements FileService {
     public void store(MultipartFile file, String name, String fileType) {
         try {
             if (file.isEmpty()) {
-                throw new StorageException("Failed to store empty file " + file.getOriginalFilename());
+                throw new StorageException(new StringBuilder("Failed to store empty file ").append(file.getOriginalFilename()).toString());
             }
-            if (file.getSize() / 1048576 > 20) {//20MB
-                throw new StorageException("Failed to store file " + file.getOriginalFilename() + ". File have size larger than 20MB ");
+            if (file.getSize() / 1048576 > 6) {//6MB
+                throw new StorageException(new StringBuilder("Failed to store file ").append(file.getOriginalFilename()).append(". File have size larger than 6MB ").toString());
             }
 
-            Files.copy(file.getInputStream(), this.rootLocation.resolve(name + "." + fileType));
-
+            Files.copy(file.getInputStream(), this.rootLocation.resolve(new StringBuilder(name).append(".").append(fileType).toString()));
 
         } catch (IOException e) {
-            throw new StorageException("Failed to store file " + file.getOriginalFilename(), e);
+            throw new StorageException(new StringBuilder("Failed to store file ").append(file.getOriginalFilename()).toString(), e);
+        }
+    }
+
+    @Override
+    public void store(File file, String name, String fileType) {
+        try {
+            if (file.length() == 0) {
+                throw new StorageException(new StringBuilder("Failed to store empty file ").append(file.getName()).toString());
+            }
+            if (file.length() / 1048576 > 6) {//6MB
+                throw new StorageException(new StringBuilder("Failed to store file ").append(file.getName()).append(". File have size larger than 6MB ").toString());
+            }
+            Path filePath = this.rootLocation.resolve(new StringBuilder(name).append(".").append(fileType).toString());
+
+            if(filePath.toFile().exists())
+                Files.delete(this.rootLocation.resolve(new StringBuilder(name).append(".").append(fileType).toString()));
+
+            Files.copy(new FileInputStream(file),filePath);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new StorageException(new StringBuilder("Failed to store file ").append(file.getName()).toString(), e);
         }
     }
 
@@ -61,11 +84,11 @@ public class FileServiceImpl implements FileService {
             if (resource.exists() || resource.isReadable()) {
                 return resource;
             } else {
-                throw new StorageFileNotFoundException("Could not read file: " + filename);
+                throw new StorageFileNotFoundException(new StringBuilder("Could not read file: ").append(filename).toString());
 
             }
         } catch (MalformedURLException e) {
-            throw new StorageFileNotFoundException("Could not read file: " + filename, e);
+            throw new StorageFileNotFoundException(new StringBuilder("Could not read file: ").append(filename).toString(), e);
         }
     }
 
@@ -90,15 +113,15 @@ public class FileServiceImpl implements FileService {
         if (Files.exists(path))
             Files.delete(path);
         else
-            throw new StorageFileNotFoundException("file of path: " + path.getFileName() + " not exist");
+            throw new StorageFileNotFoundException(new StringBuilder("file of path: ").append(path.getFileName()).append(" not exist").toString());
     }
 
     @Override
     public void deleteFilesReletedWithEntities(String direcotryName,String... entitiesUniqueNames){
         for(String entitiesUniqueName:entitiesUniqueNames){
             try {
-                Path gameRulesFile =
-                        this.findFileByRelatedEntityName(entitiesUniqueName,direcotryName);
+                Path gameRulesFile = this.findFileByRelatedEntityName(entitiesUniqueName,direcotryName);
+                if(gameRulesFile.toFile().exists())
                 this.delete(gameRulesFile);
             }
             catch (Exception e){
@@ -145,5 +168,15 @@ public class FileServiceImpl implements FileService {
         if(fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0)
             return fileName.substring(fileName.lastIndexOf(".")+1);
         else return "";
+    }
+
+    @Override
+    public File convertMultipartFileToFile(MultipartFile file) throws IOException {
+        File convFile = new File(file.getOriginalFilename());
+        convFile.createNewFile();
+        FileOutputStream fos = new FileOutputStream(convFile);
+        fos.write(file.getBytes());
+        fos.close();
+        return convFile;
     }
 }

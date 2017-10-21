@@ -21,6 +21,8 @@ public interface FileService {
 
     byte[] loadFileAsByteArray(String filename) throws IOException;
 
+    void store(File file, String name, String fileType);
+
     Resource loadAsResource(String filename);
 
     void delete(Path path) throws IOException;
@@ -30,4 +32,6 @@ public interface FileService {
     Path findFileByRelatedEntityName(String entityName, String entityRelatedFilesDirectoryName) throws FileSearchedByRelatedEntityNameNotFound;
 
     Path getRootLocation();
+
+    File convertMultipartFileToFile(MultipartFile file) throws IOException;
 }

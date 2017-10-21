@@ -10,6 +10,7 @@ import pl.edu.pollub.battleCraft.dataLayer.entities.Address.Address;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Address.Province;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Game.Game;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.Tournament;
+import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.enums.TournamentStatus;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.subClasses.tournamentWithProgression.TournamentWithProgression;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.enums.UserType;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.organizers.relationships.Organization;
@@ -239,7 +240,8 @@ public class Organizer extends Player {
                     return organization; })
                 .collect(Collectors.toList()));
         this.organizedTournaments.removeAll(this.organizedTournaments.stream()
-                .filter(organization -> !tournamentList.contains(organization.getOrganizedTournament()))
+                .filter(organization -> !tournamentList.contains(organization.getOrganizedTournament())
+                        && organization.getOrganizedTournament().getStatus()== TournamentStatus.ACCEPTED)
                 .peek(organization -> {
                     organization.getOrganizer().deleteOrganization(organization);
                     organization.setOrganizer(null);

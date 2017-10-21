@@ -21,6 +21,7 @@ public class RankingController {
     @ResponseBody
     public Page getPageOfTournaments(@RequestBody GetPageObjectsDTO getPageObjectsDTO) {
         System.out.println("Try to get rankings");
+        //TO DO: Where tournament is not banned
         return rankingService.getPageOfRanking(getPageObjectsDTO.unwrapPageRequest(),
                 getPageObjectsDTO.getSearchCriteria());
     }

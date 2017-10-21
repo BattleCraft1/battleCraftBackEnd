@@ -13,7 +13,6 @@ import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Invitation.InvitationDT
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.UserAccountRequestDTO;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Component
 public class UserAccountValidator implements Validator {
@@ -75,7 +74,7 @@ public class UserAccountValidator implements Validator {
     }
 
     public UserAccount getValidatedUserAccountToEdit(UserAccountRequestDTO userAccountRequestDTO, BindingResult bindingResult){
-        UserAccount tournamentToEdit = Optional.ofNullable(userAccountRepository.findUserAccountToEditByUniqueName(userAccountRequestDTO.name))
+        UserAccount tournamentToEdit = Optional.ofNullable(userAccountRepository.findUserAccountByUniqueName(userAccountRequestDTO.name))
                 .orElseThrow(() -> new EntityNotFoundException(UserAccount.class,userAccountRequestDTO.name));
         return tournamentToEdit;
     }
@@ -88,15 +87,13 @@ public class UserAccountValidator implements Validator {
         String[] tournamentNames = tournaments.stream()
                 .map(invitation -> invitation.name).toArray(String[]::new);
         List<Tournament> tournamentsList =
-                tournamentRepository.findTournamentsByUniqueNames(tournamentNames);
+                tournamentRepository.findAcceptedTournamentsByUniqueNames(tournamentNames);
         return tournamentsList.toArray(new Tournament[tournamentsList.size()]);
     }
 
     private boolean containsDuplicates(List<InvitationDTO> values){
         Set<InvitationDTO> setWithoutDuplicates = new HashSet<>(values);
-        if(setWithoutDuplicates.size()<values.size())
-            return true;
-        return false;
+        return setWithoutDuplicates.size() < values.size();
     }
 
     public void finishValidation(BindingResult bindingResult){

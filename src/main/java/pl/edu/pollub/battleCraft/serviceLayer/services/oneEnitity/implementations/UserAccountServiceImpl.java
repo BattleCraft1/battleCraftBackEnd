@@ -70,7 +70,7 @@ public class UserAccountServiceImpl implements UserAccountService{
 
     @Override
     public UserAccountResponseDTO getUserAccount(String userUniqueName) {
-        UserAccount userAccountToShow = Optional.ofNullable(userAccountRepository.findUserAccountToEditByUniqueName(userUniqueName))
+        UserAccount userAccountToShow = Optional.ofNullable(userAccountRepository.findUserAccountByUniqueName(userUniqueName))
                 .orElseThrow(() -> new EntityNotFoundException(UserAccount.class,userUniqueName));
 
         return new UserAccountResponseDTO(userAccountToShow);
