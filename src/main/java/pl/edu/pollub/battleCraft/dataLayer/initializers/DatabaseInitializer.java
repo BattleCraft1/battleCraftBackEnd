@@ -68,46 +68,46 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
         Address testAddress21 = new Address("opolskie", "Łódź", "Rozpaczy", "40-304","");
 
         Player testUser1 = playerBuilder
-                .create("Bartek", "Nowogrodzki", "bart2123", "bart2123@gmail.com", "abc123")
+                .create("Bartek", "Nowogrodzki", "bart2123", "bart2123@gmail.com")
                 .from(testAddress1)
                 .withPhoneNumber("123123123").build();
         Player testUser2 = playerBuilder
-                .create("Andrzej", "Bartoszewski", "art2123", "art2123@gmail.com", "abc123")
+                .create("Andrzej", "Bartoszewski", "art2123", "art2123@gmail.com")
                 .from(testAddress2)
                 .withPhoneNumber("123123123").build();
         Player testUser3 = playerBuilder
-                .create("Artur", "Partoszewski", "part2123", "part2123@gmail.com", "abc123")
+                .create("Artur", "Partoszewski", "part2123", "part2123@gmail.com")
                 .from(testAddress3)
                 .withPhoneNumber("123123123").build();
         Player testUser4 = playerBuilder
-                .create("Jurek", "Jurkowski", "jur2123", "jur2123@gmail.com", "abc123")
+                .create("Jurek", "Jurkowski", "jur2123", "jur2123@gmail.com")
                 .from(testAddress4)
                 .withPhoneNumber("123123123").build();
         Player testUser5 = playerBuilder
-                .create("Anna", "Bielec", "biel2123", "biel2123@gmail.com", "abc123")
+                .create("Anna", "Bielec", "biel2123", "biel2123@gmail.com")
                 .from(testAddress5).build();
         Player testUser6 = playerBuilder
-                .create("Tomasz", "Blawucki", "blaw2123", "blawl2123@gmail.com", "abc123")
+                .create("Tomasz", "Blawucki", "blaw2123", "blawl2123@gmail.com")
                 .from(testAddress6).build();
         Organizer testUser7 = organizerBuilder
-                .create("Filip", "Begiello", "beg2123", "beg2123@gmail.com", "abc123")
+                .create("Filip", "Begiello", "beg2123", "beg2123@gmail.com")
                 .from(testAddress7)
                 .withPhoneNumber("123123123").build();
         Organizer testUser8 = organizerBuilder
-                .create("Lukasz", "Depta", "dept2123", "dept2123@gmail.com", "abc123")
+                .create("Lukasz", "Depta", "dept2123", "dept2123@gmail.com")
                 .from(testAddress8)
                 .withPhoneNumber("123123123").build();
         Organizer testUser9 = organizerBuilder
-                .create("Albert", "Kwasny", "kwas2123", "kwas2123@gmail.com", "abc123")
+                .create("Albert", "Kwasny", "kwas2123", "kwas2123@gmail.com")
                 .from(testAddress9)
                 .withPhoneNumber("123123123").build();
         Organizer testUser10 = organizerBuilder
-                .create("Anastazja", "Nijaka", "nijak2123", "nijak2123@gmail.com", "abc123")
+                .create("Anastazja", "Nijaka", "nijak2123", "nijak2123@gmail.com")
                 .from(testAddress10)
                 .withPhoneNumber("123123123").build();
 
         UserAccount testUser11 = userBuilder
-                .create("Pawel", "Maziarczuk", "mazi2123", "mazi2123@gmail.com", "abc123")
+                .create("Pawel", "Maziarczuk", "mazi2123", "mazi2123@gmail.com")
                 .from(testAddress21)
                 .withPhoneNumber("123123123").build();
 

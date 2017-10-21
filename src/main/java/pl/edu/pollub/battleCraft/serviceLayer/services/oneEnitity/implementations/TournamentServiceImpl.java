@@ -12,7 +12,7 @@ import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.*;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.EntityNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.EntityValidation.EntityValidationException;
 import pl.edu.pollub.battleCraft.serviceLayer.services.oneEnitity.interfaces.TournamentService;
-import pl.edu.pollub.battleCraft.serviceLayer.validators.TournamentOrganizationValidator;
+import pl.edu.pollub.battleCraft.serviceLayer.validators.TournamentValidator;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Tournament.TournamentRequestDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Tournament.TournamentResponseDTO;
 
@@ -23,14 +23,14 @@ import java.util.Optional;
 public class TournamentServiceImpl implements TournamentService{
     private final TournamentRepository tournamentRepository;
 
-    private final TournamentOrganizationValidator tournamentOrganizationValidator;
+    private final TournamentValidator tournamentValidator;
 
     private final OrganizerRepository organizerRepository;
 
     @Autowired
-    public TournamentServiceImpl(TournamentRepository tournamentRepository, TournamentOrganizationValidator tournamentOrganizationValidator, OrganizerRepository organizerRepository) {
+    public TournamentServiceImpl(TournamentRepository tournamentRepository, TournamentValidator tournamentValidator, OrganizerRepository organizerRepository) {
         this.tournamentRepository = tournamentRepository;
-        this.tournamentOrganizationValidator = tournamentOrganizationValidator;
+        this.tournamentValidator = tournamentValidator;
         this.organizerRepository = organizerRepository;
     }
 
@@ -39,13 +39,13 @@ public class TournamentServiceImpl implements TournamentService{
     public TournamentResponseDTO organizeTournament(TournamentRequestDTO tournamentWebDTO, BindingResult bindingResult) throws EntityValidationException {
         Organizer mockOrganizerFromSession = organizerRepository.findByName("dept2123");
 
-        tournamentOrganizationValidator.checkIfTournamentExist(tournamentWebDTO,bindingResult);
-        tournamentOrganizationValidator.validate(tournamentWebDTO,bindingResult);
-        Game tournamentGame = tournamentOrganizationValidator.getValidatedGame(tournamentWebDTO,bindingResult);
-        Organizer[] organizers = tournamentOrganizationValidator.getValidatedOrganizers(tournamentWebDTO,bindingResult);
-        Player[] participants = tournamentOrganizationValidator.getValidatedParticipants(tournamentWebDTO,bindingResult);
+        tournamentValidator.checkIfTournamentExist(tournamentWebDTO,bindingResult);
+        tournamentValidator.validate(tournamentWebDTO,bindingResult);
+        Game tournamentGame = tournamentValidator.getValidatedGame(tournamentWebDTO,bindingResult);
+        Organizer[] organizers = tournamentValidator.getValidatedOrganizers(tournamentWebDTO,bindingResult);
+        Player[] participants = tournamentValidator.getValidatedParticipants(tournamentWebDTO,bindingResult);
 
-        tournamentOrganizationValidator.finishValidation(bindingResult);
+        tournamentValidator.finishValidation(bindingResult);
 
         Tournament organizedTournament = mockOrganizerFromSession
                 .startOrganizeTournament(
@@ -75,15 +75,15 @@ public class TournamentServiceImpl implements TournamentService{
 
         //TO DO: check if this organizer is organizer of this tournament
 
-        Tournament tournamentToEdit = tournamentOrganizationValidator.getValidatedTournamentToEdit(tournamentWebDTO, bindingResult);
+        Tournament tournamentToEdit = tournamentValidator.getValidatedTournamentToEdit(tournamentWebDTO, bindingResult);
 
-        tournamentOrganizationValidator.checkIfTournamentToEditExist(tournamentWebDTO,bindingResult);
-        tournamentOrganizationValidator.validate(tournamentWebDTO,bindingResult);
-        Game tournamentGame = tournamentOrganizationValidator.getValidatedGame(tournamentWebDTO,bindingResult);
-        Organizer[] organizers = tournamentOrganizationValidator.getValidatedOrganizers(tournamentWebDTO,bindingResult);
-        Player[] participants = tournamentOrganizationValidator.getValidatedParticipants(tournamentWebDTO,bindingResult);
+        tournamentValidator.checkIfTournamentToEditExist(tournamentWebDTO,bindingResult);
+        tournamentValidator.validate(tournamentWebDTO,bindingResult);
+        Game tournamentGame = tournamentValidator.getValidatedGame(tournamentWebDTO,bindingResult);
+        Organizer[] organizers = tournamentValidator.getValidatedOrganizers(tournamentWebDTO,bindingResult);
+        Player[] participants = tournamentValidator.getValidatedParticipants(tournamentWebDTO,bindingResult);
 
-        tournamentOrganizationValidator.finishValidation(bindingResult);
+        tournamentValidator.finishValidation(bindingResult);
 
         mockOrganizerFromSession
                 .editOrganizedTournament(
@@ -92,12 +92,12 @@ public class TournamentServiceImpl implements TournamentService{
                         tournamentWebDTO.tablesCount,
                         tournamentWebDTO.playersOnTableCount)
                 .editOrganizers(organizers)
-                .in(new Address(
+                .changeAddressForTournament(
                         tournamentWebDTO.province,
                         tournamentWebDTO.city,
                         tournamentWebDTO.street,
                         tournamentWebDTO.zipCode,
-                        tournamentWebDTO.description))
+                        tournamentWebDTO.description)
                 .withGame(tournamentGame)
                 .startAt(tournamentWebDTO.dateOfStart)
                 .endingIn(tournamentWebDTO.dateOfEnd)

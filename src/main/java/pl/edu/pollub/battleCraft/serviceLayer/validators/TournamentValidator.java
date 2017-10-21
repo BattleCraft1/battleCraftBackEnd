@@ -20,7 +20,7 @@ import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Tournament.TournamentRe
 import java.util.*;
 
 @Component
-public class TournamentOrganizationValidator implements Validator {
+public class TournamentValidator implements Validator {
     private Errors errors;
 
     private final TournamentRepository tournamentRepository;
@@ -33,7 +33,7 @@ public class TournamentOrganizationValidator implements Validator {
 
     private final GameRepository gameRepository;
 
-    public TournamentOrganizationValidator(TournamentRepository tournamentRepository, AddressValidator addressValidator, OrganizerRepository organizerRepository, PlayerRepository playerRepository, GameRepository gameRepository) {
+    public TournamentValidator(TournamentRepository tournamentRepository, AddressValidator addressValidator, OrganizerRepository organizerRepository, PlayerRepository playerRepository, GameRepository gameRepository) {
         this.tournamentRepository = tournamentRepository;
         this.addressValidator = addressValidator;
         this.organizerRepository = organizerRepository;
@@ -60,7 +60,7 @@ public class TournamentOrganizationValidator implements Validator {
     }
 
     private void validateTournamentName(String tournamentName){
-        if(tournamentName==null || !tournamentName.matches("^[A-Z][A-Za-zzżźćńółęąśŻŹĆĄŚĘŁÓŃ0-9 ]{1,29}$"))
+        if(tournamentName==null || !tournamentName.matches("^[A-ZĄĆĘŁŃÓŚŹŻ][A-Za-zzżźćńółęąśŻŹĆĄŚĘŁÓŃ0-9 ]{1,19}$"))
             errors.rejectValue("nameChange","","Tournament name must start with big letter and have between 2 to 30 chars");
     }
 

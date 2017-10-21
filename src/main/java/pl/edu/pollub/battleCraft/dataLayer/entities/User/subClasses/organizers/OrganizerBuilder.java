@@ -1,6 +1,8 @@
 package pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.organizers;
 
 import pl.edu.pollub.battleCraft.dataLayer.entities.Address.Address;
+import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.Tournament;
+import pl.edu.pollub.battleCraft.dataLayer.entities.User.UserAccount;
 
 public class OrganizerBuilder {
     private Organizer instance;
@@ -9,13 +11,12 @@ public class OrganizerBuilder {
 
     }
 
-    public OrganizerBuilder create(String firstname, String lastname, String name, String email, String password) {
+    public OrganizerBuilder create(String firstname, String lastname, String name, String email) {
         this.instance = new Organizer();
         this.instance.setFirstname(firstname);
         this.instance.setLastname(lastname);
         this.instance.setName(name);
         this.instance.setEmail(email);
-        this.instance.setPassword(password);
         return this;
     }
 
@@ -32,4 +33,5 @@ public class OrganizerBuilder {
     public Organizer build() {
         return instance;
     }
+
 }

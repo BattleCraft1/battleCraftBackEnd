@@ -2,10 +2,9 @@ package pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Tournament;
 
 import lombok.*;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.Tournament;
-import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.enums.TournamentClass;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.organizers.Organizer;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.players.Player;
-import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Tournament.Invitation.InvitationDTO;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Invitation.InvitationDTO;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,6 +46,10 @@ public class TournamentResponseDTO {
         this.street = tournament.getAddress().getStreet();
         this.zipCode = tournament.getAddress().getZipCode();
         this.description = tournament.getAddress().getDescription();
+        if(tournament.isBanned())
+            this.status = "BANNED";
+        else
+            this.status = tournament.getStatus().name();
     }
 
     public String name;
@@ -61,6 +64,7 @@ public class TournamentResponseDTO {
     public String street;
     public String zipCode;
     public String description;
+    public String status;
     public List<InvitationDTO> organizers = new ArrayList<>();
     public List<InvitationDTO> participants = new ArrayList<>();
 }

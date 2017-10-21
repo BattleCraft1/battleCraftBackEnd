@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.Formula;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Battle.Battle;
+import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.enums.UserType;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.players.relationships.Participation;
@@ -15,6 +16,7 @@ import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.players.rela
 
 import javax.persistence.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 
@@ -93,5 +95,25 @@ public class Player extends UserAccount {
 
     public void addBattlesByOneSide(Play battle){
         this.battles.add(battle);
+    }
+
+    public void editParticipation(Tournament... participatedTournaments) {
+        List<Tournament> tournamentList = Arrays.asList(participatedTournaments);
+        this.participatedTournaments.addAll(tournamentList.stream()
+                .filter(tournament -> !this.participatedTournaments.stream()
+                        .map(Participation::getParticipatedTournament)
+                        .collect(Collectors.toList()).contains(tournament))
+                .map(tournament -> {
+                    Participation participation = new Participation(this, tournament);
+                    tournament.addParticipation(participation);
+                    return participation; })
+                .collect(Collectors.toList()));
+        this.participatedTournaments.removeAll(this.participatedTournaments.stream()
+                .filter(participation -> !tournamentList.contains(participation.getParticipatedTournament()))
+                .peek(participation -> {
+                    participation.getPlayer().deleteParticipation(participation);
+                    participation.setPlayer(null);
+                    participation.setParticipatedTournament(null);
+                }).collect(Collectors.toList()));
     }
 }

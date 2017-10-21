@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Address.Address;
+import pl.edu.pollub.battleCraft.dataLayer.entities.Address.Province;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Game.Game;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.subClasses.tournamentWithProgression.TournamentWithProgression;
@@ -105,6 +106,12 @@ public class Organizer extends Player {
     @JsonIgnore
     public Organizer in(Address address){
         tournamentInOrganisation.changeAddress(address);
+        return this;
+    }
+
+    @JsonIgnore
+    public Organizer changeAddressForTournament(String province, String city, String street, String zipCode, String description) {
+        tournamentInOrganisation.changeAddress(province, city, street, zipCode, description);
         return this;
     }
 
@@ -218,5 +225,25 @@ public class Organizer extends Player {
                 .map(Organization::getOrganizedTournament)
                 .filter(tournament -> tournament.getName().equals(tournamentName))
                 .findFirst().orElseThrow(() -> new YouDidNotOrganizeTournamentWithThisName(tournamentName));
+    }
+
+    public void editOrganizations(Tournament... organizedTournaments) {
+        List<Tournament> tournamentList = Arrays.asList(organizedTournaments);
+        this.organizedTournaments.addAll(tournamentList.stream()
+                .filter(tournament -> !this.organizedTournaments.stream()
+                        .map(Organization::getOrganizedTournament)
+                        .collect(Collectors.toList()).contains(tournament))
+                .map(tournament -> {
+                    Organization organization = new Organization(this, tournament);
+                    tournament.addOrganization(organization);
+                    return organization; })
+                .collect(Collectors.toList()));
+        this.organizedTournaments.removeAll(this.organizedTournaments.stream()
+                .filter(organization -> !tournamentList.contains(organization.getOrganizedTournament()))
+                .peek(organization -> {
+                    organization.getOrganizer().deleteOrganization(organization);
+                    organization.setOrganizer(null);
+                    organization.setOrganizedTournament(null);
+                }).collect(Collectors.toList()));
     }
 }

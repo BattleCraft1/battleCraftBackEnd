@@ -88,6 +88,11 @@ public class Tournament extends AddressOwner{
                 .collect(Collectors.toList()));
     }
 
+    public void addOrganization(Organization organization) {
+        this.deleteOrganizationWithTheSameTournamentName(organization.getOrganizedTournament().getName());
+        this.organizers.add(organization);
+    }
+
     public void editOrganizers(Organizer... organizers) {
         List<Organizer> organizersList = Arrays.asList(organizers);
         this.organizers.addAll(organizersList.stream()
@@ -122,6 +127,30 @@ public class Tournament extends AddressOwner{
                 })
                 .collect(Collectors.toList());
     }
+
+    public void addParticipation(Participation participation) {
+        this.deleteParticipationWithTheSameTournamentName(participation.getParticipatedTournament().getName());
+        this.participants.add(participation);
+    }
+
+    private void deleteParticipationWithTheSameTournamentName(String playerName){
+        Participation participation = this.participants.stream()
+                .filter(participation1 -> participation1.getPlayer().getName().equals(playerName))
+                .findFirst().orElse(null);
+        if(participation!=null){
+            this.participants.remove(participation);
+        }
+    }
+
+    private void deleteOrganizationWithTheSameTournamentName(String organizerName){
+        Organization organization = this.organizers.stream()
+                .filter(organization1 -> organization1.getOrganizer().getName().equals(organizerName))
+                .findFirst().orElse(null);
+        if(organization!=null){
+            this.participants.remove(organization);
+        }
+    }
+
 
     public void editParticipants(Player... participants) {
         List<Player> participantsList = Arrays.asList(participants);
