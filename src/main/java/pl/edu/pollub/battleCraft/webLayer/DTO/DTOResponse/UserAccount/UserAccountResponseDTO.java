@@ -30,9 +30,16 @@ public class UserAccountResponseDTO {
         this.firstname = userAccount.getFirstname();
         this.lastname = userAccount.getLastname();
         this.phoneNumber = userAccount.getPhoneNumber();
+        this.province = userAccount.getAddress().getProvince().name();
+        this.city = userAccount.getAddress().getCity();
+        this.street = userAccount.getAddress().getStreet();
+        this.zipCode = userAccount.getAddress().getZipCode();
+        this.description = userAccount.getAddress().getDescription();
+        this.status = userAccount.getStatus().name();
 
         if(userAccount instanceof Player){
             Player player = (Player) userAccount;
+            this.banned = player.isBanned();
             this.points = player.getBattles().stream().mapToInt(Play::getPoints).sum();
             this.numberOfBattles = player.getBattles().size();
             player.getParticipatedTournaments()
@@ -66,6 +73,11 @@ public class UserAccountResponseDTO {
     public String lastname;
     public String phoneNumber;
     public String status;
+    public String province;
+    public String city;
+    public String street;
+    public String zipCode;
+    public String description;
     public int points;
     public int numberOfBattles;
     public List<InvitationDTO> participatedTournaments = new ArrayList<>();
@@ -73,4 +85,5 @@ public class UserAccountResponseDTO {
     public List<InvitationDTO> organizedTournaments = new ArrayList<>();
     public List<String> finishedOrganizedTournaments = new ArrayList<>();
     public List<String> createdGames = new ArrayList<>();
+    public boolean banned;
 }

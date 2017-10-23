@@ -22,5 +22,4 @@ public class TournamentRequestDTO extends AddressOwnerRequestDTO{
     public Date dateOfEnd;
     public String[] organizers;
     public String[] participants;
-    public String status;
 }

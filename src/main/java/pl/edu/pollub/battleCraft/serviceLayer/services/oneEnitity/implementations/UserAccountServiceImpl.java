@@ -54,12 +54,12 @@ public class UserAccountServiceImpl implements UserAccountService{
 
         if(userAccountToEdit instanceof Player){
             Player player = (Player) userAccountToEdit;
-            Tournament[] participatedTournaments = userAccountValidator.getValidatedTournaments(userAccountRequestDTO.participatedTournaments, bindingResult);
+            Tournament[] participatedTournaments = userAccountValidator.getValidatedTournaments("participatedTournaments",userAccountRequestDTO.participatedTournaments, bindingResult);
             player.editParticipation(participatedTournaments);
         }
         if(userAccountToEdit instanceof Organizer){
             Organizer organizer = (Organizer) userAccountToEdit;
-            Tournament[] organizedTournaments = userAccountValidator.getValidatedTournaments(userAccountRequestDTO.organizedTournaments, bindingResult);
+            Tournament[] organizedTournaments = userAccountValidator.getValidatedTournaments("organizedTournaments",userAccountRequestDTO.organizedTournaments, bindingResult);
             organizer.editOrganizations(organizedTournaments);
         }
 

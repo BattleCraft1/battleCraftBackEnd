@@ -135,7 +135,7 @@ public class TournamentValidator implements Validator {
         if(tournamentWebDTO.participants.length==0)
             return new Player[] {};
         if(containsDuplicates(tournamentWebDTO.participants))
-            bindingResult.rejectValue("participants","","you can invite player only once");
+            bindingResult.rejectValue("participants","","You can invite player only once");
         List<Player> participantsList = playerRepository.findPlayersByUniqueName(tournamentWebDTO.participants);
         Player[] participants = participantsList.toArray(new Player[participantsList.size()]);
         if(participants.length>tournamentWebDTO.playersOnTableCount*tournamentWebDTO.tablesCount)
@@ -148,7 +148,7 @@ public class TournamentValidator implements Validator {
         if(tournamentWebDTO.organizers.length==0)
             return new Organizer[] {};
         if(containsDuplicates(tournamentWebDTO.organizers))
-            bindingResult.rejectValue("organizers","","you can invite organizer only once");
+            bindingResult.rejectValue("organizers","","You can invite organizer only once");
         List<Organizer> organizersList = organizerRepository.findOrganizersByUniqueNames(tournamentWebDTO.organizers);
         Organizer[] organizers = organizersList.toArray(new Organizer[organizersList.size()]);
         if(organizers.length>10)

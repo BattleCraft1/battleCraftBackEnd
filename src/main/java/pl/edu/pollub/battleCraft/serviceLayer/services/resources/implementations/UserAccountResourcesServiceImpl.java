@@ -26,7 +26,7 @@ public class UserAccountResourcesServiceImpl implements UserAccountResourcesServ
 
     private final String DEFAULT_USER_AVATARS_DIRECTORY_NAME = "usersAvatars";
 
-    private final int DEFAULT_USER_AVATAR_SIZE_FOR_WEB = 40;
+    private final int DEFAULT_USER_AVATAR_SIZE_FOR_WEB = 80;
 
     private final int DEFAULT_BIG_USER_AVATAR_SIZE = 170;
 

@@ -64,7 +64,7 @@ public class UserAccountValidator implements Validator {
     }
 
     private void validatePhoneNumber(String phoneNumber){
-        if(phoneNumber==null || !phoneNumber.matches("^[0-9]{9,11}$"))
+        if(!phoneNumber.equals("") || !phoneNumber.matches("^[0-9]{9,11}$"))
             errors.rejectValue("phoneNumber","","Invalid phone number");
     }
 
@@ -79,11 +79,11 @@ public class UserAccountValidator implements Validator {
         return tournamentToEdit;
     }
 
-    public Tournament[] getValidatedTournaments(List<InvitationDTO> tournaments, BindingResult bindingResult){
+    public Tournament[] getValidatedTournaments(String tournamentsType,List<InvitationDTO> tournaments, BindingResult bindingResult){
         if(tournaments.size()==0)
             return new Tournament[] {};
         if(containsDuplicates(tournaments))
-            bindingResult.rejectValue("organizers","","you can invite organizer only once");
+            bindingResult.rejectValue(tournamentsType,"","You cannot have duplicated tournament");
         String[] tournamentNames = tournaments.stream()
                 .map(invitation -> invitation.name).toArray(String[]::new);
         List<Tournament> tournamentsList =
