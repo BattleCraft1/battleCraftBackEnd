@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
-import pl.edu.pollub.battleCraft.dataLayer.entities.Address.Address;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Game.Game;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.organizers.Organizer;
@@ -13,7 +12,7 @@ import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.*;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityValidation.EntityValidationException;
 import pl.edu.pollub.battleCraft.serviceLayer.services.oneEnitity.interfaces.TournamentService;
-import pl.edu.pollub.battleCraft.serviceLayer.validators.implementations.TournamentValidator;
+import pl.edu.pollub.battleCraft.serviceLayer.services.validators.implementations.TournamentValidator;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Tournament.TournamentRequestDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Tournament.TournamentResponseDTO;
 
@@ -35,7 +34,7 @@ public class TournamentServiceImpl implements TournamentService{
     }
 
     @Override
-    @Transactional(rollbackFor = EntityValidationException.class)
+    @Transactional(rollbackFor = {EntityValidationException.class,EntityNotFoundException.class})
     public TournamentResponseDTO organizeTournament(TournamentRequestDTO tournamentWebDTO, BindingResult bindingResult) throws EntityValidationException {
         Organizer mockOrganizerFromSession = organizerRepository.findByName("dept2123");
 
@@ -53,12 +52,12 @@ public class TournamentServiceImpl implements TournamentService{
                         tournamentWebDTO.tablesCount,
                         tournamentWebDTO.playersOnTableCount)
                 .with(organizers)
-                .in(new Address(
+                .changeAddressForTournament(
                         tournamentWebDTO.province,
                         tournamentWebDTO.city,
                         tournamentWebDTO.street,
                         tournamentWebDTO.zipCode,
-                        tournamentWebDTO.description))
+                        tournamentWebDTO.description)
                 .withGame(tournamentGame)
                 .startAt(tournamentWebDTO.dateOfStart)
                 .endingIn(tournamentWebDTO.dateOfEnd)
@@ -69,7 +68,7 @@ public class TournamentServiceImpl implements TournamentService{
     }
 
     @Override
-    @Transactional(rollbackFor = EntityValidationException.class)
+    @Transactional(rollbackFor = {EntityValidationException.class,EntityNotFoundException.class})
     public TournamentResponseDTO editTournament(TournamentRequestDTO tournamentWebDTO, BindingResult bindingResult){
         Organizer mockOrganizerFromSession = organizerRepository.findByName("dept2123");
 

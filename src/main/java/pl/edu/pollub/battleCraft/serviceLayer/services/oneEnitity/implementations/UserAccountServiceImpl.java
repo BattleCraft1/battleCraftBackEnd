@@ -13,7 +13,7 @@ import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.UserAccountRe
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityValidation.EntityValidationException;
 import pl.edu.pollub.battleCraft.serviceLayer.services.oneEnitity.interfaces.UserAccountService;
-import pl.edu.pollub.battleCraft.serviceLayer.validators.implementations.UserAccountValidator;
+import pl.edu.pollub.battleCraft.serviceLayer.services.validators.implementations.UserAccountValidator;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.UserAccountRequestDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.UserAccount.UserAccountResponseDTO;
 
@@ -35,7 +35,7 @@ public class UserAccountServiceImpl implements UserAccountService{
     }
 
     @Override
-    @Transactional(rollbackFor = EntityValidationException.class)
+    @Transactional(rollbackFor = {EntityValidationException.class, EntityNotFoundException.class})
     public UserAccountResponseDTO editUserAccount(UserAccountRequestDTO userAccountRequestDTO, BindingResult bindingResult){
         UserAccount userAccountToEdit = userAccountValidator.getValidatedUserAccountToEdit(userAccountRequestDTO, bindingResult);
         userAccountValidator.validate(userAccountRequestDTO, bindingResult);

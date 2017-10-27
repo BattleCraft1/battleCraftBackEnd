@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.GameRepository;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.pageOfEntity.interfaces.GamesRepository;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.criteria.SearchCriteria;
-import pl.edu.pollub.battleCraft.serviceLayer.validators.interfaces.UniqueNamesValidator;
+import pl.edu.pollub.battleCraft.serviceLayer.services.validators.interfaces.UniqueNamesValidator;
 import pl.edu.pollub.battleCraft.serviceLayer.services.pageOfEntities.interfaces.GamesService;
 
 import java.util.List;

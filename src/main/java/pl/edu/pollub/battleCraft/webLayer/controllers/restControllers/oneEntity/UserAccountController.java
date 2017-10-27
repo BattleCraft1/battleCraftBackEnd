@@ -21,8 +21,8 @@ public class UserAccountController {
     }
 
     @PostMapping(value = "/edit/user", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public UserAccountResponseDTO editUserAccount(@RequestBody UserAccountRequestDTO userAccountWebDTO, BindingResult bindingResult){
-        return userAccountService.editUserAccount(userAccountWebDTO, bindingResult);
+    public UserAccountResponseDTO editUserAccount(@RequestBody UserAccountRequestDTO userAccountRequestDTO, BindingResult bindingResult){
+        return userAccountService.editUserAccount(userAccountRequestDTO, bindingResult);
     }
 
     @GetMapping(value = "/get/user")

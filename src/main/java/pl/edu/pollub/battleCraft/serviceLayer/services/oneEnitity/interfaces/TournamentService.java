@@ -6,7 +6,7 @@ import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Tournament.TournamentRe
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Tournament.TournamentResponseDTO;
 
 public interface TournamentService{
-    TournamentResponseDTO organizeTournament(TournamentRequestDTO tournamentWebDTO, BindingResult bindingResult) throws EntityValidationException;
-    TournamentResponseDTO editTournament(TournamentRequestDTO tournamentWebDTO, BindingResult bindingResult) throws EntityValidationException;
+    TournamentResponseDTO organizeTournament(TournamentRequestDTO tournamentWebDTO, BindingResult bindingResult);
+    TournamentResponseDTO editTournament(TournamentRequestDTO tournamentWebDTO, BindingResult bindingResult);
     TournamentResponseDTO getTournament(String tournamentUniqueName);
 }

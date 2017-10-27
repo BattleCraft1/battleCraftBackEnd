@@ -6,6 +6,6 @@ import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.UserAccount
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.UserAccount.UserAccountResponseDTO;
 
 public interface UserAccountService {
-    UserAccountResponseDTO editUserAccount(UserAccountRequestDTO tournamentWebDTO, BindingResult bindingResult) throws EntityValidationException;
+    UserAccountResponseDTO editUserAccount(UserAccountRequestDTO tournamentWebDTO, BindingResult bindingResult);
     UserAccountResponseDTO getUserAccount(String name);
 }

@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.UserAccountRepository;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityNotFoundException;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.UserAvatar.InvalidUserAvatarExtension;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.File.UserAvatar.InvalidUserAvatarExtension;
 import pl.edu.pollub.battleCraft.serviceLayer.services.helpers.implementations.FileServiceImpl;
 import pl.edu.pollub.battleCraft.serviceLayer.services.helpers.interfaces.ImageService;
 import pl.edu.pollub.battleCraft.serviceLayer.services.resources.interfaces.UserAccountResourcesService;

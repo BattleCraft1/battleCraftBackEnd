@@ -45,5 +45,14 @@ public interface GameRepository extends JpaRepository<Game, Long> {
     void cancelAcceptGamesUniqueNames(String... gamesToCancelAcceptUniqueNames);
 
     @Query("SELECT g from Game g WHERE g.name = ?1 and g.status = 'ACCEPTED' and g.banned = false")
-    Game findAcceptedGameByName(String gameName);
+    Game findAcceptedGameByUniqueName(String gameName);
+
+    @Query("SELECT g from Game g WHERE g.name = ?1 and g.banned = false")
+    Game findNotBannedGameByUniqueName(String gameName);
+
+    @Query("SELECT g from Game g WHERE g.name = ?1")
+    Game findGameByUniqueName(String gameName);
+
+    @Query("SELECT g.name from Game g WHERE g.name = ?1 and g.banned = false")
+    String checkIfGameExist(String gameName);
 }

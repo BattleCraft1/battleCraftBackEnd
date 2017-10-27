@@ -71,6 +71,13 @@ public class Organizer extends Player {
         return createdGame;
     }
 
+
+    public Game editGame(Game gameToEdit , String nameChange) {//argument gameToEdit will be deleted in the future
+        gameToEdit.setName(nameChange);
+        //TO DO: check if game is game created by this organizer
+        return gameToEdit;
+    }
+
     @JsonIgnore
     public Organizer startOrganizeTournament(String name, int tablesCount, int playersOnTableCount){
         tournamentInOrganisation = new Tournament();

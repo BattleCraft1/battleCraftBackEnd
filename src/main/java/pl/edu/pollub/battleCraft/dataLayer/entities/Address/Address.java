@@ -26,7 +26,7 @@ public class Address implements Cloneable{
     @Column(length = 40)
     private String city;
 
-    @Column(length = 40)
+    @Column(length = 80)
     private String street;
 
     @Column(length = 6)

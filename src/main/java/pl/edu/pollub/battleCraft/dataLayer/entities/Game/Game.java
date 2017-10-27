@@ -32,7 +32,7 @@ public class Game{
     @JsonIgnore
     private Long id;
 
-    @Column(length = 30)
+    @Column(length = 50)
     private String name;
 
     @JsonIgnore

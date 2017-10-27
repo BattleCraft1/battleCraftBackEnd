@@ -1,21 +1,29 @@
 package pl.edu.pollub.battleCraft.webLayer.controllers.restControllers.resources;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import pl.edu.pollub.battleCraft.serviceLayer.services.resources.interfaces.GameResourcesService;
+
+import java.io.IOException;
 
 @RestController
 public class GameResourcesController {
 
     private final GameResourcesService gameResourcesService;
 
+    @Autowired
     public GameResourcesController(GameResourcesService gameResourcesService) {
         this.gameResourcesService = gameResourcesService;
+    }
+
+    @PostMapping(value = "/upload/game/rules")
+    public void uploadGameRules(@RequestParam("avatar") MultipartFile file, @RequestParam(value = "username") String gameName){
+        gameResourcesService.saveGameRules(gameName,file);
     }
 
     @GetMapping(value = "/get/game/{gameName}/rules")

@@ -1,8 +1,8 @@
-package pl.edu.pollub.battleCraft.serviceLayer.validators.implementations;
+package pl.edu.pollub.battleCraft.serviceLayer.services.validators.implementations;
 
 import org.springframework.stereotype.Component;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.PageOfEntities.OperaionOnDataBaseFailedException;
-import pl.edu.pollub.battleCraft.serviceLayer.validators.interfaces.UniqueNamesValidator;
+import pl.edu.pollub.battleCraft.serviceLayer.services.validators.interfaces.UniqueNamesValidator;
 
 import java.util.ArrayList;
 import java.util.Arrays;

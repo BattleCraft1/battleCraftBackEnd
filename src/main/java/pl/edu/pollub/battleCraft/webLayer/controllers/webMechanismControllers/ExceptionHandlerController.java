@@ -18,7 +18,7 @@ import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.Pag
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.PageOfEntities.PageNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.File.StorageException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.File.StorageFileNotFoundException;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.UserAvatar.InvalidUserAvatarExtension;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.File.UserAvatar.InvalidUserAvatarExtension;
 
 import java.util.List;
 import java.util.stream.Collectors;

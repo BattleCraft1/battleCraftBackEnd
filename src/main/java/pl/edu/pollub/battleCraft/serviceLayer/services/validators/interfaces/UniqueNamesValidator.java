@@ -1,4 +1,4 @@
-package pl.edu.pollub.battleCraft.serviceLayer.validators.interfaces;
+package pl.edu.pollub.battleCraft.serviceLayer.services.validators.interfaces;
 
 
 import java.util.List;

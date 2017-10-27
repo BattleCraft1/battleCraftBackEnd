@@ -1,4 +1,4 @@
-package pl.edu.pollub.battleCraft.serviceLayer.validators.implementations;
+package pl.edu.pollub.battleCraft.serviceLayer.services.validators.implementations;
 
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
@@ -124,7 +124,7 @@ public class TournamentValidator implements Validator {
     }
 
     public Game getValidatedGame(TournamentRequestDTO tournamentWebDTO,BindingResult bindingResult){
-        Game tournamentGame = gameRepository.findAcceptedGameByName(tournamentWebDTO.game);
+        Game tournamentGame = gameRepository.findAcceptedGameByUniqueName(tournamentWebDTO.game);
         if(tournamentGame==null){
             bindingResult.rejectValue("game","", new StringBuilder("game: ").append(tournamentWebDTO.game).append(" does not exist").toString());
         }

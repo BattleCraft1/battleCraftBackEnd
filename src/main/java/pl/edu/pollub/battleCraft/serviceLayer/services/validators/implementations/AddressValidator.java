@@ -1,12 +1,10 @@
-package pl.edu.pollub.battleCraft.serviceLayer.validators.implementations;
+package pl.edu.pollub.battleCraft.serviceLayer.services.validators.implementations;
 
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Address.Province;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Address.AddressOwnerRequestDTO;
-import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Tournament.TournamentRequestDTO;
-import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Tournament.TournamentResponseDTO;
 
 @Component
 public class AddressValidator implements Validator {
@@ -39,7 +37,7 @@ public class AddressValidator implements Validator {
     }
 
     private void validateStreet(String street){
-        if(!street.matches("^[0-9A-ZĄĆĘŁŃÓŚŹŻ][\\sA-ZĄĆĘŁŃÓŚŹŻ0-9a-ząćęłńóśźż. ]{1,39}$"))
+        if(!street.matches("^[0-9A-ZĄĆĘŁŃÓŚŹŻ][\\sA-ZĄĆĘŁŃÓŚŹŻ0-9a-ząćęłńóśźż. ]{1,79}$"))
             errors.rejectValue("street","","Street must have between 2 and 40 chars");
     }
 
