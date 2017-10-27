@@ -24,6 +24,6 @@ public class GameResourcesServiceImpl implements GameResourcesService{
 
     @Override
     public void deleteGamesRules(String... gamesToDeleteUniqueNames) {
-        fileService.deleteFilesReletedWithEntities(DEFAULT_GAME_RULES_DIRECTORY_NAME,gamesToDeleteUniqueNames);
+        fileService.deleteFilesRelatedWithEntities(DEFAULT_GAME_RULES_DIRECTORY_NAME,gamesToDeleteUniqueNames);
     }
 }

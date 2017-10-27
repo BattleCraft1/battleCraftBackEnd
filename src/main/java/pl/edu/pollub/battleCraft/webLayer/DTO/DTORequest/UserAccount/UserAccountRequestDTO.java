@@ -4,6 +4,7 @@ import lombok.*;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Address.AddressOwnerRequestDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Invitation.InvitationDTO;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -19,6 +20,6 @@ public class UserAccountRequestDTO extends AddressOwnerRequestDTO {
     public String firstname;
     public String lastname;
     public String phoneNumber;
-    public List<InvitationDTO> participatedTournaments;
-    public List<InvitationDTO> organizedTournaments;
+    public List<InvitationDTO> participatedTournaments = new ArrayList<>();
+    public List<InvitationDTO> organizedTournaments = new ArrayList<>();
 }

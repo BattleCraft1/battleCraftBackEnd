@@ -4,32 +4,32 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.pageOfEntity.interfaces.TournamentsRepository;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.field.Join;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.field.Field;
-import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.interfaces.SearchAssistant;
+import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.interfaces.Searcher;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.criteria.SearchCriteria;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.TournamentRepository;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 @Component
 public class TournamentsRepositoryImpl implements TournamentsRepository {
     private final TournamentRepository tournamentRepository;
-    private final SearchAssistant getPageAssistant;
+    private final Searcher searcher;
 
     @Autowired
-    public TournamentsRepositoryImpl(TournamentRepository tournamentRepository, SearchAssistant getPageAssistant) {
+    public TournamentsRepositoryImpl(TournamentRepository tournamentRepository, Searcher getPageAssistant) {
         this.tournamentRepository = tournamentRepository;
-        this.getPageAssistant = getPageAssistant;
+        this.searcher = getPageAssistant;
     }
 
     @Override
     @Transactional
     public Page getPageOfTournaments(List<SearchCriteria> searchCriteria, Pageable requestedPage) {
-        return getPageAssistant
+        return searcher
                 .select(
                         new Field("name", "name"),
                         new Field("playersNumber", "playersNumber"),

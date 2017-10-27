@@ -45,7 +45,7 @@ public class UserAccountResponseDTO {
             player.getParticipatedTournaments()
                     .forEach(participation -> {
                         Tournament tournament = participation.getParticipatedTournament();
-                        if(tournament.getStatus() != TournamentStatus.IN_PROGRESS || tournament.getStatus() != TournamentStatus.FINISHED)
+                        if(tournament.getStatus() != TournamentStatus.IN_PROGRESS && tournament.getStatus() != TournamentStatus.FINISHED)
                             participatedTournaments.add(new InvitationDTO(tournament.getName(),participation.isAccepted()));
                         else
                             finishedParticipatedTournaments.add(tournament.getName());
@@ -58,7 +58,7 @@ public class UserAccountResponseDTO {
             organizer.getOrganizedTournaments()
                     .forEach(organization -> {
                         Tournament tournament = organization.getOrganizedTournament();
-                        if(tournament.getStatus() != TournamentStatus.IN_PROGRESS || tournament.getStatus() != TournamentStatus.FINISHED)
+                        if(tournament.getStatus() != TournamentStatus.IN_PROGRESS && tournament.getStatus() != TournamentStatus.FINISHED)
                             organizedTournaments.add(new InvitationDTO(tournament.getName(),organization.isAccepted()));
                         else
                             finishedOrganizedTournaments.add(tournament.getName());

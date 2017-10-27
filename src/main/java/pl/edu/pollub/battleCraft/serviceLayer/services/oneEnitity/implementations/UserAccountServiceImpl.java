@@ -2,6 +2,7 @@ package pl.edu.pollub.battleCraft.serviceLayer.services.oneEnitity.implementatio
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.UserAccount;
@@ -9,9 +10,10 @@ import pl.edu.pollub.battleCraft.dataLayer.entities.User.UserBuilder;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.organizers.Organizer;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.players.Player;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.UserAccountRepository;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.EntityNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityValidation.EntityValidationException;
 import pl.edu.pollub.battleCraft.serviceLayer.services.oneEnitity.interfaces.UserAccountService;
-import pl.edu.pollub.battleCraft.serviceLayer.validators.UserAccountValidator;
+import pl.edu.pollub.battleCraft.serviceLayer.validators.implementations.UserAccountValidator;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.UserAccountRequestDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.UserAccount.UserAccountResponseDTO;
 
@@ -33,7 +35,8 @@ public class UserAccountServiceImpl implements UserAccountService{
     }
 
     @Override
-    public UserAccountResponseDTO editUserAccount(UserAccountRequestDTO userAccountRequestDTO, BindingResult bindingResult) {
+    @Transactional(rollbackFor = EntityValidationException.class)
+    public UserAccountResponseDTO editUserAccount(UserAccountRequestDTO userAccountRequestDTO, BindingResult bindingResult){
         UserAccount userAccountToEdit = userAccountValidator.getValidatedUserAccountToEdit(userAccountRequestDTO, bindingResult);
         userAccountValidator.validate(userAccountRequestDTO, bindingResult);
 
@@ -55,12 +58,12 @@ public class UserAccountServiceImpl implements UserAccountService{
         if(userAccountToEdit instanceof Player){
             Player player = (Player) userAccountToEdit;
             Tournament[] participatedTournaments = userAccountValidator.getValidatedTournaments("participatedTournaments",userAccountRequestDTO.participatedTournaments, bindingResult);
-            player.editParticipation(participatedTournaments);
+            player.editParticipation(userAccountRequestDTO.participatedTournaments, participatedTournaments);
         }
         if(userAccountToEdit instanceof Organizer){
             Organizer organizer = (Organizer) userAccountToEdit;
             Tournament[] organizedTournaments = userAccountValidator.getValidatedTournaments("organizedTournaments",userAccountRequestDTO.organizedTournaments, bindingResult);
-            organizer.editOrganizations(organizedTournaments);
+            organizer.editOrganizations(userAccountRequestDTO.organizedTournaments,organizedTournaments);
         }
 
         userAccountValidator.finishValidation(bindingResult);

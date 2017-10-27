@@ -14,6 +14,7 @@ import pl.edu.pollub.battleCraft.dataLayer.entities.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.enums.UserType;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.players.relationships.Participation;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.players.relationships.Play;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Invitation.InvitationDTO;
 
 import javax.persistence.*;
 import java.util.*;
@@ -98,8 +99,17 @@ public class Player extends UserAccount {
         this.battles.add(battle);
     }
 
-    public void editParticipation(Tournament... participatedTournaments) {
+    public void editParticipation(List<InvitationDTO> invitationDTOS, Tournament... participatedTournaments) {
         List<Tournament> tournamentList = Arrays.asList(participatedTournaments);
+        this.participatedTournaments.stream()
+                .filter(participation -> tournamentList.contains(participation.getParticipatedTournament()))
+                .forEach(participation -> {
+                    boolean accepted = invitationDTOS.stream()
+                            .filter(invitation -> invitation.name.equals(participation.getParticipatedTournament().getName()))
+                            .map(invitation -> invitation.accepted)
+                            .findFirst().orElse(false);
+                    participation.setAccepted(accepted); });
+
         this.participatedTournaments.addAll(tournamentList.stream()
                 .filter(tournament -> !this.participatedTournaments.stream()
                         .map(Participation::getParticipatedTournament)
@@ -109,12 +119,13 @@ public class Player extends UserAccount {
                     tournament.addParticipation(participation);
                     return participation; })
                 .collect(Collectors.toList()));
+
         this.participatedTournaments.removeAll(this.participatedTournaments.stream()
                 .filter(participation ->
                         !tournamentList.contains(participation.getParticipatedTournament())
                 && participation.getParticipatedTournament().getStatus()==TournamentStatus.ACCEPTED)
                 .peek(participation -> {
-                    participation.getPlayer().deleteParticipation(participation);
+                    participation.getParticipatedTournament().deleteParticipant(participation);
                     participation.setPlayer(null);
                     participation.setParticipatedTournament(null);
                 }).collect(Collectors.toList()));

@@ -4,9 +4,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.players.Player;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 @Repository
@@ -41,6 +41,4 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
     @Query("DELETE FROM Play p WHERE p.player.id IN ?1")
     void deletePlayByPlayersIds(List<Long> playersIds);
 
-    @Query("SELECT p.name FROM Player p WHERE (p.status = 'ACCEPTED' OR p.status = 'ORGANIZER') AND p.name = ?1 and p.banned = false")
-    String checkIfPlayerExist(String username);
 }

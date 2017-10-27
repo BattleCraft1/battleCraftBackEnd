@@ -2,7 +2,7 @@ package pl.edu.pollub.battleCraft.serviceLayer.services.helpers.interfaces;
 
 import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UnCheckedExceptions.File.FileSearchedByRelatedEntityNameNotFound;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.File.FileSearchedByRelatedEntityNameNotFound;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,11 +27,11 @@ public interface FileService {
 
     void delete(Path path) throws IOException;
 
-    void deleteFilesReletedWithEntities(String direcotryName,String... entitiesUniqueNames);
-
-    Path findFileByRelatedEntityName(String entityName, String entityRelatedFilesDirectoryName) throws FileSearchedByRelatedEntityNameNotFound;
+    void deleteFilesRelatedWithEntities(String directoryName, String... entitiesUniqueNames);
 
     Path getRootLocation();
 
     File convertMultipartFileToFile(MultipartFile file) throws IOException;
+
+    byte[] loadFileRelatedEntityNameAsByteArray(String entityName,String directoryName) throws IOException, FileSearchedByRelatedEntityNameNotFound ;
 }

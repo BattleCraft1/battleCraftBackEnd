@@ -24,7 +24,7 @@ public class Organization implements Cloneable{
         this.accepted = false;
     }
 
-    private Organization(Organizer organizer, Tournament organizedTournament,boolean accepted) {
+    public Organization(Organizer organizer, Tournament organizedTournament, boolean accepted) {
         this.organizer = organizer;
         this.organizedTournament = organizedTournament;
         this.accepted = accepted;

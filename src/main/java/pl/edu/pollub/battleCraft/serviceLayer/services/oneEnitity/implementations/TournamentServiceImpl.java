@@ -2,6 +2,7 @@ package pl.edu.pollub.battleCraft.serviceLayer.services.oneEnitity.implementatio
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Address.Address;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Game.Game;
@@ -9,14 +10,13 @@ import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.organizers.Organizer;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.players.Player;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.*;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.EntityNotFoundException;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.EntityValidation.EntityValidationException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityValidation.EntityValidationException;
 import pl.edu.pollub.battleCraft.serviceLayer.services.oneEnitity.interfaces.TournamentService;
-import pl.edu.pollub.battleCraft.serviceLayer.validators.TournamentValidator;
+import pl.edu.pollub.battleCraft.serviceLayer.validators.implementations.TournamentValidator;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Tournament.TournamentRequestDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Tournament.TournamentResponseDTO;
 
-import javax.transaction.Transactional;
 import java.util.Optional;
 
 @Service
@@ -35,7 +35,7 @@ public class TournamentServiceImpl implements TournamentService{
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = EntityValidationException.class)
     public TournamentResponseDTO organizeTournament(TournamentRequestDTO tournamentWebDTO, BindingResult bindingResult) throws EntityValidationException {
         Organizer mockOrganizerFromSession = organizerRepository.findByName("dept2123");
 
@@ -69,8 +69,8 @@ public class TournamentServiceImpl implements TournamentService{
     }
 
     @Override
-    @Transactional
-    public TournamentResponseDTO editTournament(TournamentRequestDTO tournamentWebDTO, BindingResult bindingResult) {
+    @Transactional(rollbackFor = EntityValidationException.class)
+    public TournamentResponseDTO editTournament(TournamentRequestDTO tournamentWebDTO, BindingResult bindingResult){
         Organizer mockOrganizerFromSession = organizerRepository.findByName("dept2123");
 
         //TO DO: check if this organizer is organizer of this tournament

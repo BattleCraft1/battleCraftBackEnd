@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.enums.UserType;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.organizers.Organizer;
@@ -11,29 +12,28 @@ import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.players.Play
 import pl.edu.pollub.battleCraft.dataLayer.repositories.pageOfEntity.interfaces.UsersAccountsRepository;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.field.Join;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.field.Field;
-import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.interfaces.SearchAssistant;
+import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.interfaces.Searcher;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.criteria.SearchCriteria;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.OrganizerRepository;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.PlayerRepository;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.UserAccountRepository;
 
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
 public class UsersAccountsRepositoryImpl implements UsersAccountsRepository {
-    private final SearchAssistant getPageAssistant;
+    private final Searcher searcher;
     private final UserAccountRepository userAccountRepository;
     private final PlayerRepository playerRepository;
     private final OrganizerRepository organiserRepository;
 
     @Autowired
-    public UsersAccountsRepositoryImpl(SearchAssistant getPageAssistant,
+    public UsersAccountsRepositoryImpl(Searcher getPageAssistant,
                                        UserAccountRepository userAccountRepository,
                                        PlayerRepository playerRepository,
                                        OrganizerRepository organiserRepository) {
-        this.getPageAssistant = getPageAssistant;
+        this.searcher = getPageAssistant;
         this.playerRepository = playerRepository;
         this.organiserRepository = organiserRepository;
         this.userAccountRepository = userAccountRepository;
@@ -42,7 +42,7 @@ public class UsersAccountsRepositoryImpl implements UsersAccountsRepository {
     @Override
     @Transactional
     public Page getPageOfUserAccounts(List<SearchCriteria> searchCriteria, Pageable requestedPage) {
-        return getPageAssistant
+        return searcher
                 .select(
                         new Field("firstname", "firstname"),
                         new Field("lastname", "lastname"),

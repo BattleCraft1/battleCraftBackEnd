@@ -7,9 +7,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 import pl.edu.pollub.battleCraft.config.StorageProperties;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UnCheckedExceptions.File.FileSearchedByRelatedEntityNameNotFound;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.File.StorageException;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.File.StorageFileNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.File.FileSearchedByRelatedEntityNameNotFound;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.File.StorageException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.File.StorageFileNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.services.helpers.interfaces.FileService;
 
 import java.io.File;
@@ -35,6 +35,15 @@ public class FileServiceImpl implements FileService {
     @Override
     public Path getRootLocation(){
         return rootLocation;
+    }
+
+    @Override
+    public void init() {
+        try {
+            Files.createDirectory(rootLocation);
+        } catch (IOException e) {
+            throw new StorageException("Could not initialize storage", e);
+        }
     }
 
     @Override
@@ -64,9 +73,6 @@ public class FileServiceImpl implements FileService {
                 throw new StorageException(new StringBuilder("Failed to store file ").append(file.getName()).append(". File have size larger than 6MB ").toString());
             }
             Path filePath = this.rootLocation.resolve(new StringBuilder(name).append(".").append(fileType).toString());
-
-            if(filePath.toFile().exists())
-                Files.delete(this.rootLocation.resolve(new StringBuilder(name).append(".").append(fileType).toString()));
 
             Files.copy(new FileInputStream(file),filePath);
 
@@ -98,11 +104,6 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public byte[] loadFileAsByteArray(String filename) throws IOException {
-        return Files.readAllBytes(this.load(filename));
-    }
-
-    @Override
     public void deleteAll() {
         FileSystemUtils.deleteRecursively(rootLocation.toFile());
 
@@ -117,12 +118,12 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public void deleteFilesReletedWithEntities(String direcotryName,String... entitiesUniqueNames){
+    public void deleteFilesRelatedWithEntities(String directoryName, String... entitiesUniqueNames){
         for(String entitiesUniqueName:entitiesUniqueNames){
             try {
-                Path gameRulesFile = this.findFileByRelatedEntityName(entitiesUniqueName,direcotryName);
-                if(gameRulesFile.toFile().exists())
-                this.delete(gameRulesFile);
+                Path relatedFile = this.findFileByRelatedEntityName(entitiesUniqueName,directoryName);
+                if(relatedFile.toFile().exists())
+                this.delete(relatedFile);
             }
             catch (Exception e){
                 e.printStackTrace();
@@ -131,16 +132,16 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public void init() {
-        try {
-            Files.createDirectory(rootLocation);
-        } catch (IOException e) {
-            throw new StorageException("Could not initialize storage", e);
-        }
+    public byte[] loadFileAsByteArray(String filename) throws IOException {
+        return Files.readAllBytes(this.load(filename));
     }
 
     @Override
-    public Path findFileByRelatedEntityName(String entityName, String entityRelatedFilesDirectoryName)
+    public byte[] loadFileRelatedEntityNameAsByteArray(String entityName,String directoryName) throws IOException, FileSearchedByRelatedEntityNameNotFound {
+        return Files.readAllBytes(this.findFileByRelatedEntityName(entityName,directoryName));
+    }
+
+    private Path findFileByRelatedEntityName(String entityName, String entityRelatedFilesDirectoryName)
             throws FileSearchedByRelatedEntityNameNotFound {
         String entityRelatedFilesDirectoryPath =
                 new StringBuilder(this.getRootLocation().toString())

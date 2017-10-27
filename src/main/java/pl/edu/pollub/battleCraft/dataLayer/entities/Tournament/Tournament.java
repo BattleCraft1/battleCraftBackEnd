@@ -172,6 +172,17 @@ public class Tournament extends AddressOwner{
                 }).collect(Collectors.toList()));
     }
 
+
+    public void deleteOrganizer(Organization organization){
+        if(this.organizers.contains(organization))
+            this.organizers.remove(organization);
+    }
+
+    public void deleteParticipant(Participation participation){
+        if(this.participants.contains(participation))
+            this.participants.remove(participation);
+    }
+
     protected void setMaxPlayers(int maxPlayers){
         this.maxPlayers = maxPlayers;
     }

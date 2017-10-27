@@ -5,30 +5,32 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Battle.Battle;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.pageOfEntity.interfaces.RankingRepository;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.field.Join;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.field.Field;
-import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.interfaces.SearchAssistant;
+import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.interfaces.Searcher;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.criteria.SearchCriteria;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.PageOfEntities.AnyEntityNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.PageOfEntities.PageNotFoundException;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 @Component
 public class RankingRepositoryImpl implements RankingRepository{
 
-    private final SearchAssistant getPageAssistant;
+    private final Searcher searcher;
 
     @Autowired
-    public RankingRepositoryImpl(SearchAssistant getPageAssistant) {
-        this.getPageAssistant = getPageAssistant;
+    public RankingRepositoryImpl(Searcher getPageAssistant) {
+        this.searcher = getPageAssistant;
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = {AnyEntityNotFoundException.class,PageNotFoundException.class})
     public Page getPageOfRanking(List<SearchCriteria> searchCriteria, Pageable requestedPage) {
-        return getPageAssistant
+        return searcher
                 .select(
                         new Field("player.name", "name"),
                         new Field("playerAddress.city", "playerCity"),

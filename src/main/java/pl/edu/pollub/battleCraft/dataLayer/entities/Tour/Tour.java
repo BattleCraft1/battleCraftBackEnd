@@ -7,8 +7,8 @@ import pl.edu.pollub.battleCraft.dataLayer.entities.Battle.Battle;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.subClasses.tournamentWithProgression.TournamentWithProgression;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.players.Player;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.players.relationships.Play;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.TournamentPrograssion.prepareEveryNextTour.BattleOnTableNotFinishedYet;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.TournamentPrograssion.prepareFirstTour.BattleWithTableNumberNotFound;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentPrograssion.prepareEveryNextTour.BattleOnTableNotFinishedYet;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentPrograssion.prepareFirstTour.BattleWithTableNumberNotFound;
 
 import javax.persistence.*;
 import java.util.*;

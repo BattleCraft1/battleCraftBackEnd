@@ -11,13 +11,13 @@ import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.organizers.r
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.players.Player;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.players.relationships.Participation;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.players.relationships.Play;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.TournamentPrograssion.finish.TournamentCannotBeFinished;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.TournamentPrograssion.prepareEveryNextTour.NotValidPointsNumber;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.TournamentPrograssion.prepareEveryNextTour.ThisPlayerDoesNotParticipateToThisTournament;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.TournamentPrograssion.prepareEveryNextTour.ThisTournamentIsNotInProgress;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.TournamentPrograssion.prepareEveryNextTour.TournamentIsFinished;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.TournamentPrograssion.prepareFirstTour.ThisPlayerHaveBattleInCurrentTour;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.TournamentPrograssion.start.TooManyToursInTournament;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentPrograssion.finish.TournamentCannotBeFinished;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentPrograssion.prepareEveryNextTour.NotValidPointsNumber;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentPrograssion.prepareEveryNextTour.ThisPlayerDoesNotParticipateToThisTournament;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentPrograssion.prepareEveryNextTour.ThisTournamentIsNotInProgress;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentPrograssion.prepareEveryNextTour.TournamentIsFinished;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentPrograssion.prepareFirstTour.ThisPlayerHaveBattleInCurrentTour;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentPrograssion.start.TooManyToursInTournament;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;

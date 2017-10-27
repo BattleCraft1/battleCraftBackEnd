@@ -4,9 +4,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.UserAccount;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 @Repository
@@ -37,4 +37,7 @@ public interface UserAccountRepository extends JpaRepository<UserAccount, Long> 
 
     @Query("SELECT u FROM UserAccount u WHERE u.name = ?1")
     UserAccount findUserAccountByUniqueName(String userUniqueName);
+
+    @Query("SELECT u.name FROM UserAccount u WHERE u.name = ?1")
+    String checkIfUserExist(String username);
 }

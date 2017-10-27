@@ -9,7 +9,7 @@ import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.PlayerReposit
 import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.UserAccountRepository;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.pageOfEntity.interfaces.UsersAccountsRepository;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.criteria.SearchCriteria;
-import pl.edu.pollub.battleCraft.serviceLayer.services.helpers.interfaces.UniqueNamesValidator;
+import pl.edu.pollub.battleCraft.serviceLayer.validators.interfaces.UniqueNamesValidator;
 import pl.edu.pollub.battleCraft.serviceLayer.services.pageOfEntities.interfaces.UsersAccountsService;
 
 import java.util.List;

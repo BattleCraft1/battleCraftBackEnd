@@ -4,18 +4,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Game.Game;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.pageOfEntity.interfaces.GamesRepository;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.field.Join;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.field.Field;
-import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.interfaces.SearchAssistant;
+import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.interfaces.Searcher;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.criteria.SearchCriteria;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.GameRepository;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.OrganizerRepository;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.TournamentRepository;
 import pl.edu.pollub.battleCraft.dataLayer.repositories.pageOfEntity.interfaces.TournamentsRepository;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 @Component
@@ -23,23 +23,23 @@ public class GamesRepositoryImpl implements GamesRepository {
     private final GameRepository gameRepository;
     private final TournamentRepository tournamentRepository;
     private final OrganizerRepository organizerRepository;
-    private final SearchAssistant getPageAssistant;
+    private final Searcher searcher;
     private final TournamentsRepository tournamentsRepository;
 
     @Autowired
     public GamesRepositoryImpl(GameRepository gameRepository, TournamentRepository tournamentRepository,
-                               OrganizerRepository organizerRepository, SearchAssistant getPageAssistant, TournamentsRepository tournamentsRepository) {
+                               OrganizerRepository organizerRepository, Searcher getPageAssistant, TournamentsRepository tournamentsRepository) {
         this.gameRepository = gameRepository;
         this.tournamentRepository = tournamentRepository;
         this.organizerRepository = organizerRepository;
-        this.getPageAssistant = getPageAssistant;
+        this.searcher = getPageAssistant;
         this.tournamentsRepository = tournamentsRepository;
     }
 
     @Override
     @Transactional
     public Page getPageOfGames(List<SearchCriteria> searchCriteria, Pageable requestedPage) {
-        return getPageAssistant
+        return searcher
                 .select(
                         new Field("name", "name"),
                         new Field("tournamentsNumber", "tournamentsNumber"),

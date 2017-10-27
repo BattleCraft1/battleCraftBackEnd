@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Address.Address;
-import pl.edu.pollub.battleCraft.dataLayer.entities.Address.Province;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Game.Game;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.enums.TournamentStatus;
@@ -16,8 +15,9 @@ import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.enums.UserTy
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.organizers.relationships.Organization;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.players.Player;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.players.relationships.Participation;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.TournamentPrograssion.start.ThisTournamentIsNotStarted;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.CheckedExceptions.TournamentPrograssion.start.YouDidNotOrganizeTournamentWithThisName;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentPrograssion.start.ThisTournamentIsNotStarted;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentPrograssion.start.YouDidNotOrganizeTournamentWithThisName;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Invitation.InvitationDTO;
 
 import javax.persistence.*;
 import java.util.*;
@@ -228,22 +228,35 @@ public class Organizer extends Player {
                 .findFirst().orElseThrow(() -> new YouDidNotOrganizeTournamentWithThisName(tournamentName));
     }
 
-    public void editOrganizations(Tournament... organizedTournaments) {
+    public void editOrganizations(List<InvitationDTO> invitationDTOS, Tournament... organizedTournaments) {
         List<Tournament> tournamentList = Arrays.asList(organizedTournaments);
+        this.organizedTournaments.stream().filter(organization -> tournamentList.contains(organization.getOrganizedTournament()))
+                .forEach(organization -> {
+                    boolean accepted = invitationDTOS.stream()
+                            .filter(invitation -> invitation.name.equals(organization.getOrganizedTournament().getName()))
+                            .map(invitation -> invitation.accepted)
+                            .findFirst().orElse(false);
+                    organization.setAccepted(accepted); });
+
         this.organizedTournaments.addAll(tournamentList.stream()
                 .filter(tournament -> !this.organizedTournaments.stream()
                         .map(Organization::getOrganizedTournament)
                         .collect(Collectors.toList()).contains(tournament))
                 .map(tournament -> {
-                    Organization organization = new Organization(this, tournament);
+                    boolean accepted = invitationDTOS.stream()
+                            .filter(invitation -> invitation.name.equals(tournament.getName()))
+                            .map(invitation -> invitation.accepted)
+                            .findFirst().orElse(false);
+                    Organization organization = new Organization(this, tournament, accepted);
                     tournament.addOrganization(organization);
                     return organization; })
                 .collect(Collectors.toList()));
+
         this.organizedTournaments.removeAll(this.organizedTournaments.stream()
                 .filter(organization -> !tournamentList.contains(organization.getOrganizedTournament())
                         && organization.getOrganizedTournament().getStatus()== TournamentStatus.ACCEPTED)
                 .peek(organization -> {
-                    organization.getOrganizer().deleteOrganization(organization);
+                    organization.getOrganizedTournament().deleteOrganizer(organization);
                     organization.setOrganizer(null);
                     organization.setOrganizedTournament(null);
                 }).collect(Collectors.toList()));

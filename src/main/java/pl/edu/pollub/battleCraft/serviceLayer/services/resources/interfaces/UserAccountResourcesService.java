@@ -6,13 +6,10 @@ import java.io.IOException;
 
 public interface UserAccountResourcesService {
 
-    byte[] getUserAvatarWeb(String userId) throws IOException;
-
-    byte[] getUserAvatarMobile(String userId) throws IOException;
+    byte[] getUserAvatar(String name) throws IOException;
 
     void deleteUsersAccountsAvatars(String... usersToDeleteUniqueNames) throws IOException;
 
     void saveUserAvatar(String username, MultipartFile file) throws IOException;
 
-    byte[] getUserBigAvatar(String name) throws IOException;
 }

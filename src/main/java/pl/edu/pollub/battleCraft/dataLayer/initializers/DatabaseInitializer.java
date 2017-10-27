@@ -8,6 +8,7 @@ import pl.edu.pollub.battleCraft.dataLayer.entities.Address.Address;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Game.Game;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Game.enums.GameStatus;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.Tournament;
+import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.enums.TournamentStatus;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.UserBuilder;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.organizers.Organizer;
@@ -251,6 +252,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
                     .endingIn(format.parse("03-06-2018 19:12:00"))
                     .inviteParticipants(testUser1,testUser2,testUser5,testUser6)
                     .finishOrganize();
+            testTournament8.setStatus(TournamentStatus.ACCEPTED);
 
             Tournament testTournament9 = testUser9
                     .startOrganizeTournament("Tournament9", 4,2)
@@ -260,6 +262,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
                     .endingIn(format.parse("16-07-2018 14:17:00"))
                     .inviteParticipants(testUser10,testUser8)
                     .finishOrganize();
+            testTournament9.setStatus(TournamentStatus.ACCEPTED);
 
             Tournament testTournament10 = testUser9
                     .startOrganizeTournament("Tournament 10", 3,2)
@@ -270,6 +273,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
                     .endingIn(format.parse("26-08-2018 21:06:00"))
                     .inviteParticipants(testUser10,testUser7,testUser6,testUser2)
                     .finishOrganize();
+            testTournament10.setStatus(TournamentStatus.ACCEPTED);
 
             tournamentRepository.save(testTournament1);
             tournamentRepository.save(testTournament2);
