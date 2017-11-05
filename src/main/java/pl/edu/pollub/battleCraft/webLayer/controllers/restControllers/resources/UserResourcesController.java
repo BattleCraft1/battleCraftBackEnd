@@ -24,8 +24,8 @@ public class UserResourcesController {
         userAccountResourcesService.saveUserAvatar(username,file);
     }
 
-    @GetMapping("/get/user/{name}/avatar")
-    public ResponseEntity<byte[]> getUserAvatarWeb(@PathVariable String name) throws IOException {
+    @GetMapping("/get/user/avatar")
+    public ResponseEntity<byte[]> getUserAvatarWeb(@RequestParam(value = "username") String name) throws IOException {
         byte[] image = userAccountResourcesService.getUserAvatar(name);
         return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(image);
     }

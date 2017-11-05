@@ -46,7 +46,7 @@ public class GameValidator implements Validator {
 
     public void finishValidation(BindingResult bindingResult){
         if (bindingResult.hasErrors()) {
-            throw new EntityValidationException("Invalid tournament data", bindingResult);
+            throw new EntityValidationException("Invalid game data", bindingResult);
         }
     }
 

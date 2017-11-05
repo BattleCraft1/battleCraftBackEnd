@@ -21,10 +21,8 @@ public class RankingEnumsController {
     }
 
     @GetMapping("/get/ranking/enums")
-    public Map<String, List<String>> getTournamentsEnums() {
-        List<String> gamesNames = gameEnumsService.getAllGamesNames();
-        Map<String, List<String>> enums = new HashMap<>();
-        enums.put("gamesNames", gamesNames);
-        return enums;
+    public List<String> getTournamentsEnums() {
+        List<String> gamesNames = gameEnumsService.getAllAcceptedGamesNames();
+        return gamesNames;
     }
 }

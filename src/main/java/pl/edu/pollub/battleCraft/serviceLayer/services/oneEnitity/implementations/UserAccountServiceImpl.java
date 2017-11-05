@@ -13,6 +13,7 @@ import pl.edu.pollub.battleCraft.dataLayer.repositories.interfaces.UserAccountRe
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityValidation.EntityValidationException;
 import pl.edu.pollub.battleCraft.serviceLayer.services.oneEnitity.interfaces.UserAccountService;
+import pl.edu.pollub.battleCraft.serviceLayer.services.resources.interfaces.UserAccountResourcesService;
 import pl.edu.pollub.battleCraft.serviceLayer.services.validators.implementations.UserAccountValidator;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.UserAccountRequestDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.UserAccount.UserAccountResponseDTO;
@@ -26,12 +27,15 @@ public class UserAccountServiceImpl implements UserAccountService{
 
     private final UserAccountRepository userAccountRepository;
 
+    private final UserAccountResourcesService userAccountResourcesService;
+
     private UserBuilder userBuilder = new UserBuilder();
 
     @Autowired
-    public UserAccountServiceImpl(UserAccountValidator userAccountValidator, UserAccountRepository userAccountRepository) {
+    public UserAccountServiceImpl(UserAccountValidator userAccountValidator, UserAccountRepository userAccountRepository, UserAccountResourcesService userAccountResourcesService) {
         this.userAccountRepository = userAccountRepository;
         this.userAccountValidator = userAccountValidator;
+        this.userAccountResourcesService = userAccountResourcesService;
     }
 
     @Override
@@ -43,7 +47,7 @@ public class UserAccountServiceImpl implements UserAccountService{
         userBuilder.edit(userAccountToEdit,
                 userAccountRequestDTO.firstname,
                 userAccountRequestDTO.lastname,
-                userAccountRequestDTO.name,
+                userAccountRequestDTO.nameChange,
                 userAccountRequestDTO.email)
                 .changeAddress(
                         userAccountRequestDTO.province,
@@ -67,6 +71,9 @@ public class UserAccountServiceImpl implements UserAccountService{
         }
 
         userAccountValidator.finishValidation(bindingResult);
+
+        if(!userAccountRequestDTO.name.equals(userAccountRequestDTO.nameChange))
+        userAccountResourcesService.renameUserAvatar(userAccountRequestDTO.name,userAccountRequestDTO.nameChange);
 
         return new UserAccountResponseDTO(userAccountRepository.save(userAccountToEdit));
     }

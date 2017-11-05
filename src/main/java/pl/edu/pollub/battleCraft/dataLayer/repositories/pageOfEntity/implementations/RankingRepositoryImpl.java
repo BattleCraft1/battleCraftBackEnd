@@ -15,6 +15,8 @@ import pl.edu.pollub.battleCraft.dataLayer.repositories.helpers.search.criteria.
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.PageOfEntities.AnyEntityNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.PageOfEntities.PageNotFoundException;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -30,6 +32,13 @@ public class RankingRepositoryImpl implements RankingRepository{
     @Override
     @Transactional(rollbackFor = {AnyEntityNotFoundException.class,PageNotFoundException.class})
     public Page getPageOfRanking(List<SearchCriteria> searchCriteria, Pageable requestedPage) {
+        searchCriteria.add(
+                new SearchCriteria(
+                        Arrays.asList("tour", "tournament", "banned"),
+                        ":",
+                        Collections.singletonList(false)
+                )
+        );
         return searcher
                 .select(
                         new Field("player.name", "name"),

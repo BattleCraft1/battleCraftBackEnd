@@ -12,8 +12,8 @@ import java.util.List;
 @Repository
 @Transactional
 public interface GameRepository extends JpaRepository<Game, Long> {
-    @Query("SELECT DISTINCT g.name from Game g")
-    List<String> getAllGamesNames();
+    @Query("SELECT DISTINCT g.name from Game g WHERE g.banned = false AND g.status = 'ACCEPTED'")
+    List<String> getAllAcceptedGamesNames();
 
     @Query("SELECT g.name FROM Game g WHERE g.banned = true AND g.name in ?1")
     List<String> selectGamesToDeleteUniqueNames(String... gamesToDeleteUniqueNames);

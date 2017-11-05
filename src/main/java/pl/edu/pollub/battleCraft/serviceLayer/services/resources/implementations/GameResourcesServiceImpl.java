@@ -42,6 +42,10 @@ public class GameResourcesServiceImpl implements GameResourcesService{
         fileService.deleteFilesRelatedWithEntities(DEFAULT_GAME_RULES_DIRECTORY_NAME,gamesToDeleteUniqueNames);
     }
 
+    @Override
+    public void renameGamesRules(String previousName,String newName) {
+        fileService.renameRelatedWithEntityFile(DEFAULT_GAME_RULES_DIRECTORY_NAME,previousName,newName);
+    }
 
     @Override
     public void saveGameRules(@NotNull @NotBlank String gameName, @NotNull @NotBlank MultipartFile file){

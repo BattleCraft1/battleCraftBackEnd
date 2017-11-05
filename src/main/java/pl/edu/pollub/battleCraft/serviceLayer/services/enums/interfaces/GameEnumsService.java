@@ -4,7 +4,6 @@ import java.util.List;
 
 public interface GameEnumsService {
 
-    List<String> getAllGamesStatus();
+    List<String> getAllAcceptedGamesNames();
 
-    List<String> getAllGamesNames();
 }

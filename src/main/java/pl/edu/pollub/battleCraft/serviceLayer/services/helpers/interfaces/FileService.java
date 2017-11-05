@@ -19,6 +19,8 @@ public interface FileService {
 
     Path load(String filename);
 
+    void renameRelatedWithEntityFile(String previousName, String newName, String directoryName);
+
     byte[] loadFileAsByteArray(String filename) throws IOException;
 
     void store(File file, String name, String fileType);

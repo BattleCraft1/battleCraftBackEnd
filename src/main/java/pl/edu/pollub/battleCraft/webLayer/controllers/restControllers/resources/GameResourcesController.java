@@ -22,7 +22,7 @@ public class GameResourcesController {
     }
 
     @PostMapping(value = "/upload/game/rules")
-    public void uploadGameRules(@RequestParam("avatar") MultipartFile file, @RequestParam(value = "username") String gameName){
+    public void uploadGameRules(@RequestParam("gameRules") MultipartFile file, @RequestParam(value = "gameName") String gameName){
         gameResourcesService.saveGameRules(gameName,file);
     }
 
@@ -32,7 +32,7 @@ public class GameResourcesController {
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.APPLICATION_PDF)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+file.getFilename())
+                .header(HttpHeaders.CONTENT_DISPOSITION, new StringBuilder("attachment; filename=").append(file.getFilename()).toString())
                 .body(file);
     }
 }

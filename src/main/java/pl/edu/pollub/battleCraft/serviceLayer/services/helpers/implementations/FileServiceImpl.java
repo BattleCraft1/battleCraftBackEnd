@@ -132,6 +132,24 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
+    public void renameRelatedWithEntityFile(String directoryName, String previousName, String newName){
+        try {
+            Path relatedFilePath = this.findFileByRelatedEntityName(previousName,directoryName);
+            File relatedFile = relatedFilePath.toFile();
+            if(relatedFile.exists()){
+                Path targetPath = Paths.get(new StringBuilder(this.getRootLocation().toString())
+                        .append("/").append(directoryName).append("/").append(newName).append(".")
+                        .append(relatedFilePath.toString().split("\\.")[1])
+                        .toString());
+                Files.move(relatedFilePath, targetPath);
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public byte[] loadFileAsByteArray(String filename) throws IOException {
         return Files.readAllBytes(this.load(filename));
     }
@@ -174,7 +192,6 @@ public class FileServiceImpl implements FileService {
     @Override
     public File convertMultipartFileToFile(MultipartFile file) throws IOException {
         File convFile = new File(file.getOriginalFilename());
-        convFile.createNewFile();
         FileOutputStream fos = new FileOutputStream(convFile);
         fos.write(file.getBytes());
         fos.close();

@@ -21,15 +21,6 @@ public class GameEnumsController {
 
     @GetMapping("/get/allGames/names")
     public List<String> getAllGamesClassesNames() {
-        return gameEnumsService.getAllGamesNames();
-    }
-
-    @GetMapping("/get/games/enums")
-    public Map<String, List<String>> getTournamentsEnums() {
-        System.out.println("get tournament enums");
-        List<String> gamesStatus = gameEnumsService.getAllGamesStatus();
-        Map<String, List<String>> enums = new HashMap<>();
-        enums.put("gamesStatus", gamesStatus);
-        return enums;
+        return gameEnumsService.getAllAcceptedGamesNames();
     }
 }

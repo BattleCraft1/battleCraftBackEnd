@@ -60,6 +60,11 @@ public class UserAccountResourcesServiceImpl implements UserAccountResourcesServ
     }
 
     @Override
+    public void renameUserAvatar(String previousName,String newName) {
+        fileService.renameRelatedWithEntityFile(DEFAULT_USER_AVATARS_DIRECTORY_NAME,previousName,newName);
+    }
+
+    @Override
     public void saveUserAvatar(@NotNull @NotBlank String username,@NotNull @NotBlank MultipartFile file) throws IOException {
         String name = Optional.ofNullable(userAccountRepository.checkIfUserExist(username))
                 .orElseThrow(() -> new EntityNotFoundException(UserAccount.class,username));

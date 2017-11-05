@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
+import pl.edu.pollub.battleCraft.dataLayer.entities.Address.Address;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Game.Game;
 import pl.edu.pollub.battleCraft.dataLayer.entities.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.entities.User.subClasses.organizers.Organizer;
@@ -52,12 +53,12 @@ public class TournamentServiceImpl implements TournamentService{
                         tournamentWebDTO.tablesCount,
                         tournamentWebDTO.playersOnTableCount)
                 .with(organizers)
-                .changeAddressForTournament(
+                .in(new Address(
                         tournamentWebDTO.province,
                         tournamentWebDTO.city,
                         tournamentWebDTO.street,
                         tournamentWebDTO.zipCode,
-                        tournamentWebDTO.description)
+                        tournamentWebDTO.description))
                 .withGame(tournamentGame)
                 .startAt(tournamentWebDTO.dateOfStart)
                 .endingIn(tournamentWebDTO.dateOfEnd)

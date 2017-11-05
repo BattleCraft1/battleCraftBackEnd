@@ -10,6 +10,8 @@ public interface UserAccountResourcesService {
 
     void deleteUsersAccountsAvatars(String... usersToDeleteUniqueNames) throws IOException;
 
+    void renameUserAvatar(String previousName, String newName);
+
     void saveUserAvatar(String username, MultipartFile file) throws IOException;
 
 }

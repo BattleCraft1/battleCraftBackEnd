@@ -8,5 +8,7 @@ public interface GameResourcesService {
 
     void deleteGamesRules(String... gamesToDeleteUniqueNames);
 
+    void renameGamesRules(String previousName, String newName);
+
     void saveGameRules(String gameName, MultipartFile file);
 }

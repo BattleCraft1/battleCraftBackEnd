@@ -36,7 +36,7 @@ public class UniqueNamesValidatorImpl implements UniqueNamesValidator{
         if(notValidUniqueNames.size()>0)
             throw new OperaionOnDataBaseFailedException(
                     new StringBuilder("Elements ").append(String.join(", ", notValidUniqueNames))
-                            .append(" are not deleted because if you want delete element you must ban it firstly").toString());
+                            .append(" are not rejected because you can cancel acceptation only for accepted elements").toString());
     }
 
     public void validateUniqueNamesElementsToAdvance(List<String> validUniqueNames, String... uniqueNamesToValidate){
