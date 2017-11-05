@@ -69,6 +69,8 @@ public class Tournament extends AddressOwner{
 
     private int playersOnTableCount;
 
+    private int toursCount;
+
     @Formula("tables_count * players_on_table_count")
     private int maxPlayers;
 

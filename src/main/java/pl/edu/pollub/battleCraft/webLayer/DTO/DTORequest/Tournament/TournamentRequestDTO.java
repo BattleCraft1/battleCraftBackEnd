@@ -15,6 +15,7 @@ import java.util.Date;
 public class TournamentRequestDTO extends AddressOwnerRequestDTO{
     public String name;
     public String nameChange;
+    public int toursCount;
     public int tablesCount;
     public int playersOnTableCount;
     public String game;

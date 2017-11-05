@@ -54,6 +54,7 @@ public class TournamentValidator implements Validator {
         this.validateTournamentName(tournamentWebDTO.nameChange);
         this.validatePlayersOnTableCount(tournamentWebDTO.playersOnTableCount);
         this.validateTablesCount(tournamentWebDTO.playersOnTableCount,tournamentWebDTO.tablesCount);
+        this.validateToursCount(tournamentWebDTO.toursCount,tournamentWebDTO.playersOnTableCount,tournamentWebDTO.tablesCount);
         this.validateStartDate(tournamentWebDTO.dateOfStart);
         this.validateEndDate(tournamentWebDTO.dateOfStart,tournamentWebDTO.dateOfEnd);
         addressValidator.validate(tournamentWebDTO,errors);
@@ -73,6 +74,14 @@ public class TournamentValidator implements Validator {
             if(tablesCount<1 || tablesCount>15)
                 errors.rejectValue("tablesCount","","Tables count must be between 1 and 15");
         }
+    }
+
+    private void validateToursCount(int toursCount, int playersOnTableCount, int tablesCount){
+        int maxPlayers = playersOnTableCount*tablesCount;
+        int maxToursNumber = factorial(maxPlayers-1)/factorial(maxPlayers-2);
+        if(toursCount>maxToursNumber)
+            errors.rejectValue("toursCount","",
+                    new StringBuilder("Max tours number in this tournament is: ").append(maxToursNumber).toString());
     }
 
     private void validatePlayersOnTableCount(int playersOnTableCount){
@@ -167,5 +176,10 @@ public class TournamentValidator implements Validator {
         if (bindingResult.hasErrors()) {
             throw new EntityValidationException("Invalid tournament data", bindingResult);
         }
+    }
+
+    private static int factorial(int number) {
+        if (number <= 1) return 1;
+        else return number * factorial(number - 1);
     }
 }

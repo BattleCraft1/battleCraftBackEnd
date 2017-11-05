@@ -79,23 +79,24 @@ public class Organizer extends Player {
     }
 
     @JsonIgnore
-    public Organizer startOrganizeTournament(String name, int tablesCount, int playersOnTableCount){
+    public Organizer startOrganizeTournament(String name, int tablesCount, int playersOnTableCount,int toursCount){
         tournamentInOrganisation = new Tournament();
         tournamentInOrganisation.addOrganizers(this);
-        return editBasicData(name,tablesCount,playersOnTableCount);
+        return editBasicData(name,tablesCount,playersOnTableCount,toursCount);
     }
 
     @JsonIgnore
-    public Organizer editOrganizedTournament(Tournament tournament, String name, int tablesCount, int playersOnTableCount){
+    public Organizer editOrganizedTournament(Tournament tournament, String name, int tablesCount, int playersOnTableCount, int toursCount){
         tournamentInOrganisation = tournament;
-        return editBasicData(name,tablesCount,playersOnTableCount);
+        return editBasicData(name,tablesCount,playersOnTableCount,toursCount);
     }
 
     @JsonIgnore
-    private Organizer editBasicData(String name, int tablesCount, int playersOnTableCount){
+    private Organizer editBasicData(String name, int tablesCount, int playersOnTableCount,int toursCount){
         tournamentInOrganisation.setName(name);
         tournamentInOrganisation.setTablesCount(tablesCount);
         tournamentInOrganisation.setPlayersOnTableCount(playersOnTableCount);
+        tournamentInOrganisation.setToursCount(toursCount);
         return this;
     }
 
@@ -158,9 +159,9 @@ public class Organizer extends Player {
         return tournamentInOrganisation;
     }
 
-    public Tournament startTournament(String tournamentToStartName,int toursNumber){
+    public Tournament startTournament(String tournamentToStartName){
         Tournament tournamentToStart = this.findOrganizedTournamentByName(tournamentToStartName);
-        return new TournamentWithProgression(tournamentToStart,toursNumber);
+        return new TournamentWithProgression(tournamentToStart);
     }
 
     public void setRandomPlayersOnTableInFirstTour(String tournamentName,int tableNumber){

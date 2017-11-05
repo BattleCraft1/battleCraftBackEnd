@@ -36,6 +36,7 @@ public class TournamentResponseDTO {
 
         this.name = tournament.getName();
         this.nameChange = tournament.getName();
+        this.tablesCount = tournament.getToursCount();
         this.tablesCount = tournament.getTablesCount();
         this.playersOnTableCount = tournament.getPlayersOnTableCount();
         this.game = tournament.getGame().getName();
@@ -54,6 +55,7 @@ public class TournamentResponseDTO {
 
     public String name;
     public String nameChange;
+    public int toursCount;
     public int tablesCount;
     public int playersOnTableCount;
     public String game;

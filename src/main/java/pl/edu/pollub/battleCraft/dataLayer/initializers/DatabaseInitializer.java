@@ -117,7 +117,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
         testGame1.setStatus(GameStatus.ACCEPTED);
 
         try {
-            testUser7.startOrganizeTournament("Tournament1", 3,2)
+            testUser7.startOrganizeTournament("Tournament1", 3,2,2)
                     .with(testUser8)
                     .in(testAddress11)
                     .withGame( testGame1)
@@ -126,7 +126,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
                     .inviteParticipants(testUser1,testUser2,testUser3,testUser4)
                     .finishOrganize();
 
-            Tournament testTournament1 = testUser7.startTournament("Tournament1",2);
+            Tournament testTournament1 = testUser7.startTournament("Tournament1");
             testUser7.setRandomPlayersOnTableInFirstTour("Tournament1",0);
             testUser7.setRandomPlayersOnTableInFirstTour("Tournament1",1);
             testUser7.setPointsOnTable("Tournament1",0,5);
@@ -136,7 +136,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
             testUser7.setPointsOnTable("Tournament1",1,10);
             testUser7.finishTournament("Tournament1");
 
-            testUser10.startOrganizeTournament("Tournament2", 4,2)
+            testUser10.startOrganizeTournament("Tournament2", 4,2,2)
                     .in(testAddress12)
                     .withGame( testGame1)
                     .startAt(format.parse("09-02-2018 14:11:00"))
@@ -144,7 +144,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
                     .inviteParticipants(testUser2,testUser3,testUser5,testUser9)
                     .finishOrganize();
 
-            Tournament testTournament2 = testUser10.startTournament("Tournament2",2);
+            Tournament testTournament2 = testUser10.startTournament("Tournament2");
             testUser10.setRandomPlayersOnTableInFirstTour("Tournament2",0);
             testUser10.setRandomPlayersOnTableInFirstTour("Tournament2",1);
             testUser10.setPointsOnTable("Tournament2",0,5);
@@ -154,7 +154,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
             testUser10.setPointsOnTable("Tournament2",1,10);
             testUser10.finishTournament("Tournament2");
 
-            testUser7.startOrganizeTournament("Tournament3", 3,2)
+            testUser7.startOrganizeTournament("Tournament3", 3,2,2)
                     .with(testUser9)
                     .in(testAddress13)
                     .withGame( testGame1)
@@ -163,7 +163,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
                     .inviteParticipants(testUser1,testUser3,testUser5,testUser7)
                     .finishOrganize();
 
-            Tournament testTournament3 = testUser9.startTournament("Tournament3",2);
+            Tournament testTournament3 = testUser9.startTournament("Tournament3");
             testUser9.setRandomPlayersOnTableInFirstTour("Tournament3",0);
             testUser9.setRandomPlayersOnTableInFirstTour("Tournament3",1);
             testUser9.setPointsOnTable("Tournament3",0,5);
@@ -173,7 +173,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
             testUser9.setPointsOnTable("Tournament3",1,10);
             testUser9.finishTournament("Tournament3");
 
-            testUser10.startOrganizeTournament("Tournament4",  5,2)
+            testUser10.startOrganizeTournament("Tournament4",  5,2,2)
                     .in(testAddress14)
                     .withGame( testGame1)
                     .startAt(format.parse("25-04-2018 16:25:00"))
@@ -181,7 +181,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
                     .inviteParticipants(testUser2,testUser4,testUser6,testUser8)
                     .finishOrganize();
 
-            Tournament testTournament4 = testUser10.startTournament("Tournament4",2);
+            Tournament testTournament4 = testUser10.startTournament("Tournament4");
             testUser10.setRandomPlayersOnTableInFirstTour("Tournament4",0);
             testUser10.setRandomPlayersOnTableInFirstTour("Tournament4",1);
             testUser10.setPointsOnTable("Tournament4",0,5);
@@ -192,7 +192,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
             testUser10.finishTournament("Tournament4");
 
 
-            testUser9.startOrganizeTournament("Tournament5", 4,2)
+            testUser9.startOrganizeTournament("Tournament5", 4,2,1)
                     .with(testUser7)
                     .in(testAddress15)
                     .withGame( testGame1)
@@ -201,12 +201,12 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
                     .inviteParticipants(testUser5,testUser10)
                     .finishOrganize();
 
-            Tournament testTournament5 = testUser9.startTournament("Tournament5",1);
+            Tournament testTournament5 = testUser9.startTournament("Tournament5");
             testUser9.setRandomPlayersOnTableInFirstTour("Tournament5",0);
             testUser9.setPointsOnTable("Tournament5",0,5);
             testUser9.finishTournament("Tournament5");
 
-            testUser8.startOrganizeTournament("Tournament6", 3,2)
+            testUser8.startOrganizeTournament("Tournament6", 3,2,2)
                     .with(testUser9)
                     .in(testAddress16)
                     .withGame( testGame1)
@@ -215,7 +215,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
                     .inviteParticipants(testUser5,testUser10,testUser1,testUser2)
                     .finishOrganize();
 
-            Tournament testTournament6 = testUser9.startTournament("Tournament6",2);
+            Tournament testTournament6 = testUser9.startTournament("Tournament6");
             testUser9.setRandomPlayersOnTableInFirstTour("Tournament6",0);
             testUser9.setRandomPlayersOnTableInFirstTour("Tournament6",1);
             testUser9.setPointsOnTable("Tournament6",0,5);
@@ -225,7 +225,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
             testUser9.setPointsOnTable("Tournament6",1,10);
             testUser9.finishTournament("Tournament6");
 
-            testUser10.startOrganizeTournament("Tournament7", 2,2)
+            testUser10.startOrganizeTournament("Tournament7", 2,2,2)
                     .in(testAddress17)
                     .withGame( testGame1)
                     .startAt(format.parse("01-12-2018 11:06:00"))
@@ -233,7 +233,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
                     .inviteParticipants(testUser10,testUser1,testUser3,testUser5)
                     .finishOrganize();
 
-            Tournament testTournament7 = testUser10.startTournament("Tournament7",2);
+            Tournament testTournament7 = testUser10.startTournament("Tournament7");
             testUser10.setRandomPlayersOnTableInFirstTour("Tournament7",0);
             testUser10.setRandomPlayersOnTableInFirstTour("Tournament7",1);
             testUser10.setPointsOnTable("Tournament7",0,5);
@@ -244,7 +244,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
             testUser10.finishTournament("Tournament7");
 
             Tournament testTournament8 = testUser7
-                    .startOrganizeTournament("Tournament8", 10,2)
+                    .startOrganizeTournament("Tournament8", 10,2,2)
                     .with(testUser8)
                     .in(testAddress18)
                     .withGame( testGame1)
@@ -255,7 +255,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
             testTournament8.setStatus(TournamentStatus.ACCEPTED);
 
             Tournament testTournament9 = testUser9
-                    .startOrganizeTournament("Tournament9", 4,2)
+                    .startOrganizeTournament("Tournament9", 4,2,2)
                     .in(testAddress19)
                     .withGame( testGame1)
                     .startAt(format.parse("13-07-2018 08:17:00"))
@@ -265,7 +265,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
             testTournament9.setStatus(TournamentStatus.ACCEPTED);
 
             Tournament testTournament10 = testUser9
-                    .startOrganizeTournament("Tournament 10", 3,2)
+                    .startOrganizeTournament("Tournament 10", 3,2,2)
                     .with(testUser8)
                     .in(testAddress20)
                     .withGame( testGame1)

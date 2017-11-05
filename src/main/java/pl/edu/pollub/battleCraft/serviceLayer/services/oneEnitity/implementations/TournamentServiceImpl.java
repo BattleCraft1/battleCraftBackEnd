@@ -51,7 +51,8 @@ public class TournamentServiceImpl implements TournamentService{
                 .startOrganizeTournament(
                         tournamentWebDTO.name,
                         tournamentWebDTO.tablesCount,
-                        tournamentWebDTO.playersOnTableCount)
+                        tournamentWebDTO.playersOnTableCount,
+                        tournamentWebDTO.toursCount)
                 .with(organizers)
                 .in(new Address(
                         tournamentWebDTO.province,
@@ -90,7 +91,8 @@ public class TournamentServiceImpl implements TournamentService{
                         tournamentToEdit,
                         tournamentWebDTO.nameChange,
                         tournamentWebDTO.tablesCount,
-                        tournamentWebDTO.playersOnTableCount)
+                        tournamentWebDTO.playersOnTableCount,
+                        tournamentWebDTO.toursCount)
                 .editOrganizers(organizers)
                 .changeAddressForTournament(
                         tournamentWebDTO.province,

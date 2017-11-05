@@ -17,7 +17,6 @@ import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.Tou
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentPrograssion.prepareEveryNextTour.ThisTournamentIsNotInProgress;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentPrograssion.prepareEveryNextTour.TournamentIsFinished;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentPrograssion.prepareFirstTour.ThisPlayerHaveBattleInCurrentTour;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentPrograssion.start.TooManyToursInTournament;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -35,14 +34,8 @@ import java.util.stream.Collectors;
 @ToString
 public class TournamentWithProgression extends Tournament{
 
-    public TournamentWithProgression(Tournament tournament,int toursCount) {
+    public TournamentWithProgression(Tournament tournament) {
         super();
-
-        int playersNumber = tournament.getParticipants().size();
-        int maxToursNumber = factorial(playersNumber-1)/factorial(playersNumber-2);
-        if(toursCount>maxToursNumber)
-            throw new TooManyToursInTournament(maxToursNumber);
-
         this.setStatus(TournamentStatus.IN_PROGRESS);
         this.setBanned(false);
         this.changeAddress(tournament.getAddress());
@@ -57,7 +50,7 @@ public class TournamentWithProgression extends Tournament{
         this.addParticipants(tournament.getParticipants().stream().map(Participation::getPlayer).toArray(Player[]::new));
         this.addOrganizers(tournament.getOrganizers().stream().map(Organization::getOrganizer).toArray(Organizer[]::new));
 
-        for(int toursNumber=0;toursNumber<toursCount;toursNumber++){
+        for(int toursNumber=0;toursNumber<tournament.getToursCount();toursNumber++){
             new Tour(toursNumber,this);
         }
         this.currentTour = this.tours.get(0);
