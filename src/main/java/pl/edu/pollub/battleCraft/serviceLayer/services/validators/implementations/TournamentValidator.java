@@ -65,6 +65,12 @@ public class TournamentValidator implements Validator {
             errors.rejectValue("nameChange","","Tournament name must start with big letter and have between 2 to 30 chars");
     }
 
+    private void validatePlayersOnTableCount(int playersOnTableCount){
+        if(playersOnTableCount!=2 && playersOnTableCount!=4)
+            errors.rejectValue("playersOnTable","",
+                    new StringBuilder("You can choose only 2 or 4 players count on table").toString());
+    }
+
     private void validateTablesCount(int playersOnTableCount, int tablesCount){
         if(playersOnTableCount==2){
             if(tablesCount<1 || tablesCount>30)
@@ -77,17 +83,13 @@ public class TournamentValidator implements Validator {
     }
 
     private void validateToursCount(int toursCount, int playersOnTableCount, int tablesCount){
-        int maxPlayers = playersOnTableCount*tablesCount;
-        int maxToursNumber = factorial(maxPlayers-1)/factorial(maxPlayers-2);
+        Long maxPlayers = (long) (playersOnTableCount * tablesCount);
+        Long factorial1 = factorial(maxPlayers-1);
+        Long factorial2 = factorial(maxPlayers-2);
+        Long maxToursNumber = factorial1/factorial2;
         if(toursCount>maxToursNumber)
             errors.rejectValue("toursCount","",
                     new StringBuilder("Max tours number in this tournament is: ").append(maxToursNumber).toString());
-    }
-
-    private void validatePlayersOnTableCount(int playersOnTableCount){
-        if(playersOnTableCount!=2 && playersOnTableCount!=4)
-            errors.rejectValue("playersOnTable","",
-                    new StringBuilder("You can choose only 2 or 4 players count on table").toString());
     }
 
     private void validateStartDate(Date startDate){
@@ -178,8 +180,8 @@ public class TournamentValidator implements Validator {
         }
     }
 
-    private static int factorial(int number) {
-        if (number <= 1) return 1;
+    private Long factorial(Long number) {
+        if (number <= 1) return 1L;
         else return number * factorial(number - 1);
     }
 }

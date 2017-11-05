@@ -36,8 +36,8 @@ public class TournamentResponseDTO {
 
         this.name = tournament.getName();
         this.nameChange = tournament.getName();
-        this.tablesCount = tournament.getToursCount();
         this.tablesCount = tournament.getTablesCount();
+        this.toursCount = tournament.getToursCount();
         this.playersOnTableCount = tournament.getPlayersOnTableCount();
         this.game = tournament.getGame().getName();
         this.dateOfStart = tournament.getDateOfStart();

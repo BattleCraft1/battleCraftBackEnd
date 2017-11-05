@@ -42,6 +42,7 @@ public class TournamentWithProgression extends Tournament{
         this.setName(tournament.getName());
         this.setTablesCount(tournament.getTablesCount());
         this.setMaxPlayers(tournament.getMaxPlayers());
+        this.setToursCount(tournament.getToursCount());
         this.setPlayersNumber(tournament.getPlayersNumber());
         this.setDateOfEnd(tournament.getDateOfEnd());
         this.setDateOfStart(new Date());
