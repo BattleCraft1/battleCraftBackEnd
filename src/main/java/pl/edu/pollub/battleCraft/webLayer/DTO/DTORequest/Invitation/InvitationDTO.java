@@ -9,6 +9,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InvitationDTO {
-    public String name;
-    public boolean accepted;
+    private String name;
+    private boolean accepted;
 }

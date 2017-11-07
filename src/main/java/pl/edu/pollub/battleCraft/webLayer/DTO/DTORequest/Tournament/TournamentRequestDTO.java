@@ -13,14 +13,14 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TournamentRequestDTO extends AddressOwnerRequestDTO{
-    public String name;
-    public String nameChange;
-    public int toursCount;
-    public int tablesCount;
-    public int playersOnTableCount;
-    public String game;
-    public Date dateOfStart;
-    public Date dateOfEnd;
-    public String[] organizers;
-    public String[] participants;
+    private String name;
+    private String nameChange;
+    private int toursCount;
+    private int tablesCount;
+    private int playersOnTableCount;
+    private String game;
+    private Date dateOfStart;
+    private Date dateOfEnd;
+    private String[] organizers;
+    private String[] participants;
 }

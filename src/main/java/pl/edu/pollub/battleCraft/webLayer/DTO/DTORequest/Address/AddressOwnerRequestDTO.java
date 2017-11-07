@@ -9,9 +9,9 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddressOwnerRequestDTO {
-    public String province;
-    public String city;
-    public String street;
-    public String zipCode;
-    public String description;
+    private String province;
+    private String city;
+    private String street;
+    private String zipCode;
+    private String description;
 }

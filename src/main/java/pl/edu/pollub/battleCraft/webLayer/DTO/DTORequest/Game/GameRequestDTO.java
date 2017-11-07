@@ -9,6 +9,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GameRequestDTO {
-    public String name;
-    public String nameChange;
+    private String name;
+    private String nameChange;
 }

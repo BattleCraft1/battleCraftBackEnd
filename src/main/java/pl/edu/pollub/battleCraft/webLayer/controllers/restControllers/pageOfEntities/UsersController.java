@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import pl.edu.pollub.battleCraft.serviceLayer.services.pageOfEntities.interfaces.UsersAccountsService;
-import pl.edu.pollub.battleCraft.serviceLayer.services.resources.interfaces.UserAccountResourcesService;
+import pl.edu.pollub.battleCraft.serviceLayer.services.pageOfEntities.UsersAccountsService;
+import pl.edu.pollub.battleCraft.serviceLayer.services.resources.UserAccountResourcesService;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Page.GetPageAndModifyDataDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Page.GetPageObjectsDTO;
 

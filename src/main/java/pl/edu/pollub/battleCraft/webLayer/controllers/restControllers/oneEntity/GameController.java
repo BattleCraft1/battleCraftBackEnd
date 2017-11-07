@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import pl.edu.pollub.battleCraft.serviceLayer.services.oneEnitity.interfaces.GameService;
+import pl.edu.pollub.battleCraft.serviceLayer.services.singleEnitity.GameService;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Game.GameRequestDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Game.GameResponseDTO;
 

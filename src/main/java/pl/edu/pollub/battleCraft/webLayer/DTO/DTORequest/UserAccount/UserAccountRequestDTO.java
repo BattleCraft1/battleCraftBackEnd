@@ -14,12 +14,12 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserAccountRequestDTO extends AddressOwnerRequestDTO {
-    public String name;
-    public String nameChange;
-    public String email;
-    public String firstname;
-    public String lastname;
-    public String phoneNumber;
-    public List<InvitationDTO> participatedTournaments = new ArrayList<>();
-    public List<InvitationDTO> organizedTournaments = new ArrayList<>();
+    private String name;
+    private String nameChange;
+    private String email;
+    private String firstname;
+    private String lastname;
+    private String phoneNumber;
+    private List<InvitationDTO> participatedTournaments = new ArrayList<>();
+    private List<InvitationDTO> organizedTournaments = new ArrayList<>();
 }

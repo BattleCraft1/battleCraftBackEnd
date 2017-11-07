@@ -7,9 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import pl.edu.pollub.battleCraft.serviceLayer.services.resources.interfaces.GameResourcesService;
-
-import java.io.IOException;
+import pl.edu.pollub.battleCraft.serviceLayer.services.resources.GameResourcesService;
 
 @RestController
 public class GameResourcesController {
