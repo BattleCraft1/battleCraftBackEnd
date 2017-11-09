@@ -3,12 +3,16 @@ package pl.edu.pollub.battleCraft.serviceLayer.toResponseDTOsMappers;
 import org.springframework.stereotype.Component;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentStatus;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentType;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.Organizer;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Play;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Game.Game;
-import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Invitation.InvitationDTO;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Invitation.PlayerFinishedInvitationResponse;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Invitation.PlayerGroupFinishedInvitationResponseDTO;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Invitation.InvitationResponseDTO;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Invitation.PlayerInvitationResponseDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.UserAccount.UserAccountResponseDTO;
 
 import java.util.stream.Collectors;
@@ -35,33 +39,64 @@ public class UserAccountToResponseDTOMapper {
             userAccountResponseDTO.setBanned(player.isBanned());
             userAccountResponseDTO.setPoints(player.getBattles().stream().mapToInt(Play::getPoints).sum());
             userAccountResponseDTO.setNumberOfBattles(player.getBattles().size());
-            player.getParticipatedTournaments()
-                    .forEach(participation -> {
-                        Tournament tournament = participation.getParticipatedTournament();
-                        if(tournament.getStatus() != TournamentStatus.IN_PROGRESS &&
-                                tournament.getStatus() != TournamentStatus.FINISHED)
-                            userAccountResponseDTO.getParticipatedTournaments()
-                                    .add(new InvitationDTO(tournament.getName(),participation.isAccepted()));
-                        else
-                            userAccountResponseDTO.getFinishedParticipatedTournaments().add(tournament.getName());
-                    });
+            this.createParticipation(userAccountResponseDTO,player);
         }
 
         if(userAccount instanceof Organizer){
             Organizer organizer = (Organizer) userAccount;
             userAccountResponseDTO.setCreatedGames(organizer.getCreatedGames().stream().map(Game::getName).collect(Collectors.toList()));
-                    ;
-            organizer.getOrganizations()
-                    .forEach(organization -> {
-                        Tournament tournament = organization.getOrganizedTournament();
-                        if(tournament.getStatus() != TournamentStatus.IN_PROGRESS &&
-                                tournament.getStatus() != TournamentStatus.FINISHED)
-                            userAccountResponseDTO.getOrganizedTournaments()
-                                    .add(new InvitationDTO(tournament.getName(),organization.isAccepted()));
-                        else
-                            userAccountResponseDTO.getFinishedOrganizedTournaments().add(tournament.getName());
-                    });
+            this.createOrganizations(userAccountResponseDTO,organizer);
         }
         return userAccountResponseDTO;
+    }
+
+    private void createParticipation(UserAccountResponseDTO userAccountResponseDTO, Player player){
+        player.getParticipation().forEach(participation -> {
+                    Tournament tournament = participation.getParticipatedTournament();
+                    if(tournament.getStatus() != TournamentStatus.IN_PROGRESS &&
+                            tournament.getStatus() != TournamentStatus.FINISHED){
+                        if(tournament.getTournamentType() == TournamentType.GROUP){
+                            String secondPlayerName = tournament.getParticipation().stream()
+                                    .filter(participation1 -> participation.getGroupNumber().equals(participation.getGroupNumber()))
+                                    .map(participation1 -> participation1.getPlayer().getName())
+                                    .findFirst().orElse("");
+                            userAccountResponseDTO.getParticipatedTournaments()
+                                    .add(new PlayerInvitationResponseDTO(secondPlayerName,participation.isAccepted(),tournament.getName()));
+                        }
+                        else{
+                            userAccountResponseDTO.getParticipatedTournaments()
+                                    .add(new InvitationResponseDTO(tournament.getName(),participation.isAccepted()));
+                        }
+                    }
+                    else{
+                        if(tournament.getTournamentType() == TournamentType.GROUP){
+                            String secondPlayerName = tournament.getParticipation().stream()
+                                    .filter(participation1 -> participation.getGroupNumber().equals(participation.getGroupNumber()))
+                                    .map(participation1 -> participation1.getPlayer().getName())
+                                    .findFirst().orElse("");
+                            userAccountResponseDTO.getFinishedParticipatedTournaments().add(
+                                    new PlayerGroupFinishedInvitationResponseDTO(tournament.getName(),secondPlayerName)
+                            );
+                        }
+                        else{
+                            userAccountResponseDTO.getFinishedParticipatedTournaments().add(
+                                    new PlayerFinishedInvitationResponse(tournament.getName())
+                            );
+                        }
+                    }
+                });
+    }
+
+    private void createOrganizations(UserAccountResponseDTO userAccountResponseDTO, Organizer organizer){
+        organizer.getOrganizations()
+                .forEach(organization -> {
+                    Tournament tournament = organization.getOrganizedTournament();
+                    if(tournament.getStatus() != TournamentStatus.IN_PROGRESS &&
+                            tournament.getStatus() != TournamentStatus.FINISHED)
+                        userAccountResponseDTO.getOrganizedTournaments()
+                                .add(new InvitationResponseDTO(tournament.getName(),organization.isAccepted()));
+                    else
+                        userAccountResponseDTO.getFinishedOrganizedTournaments().add(tournament.getName());
+                });
     }
 }

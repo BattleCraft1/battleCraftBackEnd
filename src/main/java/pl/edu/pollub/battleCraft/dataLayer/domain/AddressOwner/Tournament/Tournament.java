@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.Formula;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.AddressOwner;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentType;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Game.Game;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentStatus;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.Organizer;
@@ -26,10 +27,10 @@ import java.util.stream.Collectors;
 @Setter
 @EqualsAndHashCode(callSuper = true)
 @ToString
-@Inheritance(strategy = InheritanceType.JOINED)
-public class Tournament extends AddressOwner{
-    public Tournament() {
-        super();
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+public abstract class Tournament extends AddressOwner{
+    protected Tournament(int playersOnTableCount) {
+        this.playersOnTableCount = playersOnTableCount;
         this.status = TournamentStatus.NEW;
         this.banned = false;
     }
@@ -60,7 +61,7 @@ public class Tournament extends AddressOwner{
 
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true, mappedBy = "participatedTournament")
-    private List<Participation> participation = new ArrayList<>();
+    protected List<Participation> participation = new ArrayList<>();
 
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true, mappedBy = "organizedTournament")
@@ -95,8 +96,8 @@ public class Tournament extends AddressOwner{
         this.organizations = this.organizations.stream().filter(Organization::isAccepted).collect(Collectors.toList());
     }
 
-    public void addOrganizers(Organizer... organizers){
-        this.organizations.addAll(Arrays.stream(organizers)
+    public void addOrganizers(List<Organizer> organizers){
+        this.organizations.addAll(organizers.stream()
                 .map(organizer -> {
                     Organization organization = new Organization(organizer, this);
                     organizer.addOrganizationByOneSide(organization);
@@ -105,9 +106,14 @@ public class Tournament extends AddressOwner{
                 .collect(Collectors.toList()));
     }
 
-    public void editOrganizers(Organizer... organizers) {
-        List<Organizer> organizersList = Arrays.asList(organizers);
-        this.organizations.addAll(organizersList.stream()
+    public void editOrganizers(List<Organizer> organizers) {
+        this.addNewOrganizations(organizers);
+        this.removeNotExistingOrganizations(organizers);
+
+    }
+
+    private void addNewOrganizations(List<Organizer> organizers){
+        this.organizations.addAll(organizers.stream()
                 .filter(organizer -> !this.organizations.stream()
                         .map(Organization::getOrganizer)
                         .collect(Collectors.toList()).contains(organizer))
@@ -116,8 +122,11 @@ public class Tournament extends AddressOwner{
                     organizer.addOrganizationByOneSide(organization);
                     return organization; })
                 .collect(Collectors.toList()));
+    }
+
+    private void removeNotExistingOrganizations(List<Organizer> organizers){
         this.organizations.removeAll(this.organizations.stream()
-                .filter(organization -> !organizersList.contains(organization.getOrganizer()))
+                .filter(organization -> !organizers.contains(organization.getOrganizer()))
                 .peek(organization -> {
                     organization.getOrganizer().deleteOrganizationByOneSide(organization);
                     organization.setOrganizedTournament(null);
@@ -144,36 +153,6 @@ public class Tournament extends AddressOwner{
         }
     }
 
-    public void addParticipants(Player... participants){
-        this.participation = Arrays.stream(participants)
-                .map(participant -> {
-                    Participation participation = new Participation(participant, this);
-                    participant.addParticipationByOneSide(participation);
-                    return participation;
-                })
-                .collect(Collectors.toList());
-    }
-
-    public void editParticipants(Player... participants) {
-        List<Player> participantsList = Arrays.asList(participants);
-        this.participation.addAll(participantsList.stream()
-                .filter(participant -> !this.participation.stream()
-                        .map(Participation::getPlayer)
-                        .collect(Collectors.toList()).contains(participant))
-                .map(participant -> {
-                    Participation participation = new Participation(participant, this);
-                    participant.addParticipationByOneSide(participation);
-                    return participation; })
-                .collect(Collectors.toList()));
-        this.participation.removeAll(this.participation.stream()
-                .filter(participation -> !participantsList.contains(participation.getPlayer()))
-                .peek(participation -> {
-                    participation.getPlayer().deleteParticipationByOneSide(participation);
-                    participation.setPlayer(null);
-                    participation.setParticipatedTournament(null);
-                }).collect(Collectors.toList()));
-    }
-
     public void addParticipationByOneSide(Participation participation) {
         this.deleteParticipationWithTheSameTournamentName(participation.getParticipatedTournament().getName());
         this.participation.add(participation);
@@ -196,6 +175,25 @@ public class Tournament extends AddressOwner{
     public void chooseGame(Game game){
         this.game = game;
         game.addTournamentByOneSide(this);
+    }
+
+    public long getNoExistingGroupNumber(){
+        List<Long> groupsNumbers = this.participation.stream()
+                .map(Participation::getGroupNumber)
+                .distinct()
+                .collect(Collectors.toList());
+        long possibleGroupNumber = new Random().nextLong();
+        while (groupsNumbers.contains(possibleGroupNumber)){
+            possibleGroupNumber = new Random().nextLong();
+        }
+        return possibleGroupNumber;
+    }
+
+    public TournamentType getTournamentType(){
+        if(this.playersOnTableCount==2){
+            return TournamentType.DUEL;
+        }
+        return TournamentType.GROUP;
     }
 
     protected void setGame(Game game){

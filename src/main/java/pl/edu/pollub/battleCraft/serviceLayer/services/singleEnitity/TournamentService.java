@@ -19,6 +19,7 @@ import pl.edu.pollub.battleCraft.serviceLayer.toResponseDTOsMappers.TournamentTo
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Tournament.TournamentRequestDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Tournament.TournamentResponseDTO;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -48,8 +49,8 @@ public class TournamentService {
         tournamentValidator.checkIfTournamentExist(tournamentWebDTO,bindingResult);
         tournamentValidator.validate(tournamentWebDTO,bindingResult);
         Game tournamentGame = tournamentValidator.getValidatedGame(tournamentWebDTO,bindingResult);
-        Organizer[] organizers = tournamentValidator.getValidatedOrganizers(tournamentWebDTO,bindingResult);
-        Player[] participants = tournamentValidator.getValidatedParticipants(tournamentWebDTO,bindingResult);
+        List<Organizer> organizers = tournamentValidator.getValidatedOrganizers(tournamentWebDTO,bindingResult);
+        List<List<Player>> participants = tournamentValidator.getValidatedParticipants(tournamentWebDTO,bindingResult);
 
         tournamentValidator.finishValidation(bindingResult);
 
@@ -57,7 +58,7 @@ public class TournamentService {
                 .startOrganizeTournament(
                         tournamentWebDTO.getName(),
                         tournamentWebDTO.getTablesCount(),
-                        tournamentWebDTO.getPlayersOnTableCount(),
+                        tournamentWebDTO.getTournamentType(),
                         tournamentWebDTO.getToursCount())
                 .with(organizers)
                 .in(new Address(
@@ -84,8 +85,8 @@ public class TournamentService {
         tournamentValidator.checkIfTournamentToEditExist(tournamentWebDTO,bindingResult);
         tournamentValidator.validate(tournamentWebDTO,bindingResult);
         Game tournamentGame = tournamentValidator.getValidatedGame(tournamentWebDTO,bindingResult);
-        Organizer[] organizers = tournamentValidator.getValidatedOrganizers(tournamentWebDTO,bindingResult);
-        Player[] participants = tournamentValidator.getValidatedParticipants(tournamentWebDTO,bindingResult);
+        List<Organizer> organizers = tournamentValidator.getValidatedOrganizers(tournamentWebDTO,bindingResult);
+        List<List<Player>> participants = tournamentValidator.getValidatedParticipants(tournamentWebDTO,bindingResult);
 
         tournamentValidator.finishValidation(bindingResult);
 
@@ -93,7 +94,7 @@ public class TournamentService {
                         tournamentToEdit,
                         tournamentWebDTO.getNameChange(),
                         tournamentWebDTO.getTablesCount(),
-                        tournamentWebDTO.getPlayersOnTableCount(),
+                        tournamentWebDTO.getTournamentType(),
                         tournamentWebDTO.getToursCount())
                 .editOrganizers(organizers)
                 .changeAddress(

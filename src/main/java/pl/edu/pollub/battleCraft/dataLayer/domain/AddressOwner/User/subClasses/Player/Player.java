@@ -6,15 +6,16 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import pl.edu.pollub.battleCraft.dataLayer.domain.Address.Address;
-import pl.edu.pollub.battleCraft.dataLayer.domain.Battle.Battle;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentStatus;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentType;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.subClasses.GroupTournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.enums.UserType;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Play;
-import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Invitation.InvitationDTO;
+import pl.edu.pollub.battleCraft.serviceLayer.services.singleEnitity.InvitationDTO.GroupTournamentInvitationDTO;
+import pl.edu.pollub.battleCraft.serviceLayer.services.singleEnitity.InvitationDTO.InvitationDTO;
 
 import javax.persistence.*;
 import java.util.*;
@@ -40,24 +41,9 @@ public class Player extends UserAccount {
         this.banned = false;
     }
 
-    public Player(UserAccount userAccount){
-        this(UserType.ACCEPTED);
-        this.setFirstname(userAccount.getFirstname());
-        this.setLastname(userAccount.getLastname());
-        this.setName(userAccount.getName());
-        this.setEmail(userAccount.getEmail());
-        this.setPassword(userAccount.getPassword());
-        this.setPhoneNumber(userAccount.getPhoneNumber());
-        try {
-            this.initAddress((Address)userAccount.getAddress().clone());
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-        }
-    }
-
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true,  mappedBy = "player")
-    private List<Participation> participatedTournaments = new ArrayList<>();
+    private List<Participation> participation = new ArrayList<>();
 
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "player")
@@ -65,42 +51,55 @@ public class Player extends UserAccount {
 
     private boolean banned;
 
-    public void addBattles(Map<Player,Battle> battleMap){
-        battleMap.forEach(
-                (player, battle) -> {
-                    Play firstPlayerPlay = new Play(this,battle);
-                    Play secondPlayerPlay = new Play(player,battle);
-                    this.battles.addAll(Arrays.asList(firstPlayerPlay,secondPlayerPlay));
-                    battle.addPlayersByOneSide(firstPlayerPlay,secondPlayerPlay);
-                }
-        );
+    public void editParticipation(List<InvitationDTO> invitationDTOS) {
+
+        List<Tournament> participatedTournaments = invitationDTOS.stream()
+                .map(InvitationDTO::getTournament)
+                .collect(Collectors.toList());
+
+        this.modifyExistingParticipation(participatedTournaments, invitationDTOS);
+        this.addNewParticipation(participatedTournaments, invitationDTOS);
+        this.removeNotExistingParticipation(participatedTournaments);
     }
 
-    public void editParticipation(List<InvitationDTO> invitationDTOS, Tournament... participatedTournaments) {
-        List<Tournament> tournamentList = Arrays.asList(participatedTournaments);
-        this.participatedTournaments.stream()
-                .filter(participation -> tournamentList.contains(participation.getParticipatedTournament()))
+    private void modifyExistingParticipation(List<Tournament> participatedTournaments, List<InvitationDTO> invitationDTOS){
+        this.participation.stream()
+                .filter(participation -> participatedTournaments.contains(participation.getParticipatedTournament()))
                 .forEach(participation -> {
-                    boolean accepted = invitationDTOS.stream()
-                            .filter(invitation -> invitation.getName().equals(participation.getParticipatedTournament().getName()))
-                            .map(InvitationDTO::isAccepted)
-                            .findFirst().orElse(false);
-                    participation.setAccepted(accepted); });
+                    Tournament tournament = participation.getParticipatedTournament();
+                    InvitationDTO invitationDTO = this.findInvitationByTournamentName(tournament.getName(),invitationDTOS);
+                    participation.setAccepted(invitationDTO.isAccepted());
+                    if(tournament.getTournamentType() == TournamentType.GROUP){
+                        Player player = ((GroupTournamentInvitationDTO)invitationDTO).getSecondPlayer();
+                        if(!(player instanceof NullPlayer))
+                        ((GroupTournament)tournament).editParticipantsWithoutRemoving(Collections.singletonList(Arrays.asList(this,player)));
+                    }
+                });
+    }
 
-        this.participatedTournaments.addAll(tournamentList.stream()
-                .filter(tournament -> !this.participatedTournaments.stream()
+    private void addNewParticipation(List<Tournament> participatedTournaments, List<InvitationDTO> invitationDTOS){
+        this.participation.addAll(participatedTournaments.stream()
+                .filter(tournament -> !this.participation.stream()
                         .map(Participation::getParticipatedTournament)
                         .collect(Collectors.toList()).contains(tournament))
                 .map(tournament -> {
-                    Participation participation = new Participation(this, tournament);
+                    InvitationDTO invitationDTO = this.findInvitationByTournamentName(tournament.getName(),invitationDTOS);
+                    Participation participation = new Participation(this, tournament, tournament.getNoExistingGroupNumber());
                     tournament.addParticipationByOneSide(participation);
+                    if(tournament.getTournamentType() == TournamentType.GROUP){
+                        Player player = ((GroupTournamentInvitationDTO)invitationDTO).getSecondPlayer();
+                        if(!(player instanceof NullPlayer))
+                        ((GroupTournament)tournament).editParticipantsWithoutRemoving(Collections.singletonList(Arrays.asList(this,player)));
+                    }
                     return participation; })
                 .collect(Collectors.toList()));
+    }
 
-        this.participatedTournaments.removeAll(this.participatedTournaments.stream()
+    private void removeNotExistingParticipation(List<Tournament> participatedTournaments){
+        this.participation.removeAll(this.participation.stream()
                 .filter(participation ->
-                        !tournamentList.contains(participation.getParticipatedTournament())
-                && participation.getParticipatedTournament().getStatus()==TournamentStatus.ACCEPTED)
+                        !participatedTournaments.contains(participation.getParticipatedTournament())
+                                && participation.getParticipatedTournament().getStatus()==TournamentStatus.ACCEPTED)
                 .peek(participation -> {
                     participation.getParticipatedTournament().deleteParticipationByOneSide(participation);
                     participation.setPlayer(null);
@@ -108,22 +107,29 @@ public class Player extends UserAccount {
                 }).collect(Collectors.toList()));
     }
 
+    private InvitationDTO findInvitationByTournamentName(String tournamentName, List<InvitationDTO> invitationDTOS){
+        return invitationDTOS.stream()
+                .filter(invitation -> invitation.getTournament().getName()
+                        .equals(tournamentName))
+                .findFirst().get();
+    }
+
     public void addParticipationByOneSide(Participation participation) {
         this.deleteParticipationWithTheSameTournamentName(participation.getParticipatedTournament().getName());
-        this.participatedTournaments.add(participation);
+        this.participation.add(participation);
     }
 
     public void deleteParticipationByOneSide(Participation participation){
-        if(this.participatedTournaments.contains(participation))
-            this.participatedTournaments.remove(participation);
+        if(this.participation.contains(participation))
+            this.participation.remove(participation);
     }
 
     private void deleteParticipationWithTheSameTournamentName(String tournamentName){
-        Participation participation = this.participatedTournaments.stream()
+        Participation participation = this.participation.stream()
                 .filter(participation1 -> participation1.getParticipatedTournament().getName().equals(tournamentName))
                 .findFirst().orElse(null);
         if(participation!=null){
-            this.participatedTournaments.remove(participation);
+            this.participation.remove(participation);
         }
     }
 
@@ -131,7 +137,7 @@ public class Player extends UserAccount {
         this.battles.add(battle);
     }
 
-    protected void setParticipatedTournaments(List<Participation> participatedTournaments){
-        this.participatedTournaments = participatedTournaments;
+    public void setParticipation(List<Participation> participation){
+        this.participation = participation;
     }
 }

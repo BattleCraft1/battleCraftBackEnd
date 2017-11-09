@@ -1,5 +1,6 @@
 package pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
@@ -14,18 +15,20 @@ import javax.persistence.*;
 @AllArgsConstructor
 @EqualsAndHashCode(exclude = "id")
 @ToString
-public class Participation implements Cloneable{
+public class Participation{
 
-    public Participation(Player player, Tournament participatedTournament) {
+    public Participation(Player player, Tournament participatedTournament, Long groupNumber) {
         this.player = player;
         this.participatedTournament = participatedTournament;
         this.accepted = false;
+        this.groupNumber = groupNumber;
     }
 
-    private Participation(Player player, Tournament participatedTournament, boolean accepted) {
+    private Participation(Player player, Tournament participatedTournament, boolean accepted, Long groupNumber) {
         this.player = player;
         this.participatedTournament = participatedTournament;
         this.accepted = accepted;
+        this.groupNumber = groupNumber;
     }
     
     @Id
@@ -42,7 +45,10 @@ public class Participation implements Cloneable{
 
     private boolean accepted;
 
-    public Participation clone(){
-        return new Participation(this.player,this.participatedTournament,this.accepted);
+    private Long groupNumber;
+
+    @JsonIgnore
+    public Participation copy(){
+        return new Participation(this.player,this.participatedTournament,this.accepted,this.groupNumber);
     }
 }

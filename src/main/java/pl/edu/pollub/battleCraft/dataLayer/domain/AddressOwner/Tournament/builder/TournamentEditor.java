@@ -3,11 +3,16 @@ package pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.build
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.Tournament;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentType;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.subClasses.DuelTournament;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.subClasses.GroupTournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.Organizer;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Game.Game;
 
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class TournamentEditor{
@@ -18,13 +23,22 @@ public class TournamentEditor{
         this.tournamentBuilder = tournamentBuilder;
     }
 
-    public TournamentEditor editOrganizedTournament(Tournament tournamentToEdit, String name, int tablesCount, int playersOnTableCount, int toursCount){
+    public TournamentEditor editOrganizedTournament(Tournament tournamentToEdit, String name, int tablesCount, TournamentType tournamentType, int toursCount){
+        Tournament tournament = tournamentBuilder.getInstance();
+        if(tournament.getPlayersOnTableCount()!=tournamentType.value()){
+            if(tournament.getPlayersOnTableCount()==TournamentType.DUEL.value()){
+                tournament.setPlayersOnTableCount(TournamentType.GROUP.value());
+            }
+            else{
+                tournament.setPlayersOnTableCount(TournamentType.DUEL.value());
+            }
+        }
         tournamentBuilder.setInstance(tournamentToEdit);
-        tournamentBuilder.editBasicData(name,tablesCount,playersOnTableCount,toursCount);
+        tournamentBuilder.editBasicData(name,tablesCount,tournamentType.value(),toursCount);
         return this;
     }
 
-    public TournamentEditor editOrganizers(Organizer... coOrganisers) {
+    public TournamentEditor editOrganizers(List<Organizer> coOrganisers) {
         tournamentBuilder.getInstance().editOrganizers(coOrganisers);
         return this;
     }
@@ -39,8 +53,11 @@ public class TournamentEditor{
         return this;
     }
 
-    public TournamentEditor editParticipants(Player... participants) {
-        tournamentBuilder.getInstance().editParticipants(participants);
+    public TournamentEditor editParticipants(List<List<Player>>  participants) {
+        if(tournamentBuilder.getInstance().getPlayersOnTableCount() == TournamentType.DUEL.value())
+            ((DuelTournament)tournamentBuilder.getInstance()).editParticipants(participants.stream().flatMap(List::stream).collect(Collectors.toList()));
+        else
+            ((GroupTournament)tournamentBuilder.getInstance()).editParticipants(participants);
         return this;
     }
 

@@ -15,7 +15,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @EqualsAndHashCode(exclude = "id")
 @ToString
-public class Organization implements Cloneable{
+public class Organization{
 
     public Organization(Organizer organizer, Tournament organizedTournament) {
         this.organizer = organizer;
@@ -44,7 +44,7 @@ public class Organization implements Cloneable{
     private boolean accepted;
 
     @JsonIgnore
-    public Organization clone(){
+    public Organization copy(){
         return new Organization(this.organizer,this.organizedTournament,this.accepted);
     }
 }

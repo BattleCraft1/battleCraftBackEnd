@@ -33,6 +33,9 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
     @Query("SELECT p FROM Player p WHERE p.name in ?1")
     List<Player> findPlayersByUniqueName(String... playersNames);
 
+    @Query("SELECT p FROM Player p WHERE p.name in ?1")
+    List<Player> findPlayersByUniqueName(List<String> playersNames);
+
     @Modifying
     @Query("DELETE FROM Participation p WHERE p.player.id IN ?1")
     void deleteParticipationByPlayersIds(List<Long> playersIds);
@@ -40,5 +43,8 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
     @Modifying
     @Query("DELETE FROM Play p WHERE p.player.id IN ?1")
     void deletePlayByPlayersIds(List<Long> playersIds);
+
+    @Query("SELECT p FROM Player p WHERE p.name = ?1 and p.banned = false")
+    Player findNotBannedPlayerByUniqueName(String name);
 
 }

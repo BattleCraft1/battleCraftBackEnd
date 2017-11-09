@@ -1,4 +1,4 @@
-package pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Invitation;
+package pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Invitation;
 
 import lombok.*;
 
@@ -8,7 +8,7 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class InvitationDTO {
+public class InvitationResponseDTO {
     private String name;
     private boolean accepted;
 }

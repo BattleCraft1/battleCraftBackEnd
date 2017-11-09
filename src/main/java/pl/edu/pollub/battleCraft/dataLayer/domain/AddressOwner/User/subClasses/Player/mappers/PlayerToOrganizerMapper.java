@@ -1,5 +1,6 @@
 package pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.mappers;
 
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Address.Address;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.Organizer;
@@ -8,7 +9,7 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.P
 
 import java.util.stream.Collectors;
 
-@Service
+@Component
 public class PlayerToOrganizerMapper {
 
     public Organizer map(Player player){
@@ -19,13 +20,11 @@ public class PlayerToOrganizerMapper {
         organizer.setEmail(player.getEmail());
         organizer.setPassword(player.getPassword());
         organizer.setPhoneNumber(player.getPhoneNumber());
-        organizer.editParticipation(
-                player.getParticipatedTournaments().stream().map(Participation::clone).collect(Collectors.toList()));
-        try {
-            organizer.initAddress((Address)player.getAddress().clone());
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-        }
+        organizer.setParticipation(
+                player.getParticipation().stream().map(Participation::copy).collect(Collectors.toList()));
+
+        organizer.initAddress(player.getAddress().copy());
+
         return organizer;
     }
 

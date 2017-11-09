@@ -47,8 +47,8 @@ public class RankingRepository{
                         new Field("Player.points", "points", Projections::sum)
                 )
                 .join(
-                        new Join( "Player", "Player"),
-                        new Join( "Player.player", "player"),
+                        new Join( "players", "players"),
+                        new Join( "players.player", "player"),
                         new Join("player.address", "playerAddress"),
                         new Join( "tour", "tour"),
                         new Join( "tour.tournament", "tournament"),

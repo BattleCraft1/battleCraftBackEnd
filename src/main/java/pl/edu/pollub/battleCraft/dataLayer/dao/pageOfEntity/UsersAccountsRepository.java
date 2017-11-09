@@ -17,6 +17,7 @@ import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.OrganizerReposito
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.PlayerRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.UserAccountRepository;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.mappers.PlayerToOrganizerMapper;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.mappers.UserAccountToPlayerMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,17 +29,19 @@ public class UsersAccountsRepository{
     private final PlayerRepository playerRepository;
     private final OrganizerRepository organiserRepository;
     private final PlayerToOrganizerMapper playerToOrganizerMapper;
+    private final UserAccountToPlayerMapper userAccountToPlayerMapper;
 
     @Autowired
     public UsersAccountsRepository(Searcher searcher,
                                    UserAccountRepository userAccountRepository,
                                    PlayerRepository playerRepository,
-                                   OrganizerRepository organiserRepository, PlayerToOrganizerMapper playerToOrganizerMapper) {
+                                   OrganizerRepository organiserRepository, PlayerToOrganizerMapper playerToOrganizerMapper, UserAccountToPlayerMapper userAccountToPlayerMapper) {
         this.searcher = searcher;
         this.playerRepository = playerRepository;
         this.organiserRepository = organiserRepository;
         this.userAccountRepository = userAccountRepository;
         this.playerToOrganizerMapper = playerToOrganizerMapper;
+        this.userAccountToPlayerMapper = userAccountToPlayerMapper;
     }
 
     @Transactional
@@ -110,7 +113,7 @@ public class UsersAccountsRepository{
         userAccounts.forEach(
                 userAccount -> {
                     if(userAccount.getStatus()==UserType.NEW)
-                        players.add(new Player(userAccount));
+                        players.add(userAccountToPlayerMapper.map(userAccount));
                 }
         );
         return players;

@@ -2,7 +2,8 @@ package pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount;
 
 import lombok.*;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Address.AddressOwnerRequestDTO;
-import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Invitation.InvitationDTO;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.Invitation.InvitationRequestDTO;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.Invitation.InvitationRequestPlayerDTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,6 @@ public class UserAccountRequestDTO extends AddressOwnerRequestDTO {
     private String firstname;
     private String lastname;
     private String phoneNumber;
-    private List<InvitationDTO> participatedTournaments = new ArrayList<>();
-    private List<InvitationDTO> organizedTournaments = new ArrayList<>();
+    private List<InvitationRequestPlayerDTO> participatedTournaments = new ArrayList<>();
+    private List<InvitationRequestDTO> organizedTournaments = new ArrayList<>();
 }

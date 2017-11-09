@@ -24,8 +24,8 @@ public class GameResourcesController {
         gameResourcesService.saveGameRules(gameName,file);
     }
 
-    @GetMapping(value = "/get/game/{gameName}/rules")
-    public ResponseEntity<Resource> downloadFile(@PathVariable String gameName){
+    @GetMapping(value = "/get/game/rules")
+    public ResponseEntity<Resource> downloadFile(@RequestParam(value = "gameName") String gameName){
         Resource file = gameResourcesService.getGameRules(gameName);
         return ResponseEntity
                 .ok()

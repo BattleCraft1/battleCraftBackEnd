@@ -2,6 +2,7 @@ package pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.emuns.ColorOfSideInBattle;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Battle.Battle;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
 
@@ -17,11 +18,6 @@ import javax.persistence.*;
 @ToString
 public class Play {
 
-    public Play(Player player,Battle battle){
-        this.player = player;
-        this.battle = battle;
-    }
-
     @Id
     @GeneratedValue
     @JsonIgnore
@@ -36,4 +32,7 @@ public class Play {
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "battle_id")
     private Battle battle;
+
+    @Enumerated(EnumType.STRING)
+    private ColorOfSideInBattle colorOfSideInBattle;
 }

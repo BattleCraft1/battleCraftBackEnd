@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.builder.UserEditor;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.Organizer;
@@ -13,11 +12,13 @@ import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.UserAccountReposi
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityValidation.EntityValidationException;
 import pl.edu.pollub.battleCraft.serviceLayer.services.resources.UserAccountResourcesService;
+import pl.edu.pollub.battleCraft.serviceLayer.services.singleEnitity.InvitationDTO.InvitationDTO;
 import pl.edu.pollub.battleCraft.serviceLayer.services.validators.UserAccountValidator;
 import pl.edu.pollub.battleCraft.serviceLayer.toResponseDTOsMappers.UserAccountToResponseDTOMapper;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.UserAccountRequestDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.UserAccount.UserAccountResponseDTO;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -64,17 +65,17 @@ public class UserAccountService {
 
         if(userAccountToEdit instanceof Player){
             Player player = (Player) userAccountToEdit;
-            Tournament[] participatedTournaments =
-                    userAccountValidator.getValidatedTournaments("participatedTournaments",
+            List<InvitationDTO> participatedTournaments =
+                    userAccountValidator.getValidatedPlayersInvitations(
                             userAccountRequestDTO.getParticipatedTournaments(), bindingResult);
-            player.editParticipation(userAccountRequestDTO.getParticipatedTournaments(), participatedTournaments);
+            player.editParticipation(participatedTournaments);
         }
         if(userAccountToEdit instanceof Organizer){
             Organizer organizer = (Organizer) userAccountToEdit;
-            Tournament[] organizedTournaments =
-                    userAccountValidator.getValidatedTournaments("organizedTournaments",
+            List<InvitationDTO> organizedTournaments =
+                    userAccountValidator.getValidatedOrganizersInvitations(
                             userAccountRequestDTO.getOrganizedTournaments(), bindingResult);
-            organizer.editOrganizations(userAccountRequestDTO.getOrganizedTournaments(),organizedTournaments);
+            organizer.editOrganizations(organizedTournaments);
         }
 
         userAccountValidator.finishValidation(bindingResult);

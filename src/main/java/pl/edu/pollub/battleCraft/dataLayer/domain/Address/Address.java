@@ -16,7 +16,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @EqualsAndHashCode
 @ToString
-public class Address implements Cloneable{
+public class Address{
 
     @Id
     @GeneratedValue
@@ -62,15 +62,8 @@ public class Address implements Cloneable{
         this.addressOwner = addressOwner;
     }
 
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        Address clone = (Address) super.clone();
-        clone.province = this.province;
-        clone.city = city;
-        clone.street = street;
-        clone.zipCode = zipCode;
-        clone.description = description;
-        return clone;
+    public Address copy(){
+        return new Address(this.province,this.city,this.street,this.zipCode,this.description);
     }
 
     private void setAddressOwner(AddressOwner addressOwner){
