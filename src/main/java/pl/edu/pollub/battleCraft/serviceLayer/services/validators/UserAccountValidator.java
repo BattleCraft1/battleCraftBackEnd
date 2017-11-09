@@ -9,11 +9,12 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.*;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityValidation.EntityValidationException;
-import pl.edu.pollub.battleCraft.serviceLayer.services.singleEnitity.InvitationDTO.DuelTournamentInvitationDTO;
-import pl.edu.pollub.battleCraft.serviceLayer.services.singleEnitity.InvitationDTO.GroupTournamentInvitationDTO;
-import pl.edu.pollub.battleCraft.serviceLayer.services.singleEnitity.InvitationDTO.InvitationDTO;
+import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationDTO.DuelTournamentInvitationDTO;
+import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationDTO.GroupTournamentInvitationDTO;
+import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationDTO.InvitationDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.Invitation.InvitationRequestDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.Invitation.InvitationRequestPlayerDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.UserAccountRequestDTO;
@@ -83,12 +84,21 @@ public class UserAccountValidator implements Validator {
             errors.rejectValue("email","","Invalid email");
     }
 
+    public void checkIfUserWithThisNameAlreadyExist(UserAccountRequestDTO userAccountRequestDTO, BindingResult bindingResult){
+        if(!userAccountRequestDTO.getName().equals(userAccountRequestDTO.getNameChange())) {
+            UserAccount userExist = userAccountRepository.findUserAccountByUniqueName(userAccountRequestDTO.getNameChange());
+            if (userExist != null)
+                bindingResult.rejectValue("nameChange", "", "User with this name already exist.");
+        }
+    }
+
     public UserAccount getValidatedUserAccountToEdit(UserAccountRequestDTO userAccountRequestDTO, BindingResult bindingResult){
-        return Optional.ofNullable(userAccountRepository.findUserAccountByUniqueName(userAccountRequestDTO.getName()))
+        return Optional.ofNullable(userAccountRepository.findUserAccountByUniqueName(userAccountRequestDTO.getName()))//TO DO: if player is administrator
                 .orElseThrow(() -> new EntityNotFoundException(UserAccount.class,userAccountRequestDTO.getName()));
     }
 
-    public List<InvitationDTO> getValidatedPlayersInvitations(List<InvitationRequestPlayerDTO> invitations, BindingResult bindingResult){
+    public List<InvitationDTO> getValidatedPlayersInvitations(UserAccountRequestDTO userAccountRequestDTO, BindingResult bindingResult){
+        List<InvitationRequestPlayerDTO> invitations = userAccountRequestDTO.getParticipatedTournaments();
         if(invitations.size()==0)
             return new ArrayList<>();
         List<String> tournamentsNames = invitations.stream()
@@ -97,20 +107,28 @@ public class UserAccountValidator implements Validator {
         if(containsDuplicates(tournamentsNames))
             bindingResult.rejectValue("participatedTournaments","","You cannot have duplicated tournament");
 
-        List<Tournament> tournaments = tournamentRepository.findAcceptedTournamentsByUniqueNames(tournamentsNames);
-        return tournaments.stream().map(tournament -> {
+        List<Tournament> tournaments = tournamentRepository.findAcceptedOrNewTournamentsByUniqueNames(tournamentsNames);
+        List<String> tournamentsNamesWithTooManyPlayers = new ArrayList<>();
+        List<InvitationDTO> output = tournaments.stream().map(tournament -> {
             if(tournament.getTournamentType()== TournamentType.GROUP){
                 InvitationRequestPlayerDTO invitation = this.getInvitationByTournamentName(invitations,tournament.getName());
-                Player player = playerRepository.findNotBannedPlayerByUniqueName(invitation.getSecondPlayerName());
-                return new GroupTournamentInvitationDTO(tournament,
-                        this.checkIfPlayerInvitationIsAcceptedForTournament(invitations,tournament.getName()),
-                        player);
+                Player player;
+                if(invitation.getSecondPlayerName().equals(userAccountRequestDTO.getName()))
+                    player = null;
+                else
+                    player = playerRepository.findNotBannedPlayerByUniqueName(invitation.getSecondPlayerName());
+                this.checkIfPlayersCountIsGreaterThanLimit(tournamentsNamesWithTooManyPlayers,tournament,userAccountRequestDTO.getName(),2);
+                return new GroupTournamentInvitationDTO(tournament, invitation.getFirstPlayerInvitation().isAccepted(),player);
             }
             else{
-                return new DuelTournamentInvitationDTO(tournament,
-                        this.checkIfPlayerInvitationIsAcceptedForTournament(invitations,tournament.getName()));
+                this.checkIfPlayersCountIsGreaterThanLimit(tournamentsNamesWithTooManyPlayers,tournament,userAccountRequestDTO.getName(),1);
+                InvitationRequestPlayerDTO invitation = this.getInvitationByTournamentName(invitations,tournament.getName());
+                return new DuelTournamentInvitationDTO(tournament,invitation.getFirstPlayerInvitation().isAccepted());
             }
         }).collect(Collectors.toList());
+        if(tournamentsNamesWithTooManyPlayers.size()>0)
+            this.reportTournamentsWithTooManyPlayers(tournamentsNamesWithTooManyPlayers,bindingResult);
+        return output;
     }
 
     public List<InvitationDTO> getValidatedOrganizersInvitations(List<InvitationRequestDTO> invitations, BindingResult bindingResult){
@@ -121,22 +139,22 @@ public class UserAccountValidator implements Validator {
                 .collect(Collectors.toList());
         if(containsDuplicates(tournamentsNames))
             bindingResult.rejectValue("organizedTournaments","","You cannot have duplicated tournament");
-        List<Tournament> tournaments = tournamentRepository.findAcceptedTournamentsByUniqueNames(tournamentsNames);
+        List<Tournament> tournaments = tournamentRepository.findAcceptedOrNewTournamentsByUniqueNames(tournamentsNames);
 
         return tournaments.stream().map(tournament ->
                 new InvitationDTO(tournament,this.checkIfInvitationIsAcceptedForTournament(invitations,tournament.getName()))).collect(Collectors.toList());
+    }
+
+    public void finishValidation(BindingResult bindingResult){
+        if (bindingResult.hasErrors()) {
+            throw new EntityValidationException("Invalid user account data", bindingResult);
+        }
     }
 
     private InvitationRequestPlayerDTO getInvitationByTournamentName(List<InvitationRequestPlayerDTO> invitations, String tournamentName){
         return invitations.stream()
                 .filter(invitation -> invitation.getFirstPlayerInvitation().getTournamentName().equals(tournamentName))
                 .findFirst().get();
-    }
-
-    private boolean checkIfPlayerInvitationIsAcceptedForTournament(List<InvitationRequestPlayerDTO> invitations, String tournamentName){
-        return invitations.stream().map(InvitationRequestPlayerDTO::getFirstPlayerInvitation)
-                .filter(invitationRequestDTO -> invitationRequestDTO.getTournamentName().equals(tournamentName))
-                .findFirst().get().isAccepted();
     }
 
     private boolean checkIfInvitationIsAcceptedForTournament(List<InvitationRequestDTO> invitations, String tournamentName){
@@ -149,9 +167,20 @@ public class UserAccountValidator implements Validator {
         return setWithoutDuplicates.size() < values.size();
     }
 
-    public void finishValidation(BindingResult bindingResult){
-        if (bindingResult.hasErrors()) {
-            throw new EntityValidationException("Invalid user account data", bindingResult);
-        }
+    private void checkIfPlayersCountIsGreaterThanLimit(List<String> tournamentsNamesWithTooManyPlayers, Tournament tournament, String playerName, int slotsCount) {
+            Participation participationOfPlayer = tournament.getParticipation().stream()
+                .filter(participation -> participation.getPlayer().getName().equals(playerName))
+                .findFirst().orElse(null);
+
+            if(participationOfPlayer==null && tournament.getParticipation().size()+slotsCount>tournament.getMaxPlayers()){
+                tournamentsNamesWithTooManyPlayers.add(tournament.getName());
+            }
+    }
+
+    private void reportTournamentsWithTooManyPlayers(List<String> tournamentsNamesWithTooManyPlayers,BindingResult bindingResult){
+        StringBuilder raport = new StringBuilder("Tournaments: ")
+                .append(tournamentsNamesWithTooManyPlayers.stream().collect(Collectors.joining(", ")))
+                .append(" have too many players");
+        bindingResult.rejectValue("participatedTournaments","",raport.toString());
     }
 }

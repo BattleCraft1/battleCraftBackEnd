@@ -135,7 +135,8 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
                     .inviteParticipants(
                             Arrays.asList(
                             Arrays.asList(testUser1,testUser2),
-                            Arrays.asList(testUser3,testUser4)))
+                            Arrays.asList(testUser3,testUser4),
+                            Collections.singletonList(testUser5)))
                     .finishOrganize();
 
 

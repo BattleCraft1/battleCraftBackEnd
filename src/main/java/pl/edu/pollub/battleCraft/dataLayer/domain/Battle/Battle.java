@@ -44,8 +44,4 @@ public class Battle {
     @JsonIgnore
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "battle")
     private List<Play> players = new ArrayList<>();
-
-    public void addPlayersByOneSide(Play firstPlayer, Play secondPlayer){
-        this.players.addAll(Arrays.asList(firstPlayer,secondPlayer));
-    }
 }

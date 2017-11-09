@@ -82,7 +82,7 @@ public class TournamentService {
 
         Tournament tournamentToEdit = tournamentValidator.getValidatedTournamentToEdit(tournamentWebDTO, bindingResult);
 
-        tournamentValidator.checkIfTournamentToEditExist(tournamentWebDTO,bindingResult);
+        tournamentValidator.checkIfTournamentWithThisNameAlreadyExist(tournamentWebDTO,bindingResult);
         tournamentValidator.validate(tournamentWebDTO,bindingResult);
         Game tournamentGame = tournamentValidator.getValidatedGame(tournamentWebDTO,bindingResult);
         List<Organizer> organizers = tournamentValidator.getValidatedOrganizers(tournamentWebDTO,bindingResult);

@@ -101,7 +101,7 @@ public class Page<T> implements org.springframework.data.domain.Page<T> {
 
     private <S> List<S> getConvertedContent(Converter<? super T, ? extends S> converter) {
 
-        Assert.notNull(converter, "Converter must not be null!");
+        Assert.notNull(converter, "Converter must not be nullObjectPattern!");
 
         List<S> result = new ArrayList<>(content.size());
 

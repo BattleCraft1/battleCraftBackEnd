@@ -88,8 +88,8 @@ public interface TournamentRepository extends JpaRepository<Tournament, Long> {
     @Query("SELECT t FROM Tournament t Where t.name = ?1")
     Tournament findTournamentToEditByUniqueName(String tournamentUniqueName);
 
-    @Query("SELECT t FROM Tournament t Where t.name in ?1 and t.status='ACCEPTED' and t.banned = false")
-    List<Tournament> findAcceptedTournamentsByUniqueNames(List<String> tournamentUniqueNames);
+    @Query("SELECT t FROM Tournament t Where t.name in ?1 and (t.status='ACCEPTED' or t.status='NEW') and t.banned = false")
+    List<Tournament> findAcceptedOrNewTournamentsByUniqueNames(List<String> tournamentUniqueNames);
 
     @Query("SELECT t FROM Tournament t Where t.name = ?1 and t.status='ACCEPTED' and t.banned = false")
     Tournament findAcceptedTournamentByUniqueName(String tournamentUniqueNames);

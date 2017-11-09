@@ -11,8 +11,10 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.P
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.UserAccountRepository;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityValidation.EntityValidationException;
+import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationToOrganizationService;
+import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationToParticipationService;
 import pl.edu.pollub.battleCraft.serviceLayer.services.resources.UserAccountResourcesService;
-import pl.edu.pollub.battleCraft.serviceLayer.services.singleEnitity.InvitationDTO.InvitationDTO;
+import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationDTO.InvitationDTO;
 import pl.edu.pollub.battleCraft.serviceLayer.services.validators.UserAccountValidator;
 import pl.edu.pollub.battleCraft.serviceLayer.toResponseDTOsMappers.UserAccountToResponseDTOMapper;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.UserAccountRequestDTO;
@@ -34,18 +36,29 @@ public class UserAccountService {
 
     private final UserAccountToResponseDTOMapper userAccountToResponseDTOMapper;
 
+    private final InvitationToParticipationService invitationToParticipationService;
+
+    private final InvitationToOrganizationService invitationToOrganizationService;
+
     @Autowired
-    public UserAccountService(UserAccountValidator userAccountValidator, UserAccountRepository userAccountRepository, UserAccountResourcesService userAccountResourcesService, UserEditor userEditor, UserAccountToResponseDTOMapper userAccountToResponseDTOMapper) {
+    public UserAccountService(UserAccountValidator userAccountValidator, UserAccountRepository userAccountRepository,
+                              UserAccountResourcesService userAccountResourcesService, UserEditor userEditor,
+                              UserAccountToResponseDTOMapper userAccountToResponseDTOMapper, InvitationToParticipationService invitationToParticipationService,
+                              InvitationToOrganizationService invitationToOrganizationService) {
         this.userAccountRepository = userAccountRepository;
         this.userAccountValidator = userAccountValidator;
         this.userAccountResourcesService = userAccountResourcesService;
         this.userEditor = userEditor;
         this.userAccountToResponseDTOMapper = userAccountToResponseDTOMapper;
+        this.invitationToParticipationService = invitationToParticipationService;
+        this.invitationToOrganizationService = invitationToOrganizationService;
     }
 
     @Transactional(rollbackFor = {EntityValidationException.class, EntityNotFoundException.class})
     public UserAccountResponseDTO editUserAccount(UserAccountRequestDTO userAccountRequestDTO, BindingResult bindingResult){
         UserAccount userAccountToEdit = userAccountValidator.getValidatedUserAccountToEdit(userAccountRequestDTO, bindingResult);
+
+        userAccountValidator.checkIfUserWithThisNameAlreadyExist(userAccountRequestDTO,bindingResult);
         userAccountValidator.validate(userAccountRequestDTO, bindingResult);
 
         userEditor.edit(userAccountToEdit,
@@ -65,25 +78,22 @@ public class UserAccountService {
 
         if(userAccountToEdit instanceof Player){
             Player player = (Player) userAccountToEdit;
-            List<InvitationDTO> participatedTournaments =
-                    userAccountValidator.getValidatedPlayersInvitations(
-                            userAccountRequestDTO.getParticipatedTournaments(), bindingResult);
-            player.editParticipation(participatedTournaments);
+            List<InvitationDTO> participatedTournaments = userAccountValidator.getValidatedPlayersInvitations(userAccountRequestDTO, bindingResult);
+            invitationToParticipationService.sendInvitations(player, participatedTournaments);
         }
         if(userAccountToEdit instanceof Organizer){
             Organizer organizer = (Organizer) userAccountToEdit;
-            List<InvitationDTO> organizedTournaments =
-                    userAccountValidator.getValidatedOrganizersInvitations(
+            List<InvitationDTO> organizedTournaments = userAccountValidator.getValidatedOrganizersInvitations(
                             userAccountRequestDTO.getOrganizedTournaments(), bindingResult);
-            organizer.editOrganizations(organizedTournaments);
+            invitationToOrganizationService.sendInvitations(organizer, organizedTournaments);
         }
 
         userAccountValidator.finishValidation(bindingResult);
 
         if(!userAccountRequestDTO.getName().equals(userAccountRequestDTO.getNameChange()))
         userAccountResourcesService.renameUserAvatar(userAccountRequestDTO.getName(),userAccountRequestDTO.getNameChange());
-
-        return userAccountToResponseDTOMapper.map(userAccountRepository.save(userAccountToEdit));
+        UserAccount account = userAccountRepository.save(userAccountToEdit);
+        return userAccountToResponseDTOMapper.map(account);
     }
 
     public UserAccountResponseDTO getUserAccount(String userUniqueName) {

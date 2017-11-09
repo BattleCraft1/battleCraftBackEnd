@@ -1,8 +1,8 @@
-package pl.edu.pollub.battleCraft.serviceLayer.services.singleEnitity.InvitationDTO;
+package pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationDTO;
 
 import lombok.*;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.Tournament;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.NullPlayer;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.nullObjectPattern.NullPlayer;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
 
 @Getter

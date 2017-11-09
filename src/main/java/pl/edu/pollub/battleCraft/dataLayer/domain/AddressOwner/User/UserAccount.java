@@ -28,25 +28,25 @@ public class UserAccount extends AddressOwner{
     }
 
     @Enumerated(EnumType.STRING)
-    private UserType status;
+    protected UserType status;
 
     @Column(length = 20)
-    private String firstname;
+    protected String firstname;
 
     @Column(length = 20)
-    private String lastname;
+    protected String lastname;
 
     @Column(length = 30, unique = true)
-    private String name;
+    protected String name;
 
     @Column(length = 50, unique = true)
-    private String email;
+    protected String email;
 
     @JsonIgnore
     @Column(length = 100)
-    private String password;
+    protected String password;
 
     @Column(length = 11)
-    private String phoneNumber;
+    protected String phoneNumber;
 
 }

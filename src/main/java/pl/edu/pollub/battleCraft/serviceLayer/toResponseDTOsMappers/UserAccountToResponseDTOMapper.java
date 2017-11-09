@@ -6,8 +6,11 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentType;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.Organizer;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.nullObjectPattern.NullPlayer;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Play;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.nullObjectPattern.NullParticipation;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Game.Game;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Invitation.PlayerFinishedInvitationResponse;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Invitation.PlayerGroupFinishedInvitationResponseDTO;
@@ -56,12 +59,15 @@ public class UserAccountToResponseDTOMapper {
                     if(tournament.getStatus() != TournamentStatus.IN_PROGRESS &&
                             tournament.getStatus() != TournamentStatus.FINISHED){
                         if(tournament.getTournamentType() == TournamentType.GROUP){
-                            String secondPlayerName = tournament.getParticipation().stream()
-                                    .filter(participation1 -> participation.getGroupNumber().equals(participation.getGroupNumber()))
-                                    .map(participation1 -> participation1.getPlayer().getName())
-                                    .findFirst().orElse("");
+                            Participation secondPlayerParticipation = tournament.getParticipation().stream()
+                                    .filter(participation1 ->
+                                            participation.getGroupNumber().equals(participation1.getGroupNumber()) &&
+                                            !participation1.getPlayer().equals(player))
+                                    .findFirst().orElse(new NullParticipation());
                             userAccountResponseDTO.getParticipatedTournaments()
-                                    .add(new PlayerInvitationResponseDTO(secondPlayerName,participation.isAccepted(),tournament.getName()));
+                                    .add(new PlayerInvitationResponseDTO(secondPlayerParticipation.getPlayer().getName(),
+                                            secondPlayerParticipation.isAccepted(),
+                                            tournament.getName(),participation.isAccepted()));
                         }
                         else{
                             userAccountResponseDTO.getParticipatedTournaments()
@@ -71,7 +77,8 @@ public class UserAccountToResponseDTOMapper {
                     else{
                         if(tournament.getTournamentType() == TournamentType.GROUP){
                             String secondPlayerName = tournament.getParticipation().stream()
-                                    .filter(participation1 -> participation.getGroupNumber().equals(participation.getGroupNumber()))
+                                    .filter(participation1 -> participation.getGroupNumber().equals(participation1.getGroupNumber()) &&
+                                    !participation1.getPlayer().equals(player))
                                     .map(participation1 -> participation1.getPlayer().getName())
                                     .findFirst().orElse("");
                             userAccountResponseDTO.getFinishedParticipatedTournaments().add(

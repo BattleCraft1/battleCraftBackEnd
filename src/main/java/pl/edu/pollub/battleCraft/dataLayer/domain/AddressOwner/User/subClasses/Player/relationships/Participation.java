@@ -37,15 +37,15 @@ public class Participation{
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "player_id")
-    private Player player;
+    protected Player player;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "tournament_id")
-    private Tournament participatedTournament;
+    protected Tournament participatedTournament;
 
-    private boolean accepted;
+    protected boolean accepted;
 
-    private Long groupNumber;
+    protected Long groupNumber;
 
     @JsonIgnore
     public Participation copy(){
