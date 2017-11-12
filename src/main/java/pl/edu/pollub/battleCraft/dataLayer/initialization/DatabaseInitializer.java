@@ -126,8 +126,8 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
 
         try {
             Tournament testTournament1 = tournamentCreator
-                    .startOrganizeTournament("Tournament1", 3, TournamentType.GROUP,2)
-                    .with(Collections.singletonList(testUser8))
+                    .startOrganizeTournament("Tournament1", 2, TournamentType.GROUP,2)
+                    .with(Arrays.asList(testUser8,testUser9))
                     .in(testAddress11)
                     .withGame( testGame1)
                     .startAt(format.parse("08-01-2018 13:05:00"))

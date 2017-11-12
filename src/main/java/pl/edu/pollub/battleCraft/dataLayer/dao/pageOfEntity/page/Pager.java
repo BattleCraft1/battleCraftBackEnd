@@ -12,6 +12,7 @@ import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.Pag
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.PageOfEntities.PageNotFoundException;
 
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -41,7 +42,6 @@ public class Pager<V>{
         int firstResultNumber = requestedPageNumber * requestedPageSize;
         criteria.setFirstResult(firstResultNumber);
         criteria.setMaxResults(requestedPageSize);
-
         List result = criteria.list();
         Pageable changedPageRequest = new PageRequest(requestedPageNumber, requestedPageSize, requestedPage.getSort());
 

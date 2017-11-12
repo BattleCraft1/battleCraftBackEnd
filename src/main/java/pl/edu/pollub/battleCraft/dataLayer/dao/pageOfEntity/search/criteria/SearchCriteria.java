@@ -50,7 +50,7 @@ public class SearchCriteria {
         Class fieldType = getType(root);
         if (fieldType == Date.class) {
             return Collections.singletonList(convertValueToDate());
-        } else if (fieldType == String.class) {
+        } else if (fieldType == String.class && value.size()==1) {
             return Collections.singletonList(convertValueToString());
         } else if (fieldType.getSuperclass() == Enum.class) {
             return value.stream()

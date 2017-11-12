@@ -18,6 +18,7 @@ import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Invitation.InvitationR
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Invitation.PlayerInvitationResponseDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.UserAccount.UserAccountResponseDTO;
 
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -29,12 +30,12 @@ public class UserAccountToResponseDTOMapper {
         userAccountResponseDTO.setEmail(userAccount.getEmail());
         userAccountResponseDTO.setFirstname(userAccount.getFirstname());
         userAccountResponseDTO.setLastname(userAccount.getLastname());
-        userAccountResponseDTO.setPhoneNumber(userAccount.getPhoneNumber());
+        userAccountResponseDTO.setPhoneNumber(Optional.ofNullable(userAccount.getPhoneNumber()).orElse(""));
         userAccountResponseDTO.setProvince(userAccount.getAddress().getProvince().name());
         userAccountResponseDTO.setCity(userAccount.getAddress().getCity());
         userAccountResponseDTO.setStreet(userAccount.getAddress().getStreet());
         userAccountResponseDTO.setZipCode(userAccount.getAddress().getZipCode());
-        userAccountResponseDTO.setDescription(userAccount.getAddress().getDescription());
+        userAccountResponseDTO.setDescription(Optional.ofNullable(userAccount.getAddress().getDescription()).orElse(""));
         userAccountResponseDTO.setStatus(userAccount.getStatus().name());
 
         if(userAccount instanceof Player){

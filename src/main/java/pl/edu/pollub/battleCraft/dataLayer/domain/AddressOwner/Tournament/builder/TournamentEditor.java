@@ -24,15 +24,6 @@ public class TournamentEditor{
     }
 
     public TournamentEditor editOrganizedTournament(Tournament tournamentToEdit, String name, int tablesCount, TournamentType tournamentType, int toursCount){
-        Tournament tournament = tournamentBuilder.getInstance();
-        if(tournament.getPlayersOnTableCount()!=tournamentType.value()){
-            if(tournament.getPlayersOnTableCount()==TournamentType.DUEL.value()){
-                tournament.setPlayersOnTableCount(TournamentType.GROUP.value());
-            }
-            else{
-                tournament.setPlayersOnTableCount(TournamentType.DUEL.value());
-            }
-        }
         tournamentBuilder.setInstance(tournamentToEdit);
         tournamentBuilder.editBasicData(name,tablesCount,tournamentType.value(),toursCount);
         return this;

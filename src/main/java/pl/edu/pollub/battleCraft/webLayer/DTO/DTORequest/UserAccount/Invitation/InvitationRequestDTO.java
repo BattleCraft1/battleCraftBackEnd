@@ -9,7 +9,11 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InvitationRequestDTO {
-    private String tournamentName;
+    private String name;
     private boolean accepted;
+
+    public String getTournamentName(){
+        return this.name;
+    }
 }
 

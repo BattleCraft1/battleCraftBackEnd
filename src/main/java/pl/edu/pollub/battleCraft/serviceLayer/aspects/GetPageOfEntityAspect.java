@@ -14,7 +14,7 @@ public class GetPageOfEntityAspect {
 
     private Logger logger = Logger.getLogger(getClass().getName());
 
-    @Before("execution(* pl.edu.pollub.battleCraft.serviceLayer.services.pageOfEntities.implementations.*ServiceImpl.getPageOf*(..)) && args(pageRequest,..)")
+    @Before("execution(* pl.edu.pollub.battleCraft.serviceLayer.services.pageOfEntities.*ServiceImpl.getPageOf*(..)) && args(pageRequest,..)")
     public void checkPageSize(PageRequest pageRequest) throws IllegalAccessException {
         logger.info("checking page size");
         int allowedPageSize = 20;

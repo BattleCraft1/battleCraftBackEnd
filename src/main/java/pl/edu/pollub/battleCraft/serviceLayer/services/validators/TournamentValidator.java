@@ -159,11 +159,11 @@ public class TournamentValidator implements Validator {
         List<List<Player>> groupedParticipants;
         if(tournamentWebDTO.getTournamentType() == TournamentType.GROUP){
             groupedParticipants = this.groupPlayers(tournamentWebDTO.getParticipants(),participantsList);
-            this.checkIfPlayersCountIsGreaterThanLimit(2,bindingResult,tournamentWebDTO,groupedParticipants);
+            this.checkIfPlayersCountIsGreaterThanLimit(bindingResult,tournamentWebDTO,groupedParticipants);
         }
         else{
             groupedParticipants = this.groupPlayers(participantsList);
-            this.checkIfPlayersCountIsGreaterThanLimit(1,bindingResult,tournamentWebDTO,groupedParticipants);
+            this.checkIfPlayersCountIsGreaterThanLimit(bindingResult,tournamentWebDTO,groupedParticipants);
         }
         return groupedParticipants;
     }
@@ -241,8 +241,8 @@ public class TournamentValidator implements Validator {
         return false;
     }
 
-    private void checkIfPlayersCountIsGreaterThanLimit(int multiplayer, BindingResult bindingResult, TournamentRequestDTO tournamentWebDTO, List<List<Player>> groupedParticipants){
-        if(groupedParticipants.size() * multiplayer>tournamentWebDTO.getPlayersOnTableCount()*tournamentWebDTO.getTablesCount())
+    private void checkIfPlayersCountIsGreaterThanLimit(BindingResult bindingResult, TournamentRequestDTO tournamentWebDTO, List<List<Player>> groupedParticipants){
+        if(groupedParticipants.size() * tournamentWebDTO.getPlayersOnTableCount()/2>tournamentWebDTO.getPlayersOnTableCount()*tournamentWebDTO.getTablesCount())
             bindingResult.rejectValue("participants","",
                     new StringBuilder("Participants count must be less than ").append(tournamentWebDTO.getPlayersOnTableCount()*tournamentWebDTO.getTablesCount()).toString());
     }

@@ -79,6 +79,9 @@ public abstract class Tournament extends AddressOwner{
     @Formula("(select count(*) from participation p where p.tournament_id = id)")
     private int playersNumber;
 
+    @Formula("(select count(*) from organization o where o.tournament_id = id)")
+    private int organizersNumber;
+
     @Formula("(tables_count * players_on_table_count)-(select count(*) from participation p where p.tournament_id = id)")
     private int freeSlots;
 

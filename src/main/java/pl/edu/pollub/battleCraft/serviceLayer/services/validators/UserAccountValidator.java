@@ -102,7 +102,7 @@ public class UserAccountValidator implements Validator {
         if(invitations.size()==0)
             return new ArrayList<>();
         List<String> tournamentsNames = invitations.stream()
-                .map(invitation -> invitation.getFirstPlayerInvitation().getTournamentName())
+                .map(InvitationRequestPlayerDTO::getTournamentName)
                 .collect(Collectors.toList());
         if(containsDuplicates(tournamentsNames))
             bindingResult.rejectValue("participatedTournaments","","You cannot have duplicated tournament");
@@ -117,13 +117,14 @@ public class UserAccountValidator implements Validator {
                     player = null;
                 else
                     player = playerRepository.findNotBannedPlayerByUniqueName(invitation.getSecondPlayerName());
+                this.checkIfPlayerHaveAlreadyHaveParticipation(tournament,player,userAccountRequestDTO.getName(),bindingResult);
                 this.checkIfPlayersCountIsGreaterThanLimit(tournamentsNamesWithTooManyPlayers,tournament,userAccountRequestDTO.getName(),2);
-                return new GroupTournamentInvitationDTO(tournament, invitation.getFirstPlayerInvitation().isAccepted(),player);
+                return new GroupTournamentInvitationDTO(tournament, invitation.isAccepted(),player);
             }
             else{
                 this.checkIfPlayersCountIsGreaterThanLimit(tournamentsNamesWithTooManyPlayers,tournament,userAccountRequestDTO.getName(),1);
                 InvitationRequestPlayerDTO invitation = this.getInvitationByTournamentName(invitations,tournament.getName());
-                return new DuelTournamentInvitationDTO(tournament,invitation.getFirstPlayerInvitation().isAccepted());
+                return new DuelTournamentInvitationDTO(tournament,invitation.isAccepted());
             }
         }).collect(Collectors.toList());
         if(tournamentsNamesWithTooManyPlayers.size()>0)
@@ -141,8 +142,16 @@ public class UserAccountValidator implements Validator {
             bindingResult.rejectValue("organizedTournaments","","You cannot have duplicated tournament");
         List<Tournament> tournaments = tournamentRepository.findAcceptedOrNewTournamentsByUniqueNames(tournamentsNames);
 
-        return tournaments.stream().map(tournament ->
-                new InvitationDTO(tournament,this.checkIfInvitationIsAcceptedForTournament(invitations,tournament.getName()))).collect(Collectors.toList());
+        List<String> tournamentsNamesWithTooManyOrganizers = new ArrayList<>();
+        List<InvitationDTO> output = tournaments.stream().map(tournament -> {
+                boolean invitationAccepted = this.checkIfInvitationIsAcceptedForTournament(invitations,tournament.getName());
+                if(tournament.getOrganizations().size()>=10)
+                    tournamentsNamesWithTooManyOrganizers.add(tournament.getName());
+                return new InvitationDTO(tournament,invitationAccepted);
+        }).collect(Collectors.toList());
+        if(tournamentsNamesWithTooManyOrganizers.size()>0)
+            this.reportTournamentsWithTooManyOrganizers(tournamentsNamesWithTooManyOrganizers,bindingResult);
+        return output;
     }
 
     public void finishValidation(BindingResult bindingResult){
@@ -153,7 +162,7 @@ public class UserAccountValidator implements Validator {
 
     private InvitationRequestPlayerDTO getInvitationByTournamentName(List<InvitationRequestPlayerDTO> invitations, String tournamentName){
         return invitations.stream()
-                .filter(invitation -> invitation.getFirstPlayerInvitation().getTournamentName().equals(tournamentName))
+                .filter(invitation -> invitation.getTournamentName().equals(tournamentName))
                 .findFirst().get();
     }
 
@@ -172,9 +181,23 @@ public class UserAccountValidator implements Validator {
                 .filter(participation -> participation.getPlayer().getName().equals(playerName))
                 .findFirst().orElse(null);
 
-            if(participationOfPlayer==null && tournament.getParticipation().size()+slotsCount>tournament.getMaxPlayers()){
+            if(participationOfPlayer==null && tournament.getParticipation().size()+slotsCount>=tournament.getMaxPlayers()){
                 tournamentsNamesWithTooManyPlayers.add(tournament.getName());
             }
+    }
+
+    private void checkIfPlayerHaveAlreadyHaveParticipation(Tournament tournament,Player secondPlayer,String userName,BindingResult bindingResult){
+        Participation participationOfSecondPlayer = tournament.getParticipation().stream()
+                .filter(participation -> participation.getPlayer().equals(secondPlayer)).findFirst().orElse(null);
+        if(participationOfSecondPlayer!=null){
+            Participation participationOfEditedPlayer = tournament.getParticipation().stream()
+                    .filter(participation -> participation.getPlayer().getName().equals(userName)).findFirst().orElse(null);
+            if(participationOfEditedPlayer==null ||  !participationOfEditedPlayer.getGroupNumber().equals(participationOfSecondPlayer.getGroupNumber())){
+                bindingResult.rejectValue("participatedTournaments","",
+                        new StringBuilder("Player: ").append(secondPlayer.getName()).append(" already participed in in tournament: ")
+                                .append(tournament.getName()).toString());
+            }
+        }
     }
 
     private void reportTournamentsWithTooManyPlayers(List<String> tournamentsNamesWithTooManyPlayers,BindingResult bindingResult){
@@ -182,5 +205,12 @@ public class UserAccountValidator implements Validator {
                 .append(tournamentsNamesWithTooManyPlayers.stream().collect(Collectors.joining(", ")))
                 .append(" have too many players");
         bindingResult.rejectValue("participatedTournaments","",raport.toString());
+    }
+
+    private void reportTournamentsWithTooManyOrganizers(List<String> tournamentsNamesWithTooManyPlayers,BindingResult bindingResult){
+        StringBuilder raport = new StringBuilder("Tournaments: ")
+                .append(tournamentsNamesWithTooManyPlayers.stream().collect(Collectors.joining(", ")))
+                .append(" have too many organizers");
+        bindingResult.rejectValue("organizedTournaments","",raport.toString());
     }
 }

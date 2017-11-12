@@ -35,8 +35,8 @@ public class TournamentToResponseDTOMapper {
 
         tournamentResponseDTO.setName(tournament.getName());
         tournamentResponseDTO.setNameChange(tournament.getName());
-        tournamentResponseDTO.setTablesCount(tournament.getTablesCount());
         tournamentResponseDTO.setTablesCount(tournament.getToursCount());
+        tournamentResponseDTO.setTablesCount(tournament.getTablesCount());
         tournamentResponseDTO.setPlayersOnTableCount(tournament.getPlayersOnTableCount());
         tournamentResponseDTO.setGame(tournament.getGame().getName());
         tournamentResponseDTO.setDateOfStart(tournament.getDateOfStart());

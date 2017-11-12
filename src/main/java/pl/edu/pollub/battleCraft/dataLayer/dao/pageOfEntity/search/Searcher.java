@@ -14,6 +14,7 @@ import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.page.Pager;
 import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.search.field.Join;
 import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.search.field.Field;
 import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.search.criteria.SearchCriteria;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.PageOfEntities.AnyEntityNotFoundException;
 
 import javax.persistence.EntityManager;
@@ -24,6 +25,7 @@ import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -76,7 +78,7 @@ public class Searcher{
             String fieldName = condition.getName();
             List<Object> fieldValue = condition.getValue(root);
             String operationOnField = condition.getOperation();
-            if(fieldValue.get(0) instanceof String)
+            if(fieldValue.get(0) instanceof String && operationOnField.equalsIgnoreCase(":"))
                 whereConditions.add(Restrictions.like(fieldName, fieldValue.get(0)));
             else if(fieldValue.get(0) instanceof Enum){
                 SimpleExpression[] orCriteries = fieldValue.stream().map(value -> Restrictions.eq(fieldName, value))
@@ -87,6 +89,10 @@ public class Searcher{
                 whereConditions.add(Restrictions.ge(fieldName, fieldValue.get(0)));
             else if (operationOnField.equalsIgnoreCase("<"))
                 whereConditions.add(Restrictions.le(fieldName, fieldValue.get(0)));
+            else if (operationOnField.equalsIgnoreCase("not in"))
+                whereConditions.add(Restrictions.not(Restrictions.in(fieldName, fieldValue)));
+            else if (operationOnField.equalsIgnoreCase("not participate"))
+                whereConditions.add(Subqueries.propertyNotIn("name", this.notParticipateSubQuery(fieldValue)));
             else
                 whereConditions.add(Restrictions.eq(fieldName, fieldValue.get(0)));
         });
@@ -98,7 +104,8 @@ public class Searcher{
         Arrays.stream(groupByFields).forEach(
                 field -> projectionList.add(Projections.groupProperty(getFieldFullName(field)))
         );
-        this.criteria.setProjection(projectionList).setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+        this.criteria.setProjection(projectionList);
+        this.criteria.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
         return this;
     }
 
@@ -129,5 +136,14 @@ public class Searcher{
             return fieldName;
         else
             return new StringBuilder(transactionId).append(".").append(fieldName).toString();
+    }
+
+    private DetachedCriteria notParticipateSubQuery(List<Object> fieldValue){
+        return DetachedCriteria.forClass(Tournament.class)
+                .createAlias("participation","participation")
+                .createAlias("participation.player","player")
+                .add(Restrictions.like("name", fieldValue.get(0)))
+                .setProjection(Projections.property("player.name"))
+                .setProjection(Projections.groupProperty("player.name"));
     }
 }

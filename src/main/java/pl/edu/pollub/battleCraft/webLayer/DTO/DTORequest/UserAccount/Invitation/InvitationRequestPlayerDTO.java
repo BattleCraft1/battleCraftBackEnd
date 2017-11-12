@@ -9,6 +9,11 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InvitationRequestPlayerDTO {
-    private InvitationRequestDTO firstPlayerInvitation;
+    private String name;
+    private boolean accepted;
     private String secondPlayerName;
+
+    public String getTournamentName(){
+        return this.name;
+    }
 }

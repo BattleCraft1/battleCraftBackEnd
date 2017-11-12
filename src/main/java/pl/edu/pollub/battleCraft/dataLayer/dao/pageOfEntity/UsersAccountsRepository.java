@@ -59,11 +59,12 @@ public class UsersAccountsRepository{
                         new Field("banned", "banned")
                 )
                 .join(
-                        new Join("address", "address")
+                        new Join("address", "address"),
+                        new Join("participation", "participation")
                 )
                 .from(UserAccount.class)
                 .where(searchCriteria)
-                .groupBy("id", "banned", "address.city", "address.province")
+                .groupBy("id","banned", "address.city", "address.province")
                 .execute("id",requestedPage);
     }
 
