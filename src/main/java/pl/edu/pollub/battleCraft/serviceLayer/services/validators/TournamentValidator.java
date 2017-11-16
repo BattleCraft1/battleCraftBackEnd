@@ -59,7 +59,6 @@ public class TournamentValidator implements Validator {
         this.validatePlayersOnTableCount(tournamentWebDTO.getPlayersOnTableCount());
         this.validateTablesCount(tournamentWebDTO.getPlayersOnTableCount(),tournamentWebDTO.getTablesCount());
         this.validateToursCount(tournamentWebDTO.getToursCount(),
-                tournamentWebDTO.getPlayersOnTableCount(),
                 tournamentWebDTO.getTablesCount());
         this.validateStartDate(tournamentWebDTO.getDateOfStart());
         this.validateEndDate(tournamentWebDTO.getDateOfStart(),tournamentWebDTO.getDateOfEnd());
@@ -88,11 +87,9 @@ public class TournamentValidator implements Validator {
         }
     }
 
-    private void validateToursCount(int toursCount, int playersOnTableCount, int tablesCount){
-        Long maxPlayers = (long) (playersOnTableCount * tablesCount);
-        Long factorial1 = Factorial.factorial(maxPlayers-1);
-        Long factorial2 = Factorial.factorial(maxPlayers-2);
-        Long maxToursNumber = factorial1/factorial2;
+    private void validateToursCount(int toursCount, int tablesCount){
+        int maxPlayers = (2 * tablesCount);
+        int maxToursNumber = maxPlayers - 1;
         if(toursCount>maxToursNumber)
             errors.rejectValue("toursCount","",
                     new StringBuilder("Max tours number in this tournament is: ").append(maxToursNumber).toString());

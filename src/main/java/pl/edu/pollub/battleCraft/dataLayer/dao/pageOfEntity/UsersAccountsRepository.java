@@ -46,6 +46,17 @@ public class UsersAccountsRepository{
 
     @Transactional
     public Page getPageOfUserAccounts(List<SearchCriteria> searchCriteria, Pageable requestedPage) {
+        SearchCriteria ifParticipateSearchCriteria = searchCriteria.stream()
+                .filter(searchCriteria1 -> searchCriteria1.getOperation().equalsIgnoreCase("not participate"))
+                .findFirst().orElse(null);
+        Join[] joins;
+        if(ifParticipateSearchCriteria!=null){
+            joins = new Join[]{new Join("address", "address"),
+                    new Join("participation", "participation")};
+        }
+        else{
+            joins = new Join[]{new Join("address", "address")};
+        }
         return searcher
                 .select(
                         new Field("firstname", "firstname"),
@@ -59,8 +70,7 @@ public class UsersAccountsRepository{
                         new Field("banned", "banned")
                 )
                 .join(
-                        new Join("address", "address"),
-                        new Join("participation", "participation")
+                        joins
                 )
                 .from(UserAccount.class)
                 .where(searchCriteria)

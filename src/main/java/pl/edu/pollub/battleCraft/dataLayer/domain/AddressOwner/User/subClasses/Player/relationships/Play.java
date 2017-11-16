@@ -2,7 +2,6 @@ package pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.emuns.ColorOfSideInBattle;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Battle.Battle;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
 
@@ -33,6 +32,15 @@ public class Play {
     @JoinColumn(name = "battle_id")
     private Battle battle;
 
-    @Enumerated(EnumType.STRING)
-    private ColorOfSideInBattle colorOfSideInBattle;
+    public Play(Player player,Battle battle, int points){
+        this.player = player;
+        this.battle = battle;
+        this.points = points;
+    }
+
+    public Play(Player player,Battle battle){
+        this.player = player;
+        this.battle = battle;
+        this.points = 0;
+    }
 }

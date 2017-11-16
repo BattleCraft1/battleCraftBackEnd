@@ -138,16 +138,18 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
                             Arrays.asList(testUser3,testUser4),
                             Collections.singletonList(testUser5)))
                     .finishOrganize();
-
+            testTournament1.setStatus(TournamentStatus.ACCEPTED);
 
             Tournament testTournament2 = tournamentCreator
-                    .startOrganizeTournament("Tournament2", 4,TournamentType.DUEL,2)
+                    .startOrganizeTournament("Tournament2", 4,TournamentType.DUEL,4)
+                    .with(Collections.singletonList(testUser9))
                     .in(testAddress12)
                     .withGame( testGame1)
                     .startAt(format.parse("09-02-2018 14:11:00"))
                     .endingIn(format.parse("11-02-2018 14:05:00"))
-                    .inviteParticipants(testUser2,testUser3,testUser5,testUser9)
+                    .inviteParticipants(testUser2,testUser3,testUser5,testUser9,testUser1)
                     .finishOrganize();
+            testTournament2.setStatus(TournamentStatus.ACCEPTED);
 
 
             Tournament testTournament3 = tournamentCreator

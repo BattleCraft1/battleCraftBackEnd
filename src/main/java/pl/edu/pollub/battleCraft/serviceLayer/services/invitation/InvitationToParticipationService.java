@@ -59,8 +59,7 @@ public class InvitationToParticipationService {
     private void removeNotExistingParticipation(Player player, List<Tournament> participatedTournaments){
         player.getParticipation().removeAll(player.getParticipation().stream()
                 .filter(participation ->
-                        !participatedTournaments.contains(participation.getParticipatedTournament())
-                                && participation.getParticipatedTournament().getStatus()== TournamentStatus.ACCEPTED)
+                        !participatedTournaments.contains(participation.getParticipatedTournament()))
                 .peek(participation -> {
                     this.deleteParticipation(participation, participation.getParticipatedTournament());
                 }).collect(Collectors.toList()));

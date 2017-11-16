@@ -63,8 +63,12 @@ public class Player extends UserAccount {
         }
     }
 
-    public void addBattlesByOneSide(Play battle){
+    public void addBattleByOneSide(Play battle){
         this.battles.add(battle);
+    }
+
+    public void removeBattleByOneSide(Play battle){
+        this.battles.remove(battle);
     }
 
     public void setParticipation(List<Participation> participation){

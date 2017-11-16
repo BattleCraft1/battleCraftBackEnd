@@ -56,6 +56,7 @@ public class GamesRepository {
 
     public void banGames(String... gamesToBanUniqueNames) {
         gameRepository.banGamesByUniqueNames(gamesToBanUniqueNames);
+        tournamentRepository.banTournamentsRelatedWithGame(gamesToBanUniqueNames);
     }
 
     public void deleteGames(String... gamesToDeleteUniqueNames) {

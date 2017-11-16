@@ -9,6 +9,8 @@ import lombok.ToString;
 import org.hibernate.annotations.Formula;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.AddressOwner;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentType;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.subClasses.GroupTournament;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Battle.Battle;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Game.Game;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentStatus;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.Organizer;
@@ -16,6 +18,7 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.O
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tour.Tour;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityNotFoundException;
 
 import javax.persistence.*;
 import java.util.*;
@@ -91,12 +94,41 @@ public abstract class Tournament extends AddressOwner{
 
     private int currentTourNumber;
 
-    public void filterNoAcceptedParticipation(){
-        this.participation = this.participation.stream().filter(Participation::isAccepted).collect(Collectors.toList());
+    public Player getPlayerByName(String playerName){
+        return this.getParticipation().stream()
+                .map(Participation::getPlayer)
+                .filter(player -> player.getName().equals(playerName))
+                .findFirst().orElseThrow(() -> new EntityNotFoundException(Player.class,playerName));
+    }
+
+    public Participation getParticipationByPlayerName(String playerName){
+        return this.getParticipation().stream()
+                .filter(participation -> participation.getPlayer().getName().equals(playerName))
+                .findFirst().orElseThrow(() -> new EntityNotFoundException(Player.class,playerName));
+    }
+
+    public Tour getTourByNumber(int number){
+        return this.getTours().stream().filter(tour -> tour.getNumber() == number)
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException(Tour.class,new StringBuilder(currentTourNumber).toString()));
+    }
+
+    public List<Tour> getActivatedTours(){
+        return this.getTours().subList(0,currentTourNumber+1);
+    }
+
+    protected List<Tour> getPreviousTours(){
+        return this.getTours().subList(0,currentTourNumber);
     }
 
     public void filterNoAcceptedOrganizations(){
-        this.organizations = this.organizations.stream().filter(Organization::isAccepted).collect(Collectors.toList());
+        this.organizations.removeAll(this.organizations.stream()
+                .filter(organization -> !organization.isAccepted())
+                .peek(organization -> {
+                    organization.getOrganizer().deleteOrganizationByOneSide(organization);
+                    organization.setOrganizer(null);
+                    organization.setOrganizedTournament(null);
+                }).collect(Collectors.toList()));
     }
 
     public void addOrganizers(List<Organizer> organizers){
@@ -221,5 +253,14 @@ public abstract class Tournament extends AddressOwner{
 
     private void setOrganizations(List<Organization> organizations){
         this.organizations = organizations;
+    }
+
+    public int getTableNumberForPlayer(Player firstPlayer) {
+        return this.getTourByNumber(this.getCurrentTourNumber()).getBattles().stream()
+                .filter(battle -> battle.getPlayers().stream()
+                        .filter(play -> play.getPlayer().equals(firstPlayer))
+                        .findFirst().orElse(null)!=null)
+                .findFirst().orElseThrow(() -> new EntityNotFoundException(Battle.class,firstPlayer.getName()))
+                .getTableNumber();
     }
 }

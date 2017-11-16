@@ -94,5 +94,15 @@ public interface TournamentRepository extends JpaRepository<Tournament, Long> {
     @Query("SELECT t FROM Tournament t Where t.name = ?1 and t.status='ACCEPTED' and t.banned = false")
     Tournament findAcceptedTournamentByUniqueName(String tournamentUniqueNames);
 
+    @Query("SELECT t FROM Tournament t Where t.name = ?1 and t.status='IN_PROGRESS' and t.banned = false")
+    Tournament findStartedTournamentByUniqueName(String tournamentUniqueNames);
+
+    @Query("SELECT t FROM Tournament t Where t.name = ?1 and (t.status='IN_PROGRESS' or t.status='FINISHED') and t.banned = false")
+    Tournament findNotNewTournamentByUniqueName(String tournamentUniqueNames);
+
     Tournament findByName(String name);
+
+    @Modifying
+    @Query("UPDATE Tournament t SET t.banned = true WHERE (SELECT g.name FROM Game g WHERE t.game=g.id) IN ?1")
+    void banTournamentsRelatedWithGame(String... bannedGamesList);
 }

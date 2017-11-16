@@ -37,6 +37,13 @@ public class RankingRepository{
                         Collections.singletonList(false)
                 )
         );
+        searchCriteria.add(
+                new SearchCriteria(
+                        Arrays.asList("tour", "tournament", "status"),
+                        ":",
+                        Collections.singletonList("FINISHED")
+                )
+        );
         return searcher
                 .select(
                         new Field("player.name", "name"),

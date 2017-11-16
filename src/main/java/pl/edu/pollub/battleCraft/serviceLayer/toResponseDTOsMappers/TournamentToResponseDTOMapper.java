@@ -11,7 +11,6 @@ import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Invitation.InvitationR
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -80,9 +79,9 @@ public class TournamentToResponseDTOMapper {
                     !includedPlayersNames.contains(participationElement2.getPlayer().getName()))
                     .findFirst()
                     .ifPresent(participationElement2 ->{
-                        String playerName2 = participationElement2.getPlayer().getName();
-                        playersGroup.add(new InvitationResponseDTO(playerName2,participationElement2.isAccepted()));
-                        includedPlayersNames.add(playerName2);
+                        String player2Name = participationElement2.getPlayer().getName();
+                        playersGroup.add(new InvitationResponseDTO(player2Name,participationElement2.isAccepted()));
+                        includedPlayersNames.add(player2Name);
                     });
 
             playersGroups.add(playersGroup);
