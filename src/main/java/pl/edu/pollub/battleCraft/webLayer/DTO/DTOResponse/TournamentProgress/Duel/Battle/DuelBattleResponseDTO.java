@@ -13,4 +13,5 @@ public class DuelBattleResponseDTO {
     private int tableNumber;
     private PlayerDTO firstPlayer;
     private PlayerDTO secondPlayer;
+    private boolean finished;
 }

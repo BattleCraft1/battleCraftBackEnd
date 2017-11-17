@@ -44,7 +44,8 @@ public class GroupTournamentProgressDTOMapper {
                                                                 ):
                                                                 Arrays.asList("",""),
                                                         battle.getPlayers().size()>2?battle.getPlayers().get(2).getPoints():0
-                                                )
+                                                ),
+                                                battle.isFinished()
                                         )
                                 );
                             }

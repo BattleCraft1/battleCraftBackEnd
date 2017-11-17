@@ -33,7 +33,8 @@ public class DuelTournamentProgressDTOMapper {
                                         new PlayerDTO(
                                                 battle.getPlayers().size()>1?battle.getPlayers().get(1).getPlayer().getName():"",
                                                 battle.getPlayers().size()>1?battle.getPlayers().get(1).getPoints():0
-                                        )
+                                        ),
+                                        battle.isFinished()
                                 )
                         );
                     });

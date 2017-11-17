@@ -16,4 +16,5 @@ public class GroupBattleResponseDTO {
     private int tableNumber;
     private PlayersGroupDTO firstPlayersGroup;
     private PlayersGroupDTO secondPlayersGroup;
+    private boolean finished;
 }
