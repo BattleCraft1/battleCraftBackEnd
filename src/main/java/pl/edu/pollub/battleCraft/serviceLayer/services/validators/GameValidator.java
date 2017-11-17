@@ -8,7 +8,7 @@ import org.springframework.validation.Validator;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Game.Game;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Game.enums.GameStatus;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.GameRepository;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.EntityNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityValidation.EntityValidationException;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Game.GameRequestDTO;
 

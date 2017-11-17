@@ -15,5 +15,5 @@ import java.util.List;
 public class GroupBattleResponseDTO {
     private int tableNumber;
     private PlayersGroupDTO firstPlayersGroup;
-    private PlayersGroupDTO secondPlayerGroup;
+    private PlayersGroupDTO secondPlayersGroup;
 }

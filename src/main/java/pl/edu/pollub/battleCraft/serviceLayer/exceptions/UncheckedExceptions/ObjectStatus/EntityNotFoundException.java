@@ -1,4 +1,4 @@
-package pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions;
+package pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus;
 
 public class EntityNotFoundException extends RuntimeException{
     public EntityNotFoundException(Class classOfEntity, String uniqueName){

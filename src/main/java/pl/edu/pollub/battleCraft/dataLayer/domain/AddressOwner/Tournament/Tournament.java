@@ -9,7 +9,7 @@ import lombok.ToString;
 import org.hibernate.annotations.Formula;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.AddressOwner;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentType;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.subClasses.GroupTournament;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Play;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Battle.Battle;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Game.Game;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentStatus;
@@ -18,7 +18,7 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.O
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tour.Tour;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.EntityNotFoundException;
 
 import javax.persistence.*;
 import java.util.*;
@@ -110,7 +110,15 @@ public abstract class Tournament extends AddressOwner{
     public Tour getTourByNumber(int number){
         return this.getTours().stream().filter(tour -> tour.getNumber() == number)
                 .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException(Tour.class,new StringBuilder(currentTourNumber).toString()));
+                .orElseThrow(() -> new EntityNotFoundException(Tour.class,String.valueOf(currentTourNumber)));
+    }
+
+    public int getPointsForPlayer(Player player){
+        return this.getTours().subList(0,this.getCurrentTourNumber()+1).stream()
+                .flatMap(tour -> tour.getBattles().stream())
+                .flatMap(battle -> battle.getPlayers().stream())
+                .filter(play -> play.getPlayer().equals(player))
+                .mapToInt(Play::getPoints).sum();
     }
 
     public List<Tour> getActivatedTours(){

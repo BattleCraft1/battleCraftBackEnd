@@ -8,7 +8,7 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.Game.Game;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.Organizer;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.GameRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.OrganizerRepository;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.EntityNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityValidation.EntityValidationException;
 import pl.edu.pollub.battleCraft.serviceLayer.services.resources.GameResourcesService;
 import pl.edu.pollub.battleCraft.serviceLayer.services.validators.GameValidator;

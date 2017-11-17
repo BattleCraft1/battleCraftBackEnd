@@ -12,7 +12,7 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.Battle.Battle;
 import javax.persistence.*;
 import java.util.*;
 import java.util.stream.Collectors;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.EntityNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentManagement.BattleOnTableNotFinishedYet;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentManagement.NotValidPointsNumber;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.TournamentProgress.Duel.Battle.DuelBattleRequestDTO;
@@ -65,11 +65,12 @@ public class Tour {
 
     public void setPoints(GroupBattleRequestDTO groupBattleDTO, List<Player> firstPlayersGroup, List<Player> secondPlayersGroup) {
         if(checkPoints(groupBattleDTO.getFirstPlayersGroup().getPlayersPoints(),
-                groupBattleDTO.getSecondPlayerGroup().getPlayersPoints()))
+                groupBattleDTO.getSecondPlayersGroup().getPlayersPoints()))
             throw new NotValidPointsNumber();
+
         Battle battleWithTableNumber = this.findBattleByTableNumber(groupBattleDTO.getTableNumber());
         battleWithTableNumber.setPoints(firstPlayersGroup,groupBattleDTO.getFirstPlayersGroup().getPlayersPoints(),
-                                        secondPlayersGroup,groupBattleDTO.getSecondPlayerGroup().getPlayersPoints());
+                                        secondPlayersGroup,groupBattleDTO.getSecondPlayersGroup().getPlayersPoints());
     }
 
     public Battle findBattleByTableNumber(int tableNumber){

@@ -12,7 +12,7 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.Tourna
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.Organizer;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.*;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.EntityNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityValidation.EntityValidationException;
 import pl.edu.pollub.battleCraft.serviceLayer.services.validators.TournamentValidator;
 import pl.edu.pollub.battleCraft.serviceLayer.toResponseDTOsMappers.TournamentToResponseDTOMapper;

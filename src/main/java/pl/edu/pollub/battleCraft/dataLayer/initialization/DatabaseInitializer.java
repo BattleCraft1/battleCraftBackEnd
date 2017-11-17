@@ -134,9 +134,10 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
                     .endingIn(format.parse("09-01-2018 14:05:00"))
                     .inviteParticipants(
                             Arrays.asList(
-                            Arrays.asList(testUser1,testUser2),
-                            Arrays.asList(testUser3,testUser4),
-                            Collections.singletonList(testUser5)))
+                                    Arrays.asList(testUser1,testUser2),
+                                    Arrays.asList(testUser3,testUser4),
+                                    Arrays.asList(testUser5,testUser6),
+                                    Arrays.asList(testUser7,testUser8)))
                     .finishOrganize();
             testTournament1.setStatus(TournamentStatus.ACCEPTED);
 

@@ -16,16 +16,6 @@ public class DuelTournamentManagementController {
         this.duelTournamentManagementService = duelTournamentManagementService;
     }
 
-    @GetMapping(value ="/start/duel/tournament")
-    public DuelTournamentProgressResponseDTO startTournament(@RequestParam(value = "name") String name){
-        return duelTournamentManagementService.startTournament(name);
-    }
-
-    @GetMapping(value ="/progress/duel/tournament")
-    public DuelTournamentProgressResponseDTO getTournamentProgress(@RequestParam(value = "name") String name){
-        return duelTournamentManagementService.getTournamentProgress(name);
-    }
-
     @GetMapping(value ="/next/tour/duel/tournament")
     public DuelTournamentProgressResponseDTO nextTour(@RequestParam(value = "name") String name){
         return duelTournamentManagementService.nextTour(name);

@@ -11,8 +11,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import pl.edu.pollub.battleCraft.serviceLayer.errors.ErrorResource;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.EntityNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityValidation.EntityValidationException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ThisObjectIsNotAcceptedException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.PageOfEntities.AnyEntityNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.PageOfEntities.OperationOnPageFailedException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.PageOfEntities.PageNotFoundException;
@@ -44,7 +45,8 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(value = {OperationOnPageFailedException.class, InvalidUserAvatarExtension.class, TournamentManagementException.class})
+    @ExceptionHandler(value = {OperationOnPageFailedException.class, InvalidUserAvatarExtension.class,
+            TournamentManagementException.class, ThisObjectIsNotAcceptedException.class, ThisObjectIsNotAcceptedException.class})
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     protected ResponseEntity<String> handleBadRequest(Exception ex, WebRequest req) {
         System.out.println("exception: "+ex.getClass().getSimpleName()+" message: " + ex.getMessage());

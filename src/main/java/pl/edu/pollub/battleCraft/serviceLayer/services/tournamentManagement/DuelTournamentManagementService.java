@@ -9,8 +9,11 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.subCla
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Battle.Battle;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tour.Tour;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.EntityNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ThisObjectIsBannedException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ThisObjectIsNotAcceptedException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentManagement.*;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentManagement.DuplicatedPlayersNamesException;
 import pl.edu.pollub.battleCraft.serviceLayer.toResponseDTOsMappers.TournamentProgress.DuelTournamentProgressDTOMapper;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.TournamentProgress.Duel.Battle.DuelBattleRequestDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.TournamentProgress.Duel.DuelTournamentProgressResponseDTO;
@@ -18,6 +21,8 @@ import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.TournamentProgress.Due
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+
+import static java.lang.Math.floor;
 
 @Service
 public class DuelTournamentManagementService {
@@ -32,8 +37,26 @@ public class DuelTournamentManagementService {
         this.duelTournamentProgressDTOMapper = duelTournamentProgressDTOMapper;
     }
 
-    public DuelTournamentProgressResponseDTO startTournament(String tournamentName) {
-        DuelTournament tournament = this.findNotStartedTournamentByName(tournamentName);
+    public DuelTournamentProgressResponseDTO getTournamentProgress(DuelTournament tournament) {
+        if(tournament.getPlayersOnTableCount() == 2){
+            if(tournament.isBanned()){
+                throw new ThisObjectIsBannedException(Tournament.class,tournament.getName());
+            }
+            else if(tournament.getStatus()==TournamentStatus.FINISHED || tournament.getStatus()==TournamentStatus.IN_PROGRESS){
+                return duelTournamentProgressDTOMapper.map((DuelTournament)tournament);
+            }
+            else if(tournament.getStatus()==TournamentStatus.ACCEPTED){
+                return this.startTournament((DuelTournament)tournament);
+            }
+            else{
+                throw new ThisObjectIsNotAcceptedException(Tournament.class,tournament.getName());
+            }
+        }
+        else
+            throw new InvalidTypeOfTournament();
+    }
+
+    private DuelTournamentProgressResponseDTO startTournament(DuelTournament tournament) {
         this.checkIfTournamentCanStart(tournament);
         this.checkIfTournamentIsNotOutOfDate(tournament);
 
@@ -71,6 +94,9 @@ public class DuelTournamentManagementService {
             return duelTournamentProgressDTOMapper.map(tournamentRepository.save(tournament));
         }
 
+        if(tournament.getParticipation().size()%2!=0 && battleDTO.getTableNumber()==floor(tournament.getParticipation().size() / 2.0f))
+            throw new ThisTableIsReservedForAlonePlayer();
+
         Player firstPlayer = tournament.getPlayerByName(battleDTO.getFirstPlayer().getName());
 
         Player secondPlayer = tournament.getPlayerByName(battleDTO.getSecondPlayer().getName());
@@ -90,15 +116,6 @@ public class DuelTournamentManagementService {
         }
 
         return duelTournamentProgressDTOMapper.map(tournamentRepository.save(tournament));
-    }
-
-    public DuelTournamentProgressResponseDTO getTournamentProgress(String name) {
-        Tournament tournament = Optional.ofNullable(tournamentRepository.findNotNewTournamentByUniqueName(name))
-                .orElseThrow(() -> new EntityNotFoundException(Tournament.class,name));
-        if(tournament.getPlayersOnTableCount() == 2)
-            return duelTournamentProgressDTOMapper.map((DuelTournament)tournament);
-        else
-            throw new InvalidTypeOfTournament();
     }
 
     public DuelTournamentProgressResponseDTO nextTour(String name) {

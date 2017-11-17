@@ -16,16 +16,6 @@ public class GroupTournamentManagementController {
         this.groupTournamentManagementService = groupTournamentManagementService;
     }
 
-    @GetMapping(value ="/start/group/tournament")
-    public GroupTournamentProgressResponseDTO startTournament(@RequestParam(value = "name") String name){
-        return groupTournamentManagementService.startTournament(name);
-    }
-
-    @GetMapping(value ="/progress/group/tournament")
-    public GroupTournamentProgressResponseDTO getTournamentProgress(@RequestParam(value = "name") String name){
-        return groupTournamentManagementService.getTournamentProgress(name);
-    }
-
     @GetMapping(value ="/next/tour/group/tournament")
     public GroupTournamentProgressResponseDTO nextTour(@RequestParam(value = "name") String name){
         return groupTournamentManagementService.nextTour(name);

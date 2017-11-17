@@ -4,7 +4,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Validator;
 import org.springframework.validation.Errors;
-import pl.edu.pollub.battleCraft.additionalClasses.Factorial;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentType;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Game.Game;
@@ -16,7 +15,7 @@ import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.GameRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.OrganizerRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.PlayerRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.TournamentRepository;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.EntityNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityValidation.EntityValidationException;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Tournament.TournamentRequestDTO;
 

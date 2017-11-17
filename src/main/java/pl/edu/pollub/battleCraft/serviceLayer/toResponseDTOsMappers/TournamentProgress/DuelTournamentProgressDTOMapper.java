@@ -49,6 +49,7 @@ public class DuelTournamentProgressDTOMapper {
                                 .map(UserAccount::getName).collect(Collectors.toList()))));
         duelTournamentProgressDTO.setCurrentTourNumber(tournament.getCurrentTourNumber());
         duelTournamentProgressDTO.setTournamentStatus(tournament.getStatus());
+        duelTournamentProgressDTO.setPlayersCount(tournament.getParticipation().size());
         return duelTournamentProgressDTO;
     }
 }

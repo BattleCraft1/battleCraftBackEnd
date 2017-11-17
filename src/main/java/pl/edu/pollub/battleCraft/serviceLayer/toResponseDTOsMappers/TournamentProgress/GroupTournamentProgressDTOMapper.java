@@ -54,7 +54,7 @@ public class GroupTournamentProgressDTOMapper {
         );
         groupTournamentProgressResponseDTO.setTours(toursOfDTO);
         groupTournamentProgressResponseDTO.setPlayersNamesWithPoints(tournament.getParticipation().stream()
-                .map(Participation::getPlayer).collect(Collectors.toMap(Player::getName,tournament::getPointsForPlayerFromPreviousTours)));
+                .map(Participation::getPlayer).collect(Collectors.toMap(Player::getName,tournament::getPointsForPlayer)));
         groupTournamentProgressResponseDTO.setPlayersWithoutBattles(
                 tournament.getActivatedTours().stream()
                 .collect(Collectors.toMap(
@@ -66,6 +66,7 @@ public class GroupTournamentProgressDTOMapper {
                                 .collect(Collectors.toList()))));
         groupTournamentProgressResponseDTO.setCurrentTourNumber(tournament.getCurrentTourNumber());
         groupTournamentProgressResponseDTO.setTournamentStatus(tournament.getStatus());
+        groupTournamentProgressResponseDTO.setPlayersCount(tournament.getParticipation().size()/2);
         return groupTournamentProgressResponseDTO;
     }
 }

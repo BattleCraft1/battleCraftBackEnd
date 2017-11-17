@@ -10,10 +10,12 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.P
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Battle.Battle;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tour.Tour;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.EntityNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ThisObjectIsBannedException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ThisObjectIsNotAcceptedException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentManagement.*;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentManagement.DuplicatedPlayersNamesException;
 import pl.edu.pollub.battleCraft.serviceLayer.toResponseDTOsMappers.TournamentProgress.GroupTournamentProgressDTOMapper;
-import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.TournamentProgress.Duel.Battle.DuelBattleRequestDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.TournamentProgress.Group.Battle.GroupBattleRequestDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.TournamentProgress.Group.GroupTournamentProgressResponseDTO;
 
@@ -21,6 +23,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static java.lang.Math.floor;
 
 @Service
 public class GroupTournamentManagementService {
@@ -35,8 +39,26 @@ public class GroupTournamentManagementService {
         this.groupTournamentProgressDTOMapper = groupTournamentProgressDTOMapper;
     }
 
-    public GroupTournamentProgressResponseDTO startTournament(String tournamentName) {
-        GroupTournament tournament = this.findNotStartedTournamentByName(tournamentName);
+    public GroupTournamentProgressResponseDTO getTournamentProgress(GroupTournament tournament) {
+        if(tournament.getPlayersOnTableCount() == 4){
+            if(tournament.isBanned()){
+                throw new ThisObjectIsBannedException(Tournament.class,tournament.getName());
+            }
+            else if(tournament.getStatus()==TournamentStatus.FINISHED || tournament.getStatus()==TournamentStatus.IN_PROGRESS){
+                return groupTournamentProgressDTOMapper.map((GroupTournament) tournament);
+            }
+            else if(tournament.getStatus()==TournamentStatus.ACCEPTED){
+                return this.startTournament((GroupTournament) tournament);
+            }
+            else{
+                throw new ThisObjectIsNotAcceptedException(Tournament.class,tournament.getName());
+            }
+        }
+        else
+            throw new InvalidTypeOfTournament();
+    }
+
+    private GroupTournamentProgressResponseDTO startTournament(GroupTournament tournament) {
         this.checkIfTournamentCanStart(tournament);
         this.checkIfTournamentIsNotOutOfDate(tournament);
 
@@ -66,6 +88,7 @@ public class GroupTournamentManagementService {
 
         GroupTournament tournament = this.findStartedTournamentByName(tournamentName);
 
+
         if(battleDTO.getTourNumber()>tournament.getCurrentTourNumber())
             throw new EntityNotFoundException(Tour.class,String.valueOf(tournament.getCurrentTourNumber()));
 
@@ -73,6 +96,9 @@ public class GroupTournamentManagementService {
             tournament.getTourByNumber(battleDTO.getTourNumber()).findBattleByTableNumber(battleDTO.getTableNumber()).clearPlayers();
             return groupTournamentProgressDTOMapper.map(tournamentRepository.save(tournament));
         }
+
+        if(tournament.getParticipation().size()/2%2!=0 && battleDTO.getTableNumber()==floor(tournament.getParticipation().size() / 4.0f))
+            throw new ThisTableIsReservedForAlonePlayer();
 
         List<Participation> firstPlayersGroupParticipation =
                 battleDTO.getFirstPlayersGroup().getPlayersNames().stream().map(tournament::getParticipationByPlayerName)
@@ -85,7 +111,7 @@ public class GroupTournamentManagementService {
         }
 
         List<Participation> secondPlayersGroupParticipation =
-                battleDTO.getSecondPlayerGroup().getPlayersNames().stream().map(tournament::getParticipationByPlayerName)
+                battleDTO.getSecondPlayersGroup().getPlayersNames().stream().map(tournament::getParticipationByPlayerName)
                         .collect(Collectors.toList());
 
         List<Player> secondPlayersGroup = secondPlayersGroupParticipation.stream().map(Participation::getPlayer).collect(Collectors.toList());
@@ -110,17 +136,7 @@ public class GroupTournamentManagementService {
             }
         }
 
-        tournament.getTourByNumber(tournament.getCurrentTourNumber()).setPoints(battleDTO,firstPlayersGroup,secondPlayersGroup);
         return groupTournamentProgressDTOMapper.map(tournamentRepository.save(tournament));
-    }
-
-    public GroupTournamentProgressResponseDTO getTournamentProgress(String name) {
-        Tournament tournament = Optional.ofNullable(tournamentRepository.findNotNewTournamentByUniqueName(name))
-                .orElseThrow(() -> new EntityNotFoundException(Tournament.class,name));
-        if(tournament.getPlayersOnTableCount() == 4)
-            return groupTournamentProgressDTOMapper.map((GroupTournament) tournament);
-        else
-            throw new InvalidTypeOfTournament();
     }
 
     public GroupTournamentProgressResponseDTO nextTour(String name) {

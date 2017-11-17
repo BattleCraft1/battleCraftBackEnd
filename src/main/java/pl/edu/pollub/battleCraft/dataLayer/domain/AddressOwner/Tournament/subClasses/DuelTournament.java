@@ -88,14 +88,6 @@ public class DuelTournament extends Tournament{
                 .collect(Collectors.toList());
     }
 
-    public int getPointsForPlayer(Player player){
-        return this.getTours().subList(0,this.getCurrentTourNumber()+1).stream()
-                .flatMap(tour -> tour.getBattles().stream())
-                .flatMap(battle -> battle.getPlayers().stream())
-                .filter(play -> play.getPlayer().equals(player))
-                .mapToInt(Play::getPoints).sum();
-    }
-
     private int getPointsForPlayerFromPreviousTours(Player player){
         return this.getPreviousTours().stream()
                 .flatMap(tour -> tour.getBattles().stream())

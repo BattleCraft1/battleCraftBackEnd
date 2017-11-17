@@ -3,6 +3,7 @@ package pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.TournamentProgress.Gr
 import lombok.*;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentStatus;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.TournamentProgress.Group.Battle.GroupBattleResponseDTO;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.TournamentProgress.TournamentProgressResponseDTO;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,10 +16,12 @@ import java.util.Map;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class GroupTournamentProgressResponseDTO {
+public class GroupTournamentProgressResponseDTO implements TournamentProgressResponseDTO {
     private List<List<GroupBattleResponseDTO>> tours = new ArrayList<>();
     private Map<String,Integer> playersNamesWithPoints = new HashMap<>();
     private Map<Integer,List<List<String>>> playersWithoutBattles = new HashMap<>();
     private int currentTourNumber;
     private TournamentStatus tournamentStatus;
+    private int playersOnTableCount = 4;
+    private int playersCount;
 }
