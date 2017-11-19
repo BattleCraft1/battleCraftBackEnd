@@ -3,6 +3,7 @@ package pl.edu.pollub.battleCraft.dataLayer.domain.Battle;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.emuns.ColorOfSideInBattle;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tour.Tour;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Play;
@@ -10,6 +11,7 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.P
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
@@ -48,8 +50,8 @@ public class Battle {
     boolean finished;
 
     public void setPoints( Player firstPlayer, int firstPlayerPoints, Player secondPlayer, int secondPlayerPoints){
-        Play firstPlayerPlay = new Play(firstPlayer,this, firstPlayerPoints);
-        Play secondPlayerPlay = new Play(secondPlayer, this,secondPlayerPoints);
+        Play firstPlayerPlay = new Play(firstPlayer,this, firstPlayerPoints, ColorOfSideInBattle.BLUE);
+        Play secondPlayerPlay = new Play(secondPlayer, this,secondPlayerPoints, ColorOfSideInBattle.RED);
 
         this.clearPlayers();
         this.players.add(firstPlayerPlay);
@@ -62,10 +64,10 @@ public class Battle {
     }
 
     public void setPoints(List<Player> firstPlayersGroup, int firstGroupPoints, List<Player> secondPlayersGroup, int secondGroupPoints){
-        Play firstPlayerInFirstGroupPlay = new Play(firstPlayersGroup.get(0),this, firstGroupPoints);
-        Play secondPlayerInFirstGroupPlay = new Play(firstPlayersGroup.get(1),this, firstGroupPoints);
-        Play firstPlayerInSecondGroupPlay = new Play(secondPlayersGroup.get(0), this, secondGroupPoints);
-        Play secondPlayerInSecondGroupPlay = new Play(secondPlayersGroup.get(1), this,secondGroupPoints);
+        Play firstPlayerInFirstGroupPlay = new Play(firstPlayersGroup.get(0),this, firstGroupPoints, ColorOfSideInBattle.BLUE);
+        Play secondPlayerInFirstGroupPlay = new Play(firstPlayersGroup.get(1),this, firstGroupPoints, ColorOfSideInBattle.BLUE);
+        Play firstPlayerInSecondGroupPlay = new Play(secondPlayersGroup.get(0), this, secondGroupPoints, ColorOfSideInBattle.RED);
+        Play secondPlayerInSecondGroupPlay = new Play(secondPlayersGroup.get(1), this,secondGroupPoints, ColorOfSideInBattle.RED);
 
         this.clearPlayers();
         this.players.add(firstPlayerInFirstGroupPlay);
@@ -83,8 +85,8 @@ public class Battle {
     }
 
     public void addPlayers(Player firstPlayer, Player secondPlayer) {
-        Play firstPlayerPlay = new Play(firstPlayer,this);
-        Play secondPlayerPlay = new Play(secondPlayer, this);
+        Play firstPlayerPlay = new Play(firstPlayer,this, ColorOfSideInBattle.BLUE);
+        Play secondPlayerPlay = new Play(secondPlayer, this, ColorOfSideInBattle.RED);
 
         this.clearPlayers();
         this.players.add(firstPlayerPlay);
@@ -102,7 +104,7 @@ public class Battle {
     }
 
     public void addAlonePlayer(Player player){
-        Play play = new Play(player,this, NUMBER_OF_POINTS_FOR_ALONE_PLAYER);
+        Play play = new Play(player,this, NUMBER_OF_POINTS_FOR_ALONE_PLAYER, ColorOfSideInBattle.BLUE);
 
         this.clearPlayers();
         this.players.add(play);
@@ -113,8 +115,8 @@ public class Battle {
     }
 
     public void addAlonePlayer(List<Player> player){
-        Play playOfFirstPlayer = new Play(player.get(0),this, NUMBER_OF_POINTS_FOR_ALONE_PLAYER);
-        Play playOfSecondPlayer = new Play(player.get(1),this, NUMBER_OF_POINTS_FOR_ALONE_PLAYER);
+        Play playOfFirstPlayer = new Play(player.get(0),this, NUMBER_OF_POINTS_FOR_ALONE_PLAYER, ColorOfSideInBattle.BLUE);
+        Play playOfSecondPlayer = new Play(player.get(1),this, NUMBER_OF_POINTS_FOR_ALONE_PLAYER, ColorOfSideInBattle.BLUE);
 
         this.clearPlayers();
         this.players.add(playOfFirstPlayer);
@@ -127,10 +129,10 @@ public class Battle {
     }
 
     public void addPlayers(List<Player> firstPlayersGroup, List<Player> secondPlayersGroup) {
-        Play firstPlayerInFirstGroupPlay = new Play(firstPlayersGroup.get(0),this);
-        Play secondPlayerInFirstGroupPlay = new Play(firstPlayersGroup.get(1),this);
-        Play firstPlayerInSecondGroupPlay = new Play(secondPlayersGroup.get(0), this);
-        Play secondPlayerInSecondGroupPlay = new Play(secondPlayersGroup.get(1), this);
+        Play firstPlayerInFirstGroupPlay = new Play(firstPlayersGroup.get(0),this, ColorOfSideInBattle.BLUE);
+        Play secondPlayerInFirstGroupPlay = new Play(firstPlayersGroup.get(1),this, ColorOfSideInBattle.BLUE);
+        Play firstPlayerInSecondGroupPlay = new Play(secondPlayersGroup.get(0), this, ColorOfSideInBattle.RED);
+        Play secondPlayerInSecondGroupPlay = new Play(secondPlayersGroup.get(1), this, ColorOfSideInBattle.RED);
 
         this.clearPlayers();
         this.players.add(firstPlayerInFirstGroupPlay);

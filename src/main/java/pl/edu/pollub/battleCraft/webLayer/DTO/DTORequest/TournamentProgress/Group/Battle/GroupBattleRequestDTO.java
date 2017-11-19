@@ -25,7 +25,7 @@ public class GroupBattleRequestDTO {
         names.addAll(firstPlayersGroup.getPlayersNames());
         names.addAll(secondPlayersGroup.getPlayersNames());
         Set<String> setOfNamesWithoutDuplicates = new HashSet<>(names);
-        return setOfNamesWithoutDuplicates.size() > names.size();
+        return setOfNamesWithoutDuplicates.size() > names.size() && !setOfNamesWithoutDuplicates.contains("");
     }
 
     public boolean containsEmptyName(){

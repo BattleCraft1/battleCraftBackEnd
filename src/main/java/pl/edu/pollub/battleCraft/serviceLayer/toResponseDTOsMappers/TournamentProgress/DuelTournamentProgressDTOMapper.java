@@ -5,6 +5,8 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.subCla
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Play;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.emuns.ColorOfSideInBattle;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tour.Tour;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.TournamentProgress.PlayerDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.TournamentProgress.Duel.Battle.DuelBattleResponseDTO;
@@ -23,16 +25,23 @@ public class DuelTournamentProgressDTOMapper {
                 tour -> {
                     List<DuelBattleResponseDTO> battlesOfDTO = new ArrayList<>();
                     tour.getBattles().forEach(battle -> {
+                        List<Play> plays = battle.getPlayers();
+                        List<Play> firstPlayersGroupPlays = plays.stream()
+                                .filter(play -> play.getColorOfSideInBattle() == ColorOfSideInBattle.BLUE)
+                                .collect(Collectors.toList());
+                        List<Play> secondPlayersGroupPlays = plays.stream()
+                                .filter(play -> play.getColorOfSideInBattle() == ColorOfSideInBattle.RED)
+                                .collect(Collectors.toList());
                         battlesOfDTO.add(
                                 new DuelBattleResponseDTO(
                                         battle.getTableNumber(),
                                         new PlayerDTO(
-                                                battle.getPlayers().size()>0?battle.getPlayers().get(0).getPlayer().getName():"",
-                                                battle.getPlayers().size()>0?battle.getPlayers().get(0).getPoints():0
+                                                firstPlayersGroupPlays.size()>0?firstPlayersGroupPlays.get(0).getPlayer().getName():"",
+                                                firstPlayersGroupPlays.size()>0?firstPlayersGroupPlays.get(0).getPoints():0
                                         ),
                                         new PlayerDTO(
-                                                battle.getPlayers().size()>1?battle.getPlayers().get(1).getPlayer().getName():"",
-                                                battle.getPlayers().size()>1?battle.getPlayers().get(1).getPoints():0
+                                                secondPlayersGroupPlays.size()>0?secondPlayersGroupPlays.get(0).getPlayer().getName():"",
+                                                secondPlayersGroupPlays.size()>0?secondPlayersGroupPlays.get(0).getPoints():0
                                         ),
                                         battle.isFinished()
                                 )

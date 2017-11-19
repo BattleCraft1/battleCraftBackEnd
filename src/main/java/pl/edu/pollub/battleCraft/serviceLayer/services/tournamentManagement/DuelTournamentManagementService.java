@@ -46,7 +46,7 @@ public class DuelTournamentManagementService {
                 return duelTournamentProgressDTOMapper.map((DuelTournament)tournament);
             }
             else if(tournament.getStatus()==TournamentStatus.ACCEPTED){
-                return this.startTournament((DuelTournament)tournament);
+                return this.startTournament(tournament);
             }
             else{
                 throw new ThisObjectIsNotAcceptedException(Tournament.class,tournament.getName());
@@ -81,7 +81,8 @@ public class DuelTournamentManagementService {
     }
 
     public DuelTournamentProgressResponseDTO setPoints(String tournamentName, DuelBattleRequestDTO battleDTO) {
-        if(battleDTO.getSecondPlayer().getName().equals(battleDTO.getFirstPlayer().getName()))
+        boolean containsEmptyNames = battleDTO.getFirstPlayer().getName().equals("") || battleDTO.getSecondPlayer().getName().equals("");
+        if(battleDTO.getSecondPlayer().getName().equals(battleDTO.getFirstPlayer().getName()) && !containsEmptyNames)
             throw new DuplicatedPlayersNamesException();
 
         DuelTournament tournament = this.findStartedTournamentByName(tournamentName);
@@ -89,7 +90,7 @@ public class DuelTournamentManagementService {
         if(battleDTO.getTourNumber()>tournament.getCurrentTourNumber())
             throw new EntityNotFoundException(Tour.class,new StringBuilder(tournament.getCurrentTourNumber()).toString());
 
-        if(battleDTO.getFirstPlayer().getName().equals("") || battleDTO.getSecondPlayer().getName().equals("")){
+        if(containsEmptyNames){
             tournament.getTourByNumber(battleDTO.getTourNumber()).findBattleByTableNumber(battleDTO.getTableNumber()).clearPlayers();
             return duelTournamentProgressDTOMapper.map(tournamentRepository.save(tournament));
         }
@@ -106,7 +107,7 @@ public class DuelTournamentManagementService {
             this.setPointsForPlayers(playersWithoutBattle,firstPlayer,secondPlayer,tournament,battleDTO);
         }
         else{
-            int firstPlayerTableNumber = tournament.getTableNumberForPlayer(firstPlayer);
+            int firstPlayerTableNumber = tournament.getTableNumberForPlayer(firstPlayer,battleDTO.getTourNumber());
             if(firstPlayerTableNumber == battleDTO.getTableNumber()){
                 this.setPointsForPlayers(playersWithoutBattle,firstPlayer,secondPlayer,tournament,battleDTO);
             }
@@ -159,7 +160,7 @@ public class DuelTournamentManagementService {
             tournament.getTourByNumber(battleDTO.getTourNumber()).setPoints(battleDTO,firstPlayer,secondPlayer);
         }
         else{
-            int secondPlayerTableNumber = tournament.getTableNumberForPlayer(secondPlayer);
+            int secondPlayerTableNumber = tournament.getTableNumberForPlayer(secondPlayer,battleDTO.getTourNumber());
             if(secondPlayerTableNumber == battleDTO.getTableNumber()){
                 tournament.getTourByNumber(battleDTO.getTourNumber()).setPoints(battleDTO,firstPlayer,secondPlayer);
             }

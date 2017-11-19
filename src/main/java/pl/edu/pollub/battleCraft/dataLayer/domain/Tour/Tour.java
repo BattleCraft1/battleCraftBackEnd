@@ -64,8 +64,7 @@ public class Tour {
     }
 
     public void setPoints(GroupBattleRequestDTO groupBattleDTO, List<Player> firstPlayersGroup, List<Player> secondPlayersGroup) {
-        if(checkPoints(groupBattleDTO.getFirstPlayersGroup().getPlayersPoints(),
-                groupBattleDTO.getSecondPlayersGroup().getPlayersPoints()))
+        if(checkPoints(groupBattleDTO.getFirstPlayersGroup().getPlayersPoints(), groupBattleDTO.getSecondPlayersGroup().getPlayersPoints()))
             throw new NotValidPointsNumber();
 
         Battle battleWithTableNumber = this.findBattleByTableNumber(groupBattleDTO.getTableNumber());
@@ -90,7 +89,7 @@ public class Tour {
         if(notFinishedBattles.size()==0){
             return;
         }
-        if(notFinishedBattles.size()==1){
+        if(notFinishedBattles.size()==1 && notFinishedBattles.get(0).getTableNumber() == battles.size()-1){
             if(this.checkIfPlayerIsAloneInBattle()){
                 notFinishedBattles.get(0).addAlonePlayer(((DuelTournament)tournament).getPlayersWithoutBattleInTour(number).get(0));
                 return;
@@ -110,8 +109,8 @@ public class Tour {
         if(notFinishedBattles.size()==0){
             return;
         }
-        if(notFinishedBattles.size()==1){
-            if(this.checkIfPlayerIsAloneInBattle()){
+        if(notFinishedBattles.size()==1 && notFinishedBattles.get(0).getTableNumber() == battles.size()-1){
+            if(this.checkIfPlayersAreAloneInBattle()){
                 notFinishedBattles.get(0).addAlonePlayer(((GroupTournament)tournament).getPlayersWithoutBattleInTour(number).get(0));
                 return;
             }

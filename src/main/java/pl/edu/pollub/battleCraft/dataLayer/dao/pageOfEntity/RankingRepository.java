@@ -51,7 +51,7 @@ public class RankingRepository{
                         new Field("playerAddress.province", "playerProvince"),
                         new Field("tournament.id", "numberOfTournaments",Projections::countDistinct),
                         new Field("id", "numberOfBattles",Projections::countDistinct),
-                        new Field("Player.points", "points", Projections::sum)
+                        new Field("players.points", "points", Projections::sum)
                 )
                 .join(
                         new Join( "players", "players"),

@@ -263,8 +263,8 @@ public abstract class Tournament extends AddressOwner{
         this.organizations = organizations;
     }
 
-    public int getTableNumberForPlayer(Player firstPlayer) {
-        return this.getTourByNumber(this.getCurrentTourNumber()).getBattles().stream()
+    public int getTableNumberForPlayer(Player firstPlayer, int tourNumber) {
+        return this.getTourByNumber(tourNumber).getBattles().stream()
                 .filter(battle -> battle.getPlayers().stream()
                         .filter(play -> play.getPlayer().equals(firstPlayer))
                         .findFirst().orElse(null)!=null)

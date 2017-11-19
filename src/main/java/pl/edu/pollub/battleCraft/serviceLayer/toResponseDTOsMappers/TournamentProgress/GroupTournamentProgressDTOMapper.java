@@ -5,6 +5,8 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.subCla
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Play;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.emuns.ColorOfSideInBattle;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tour.Tour;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.TournamentProgress.PlayersGroupDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.TournamentProgress.Group.Battle.GroupBattleResponseDTO;
@@ -24,26 +26,31 @@ public class GroupTournamentProgressDTOMapper {
                 tour -> {
                     List<GroupBattleResponseDTO> battlesOfDTO = new ArrayList<>();
                     tour.getBattles().forEach(battle -> {
+                        List<Play> plays = battle.getPlayers();
+                        List<Play> firstPlayersGroupPlays = plays.stream()
+                                .filter(play -> play.getColorOfSideInBattle() == ColorOfSideInBattle.BLUE)
+                                .collect(Collectors.toList());
+                        List<Play> secondPlayersGroupPlays = plays.stream()
+                                .filter(play -> play.getColorOfSideInBattle() == ColorOfSideInBattle.RED)
+                                .collect(Collectors.toList());
                                 battlesOfDTO.add(
                                         new GroupBattleResponseDTO(
                                             battle.getTableNumber(),
                                                 new PlayersGroupDTO(
-                                                        battle.getPlayers().size()>0?
+                                                        firstPlayersGroupPlays.size()>=2?
                                                                 Arrays.asList(
-                                                                        battle.getPlayers().get(0).getPlayer().getName(),
-                                                                        battle.getPlayers().get(1).getPlayer().getName()
-                                                                ):
-                                                                Arrays.asList("",""),
-                                                        battle.getPlayers().size()>0?battle.getPlayers().get(0).getPoints():0
+                                                                        firstPlayersGroupPlays.get(0).getPlayer().getName(),
+                                                                        firstPlayersGroupPlays.get(1).getPlayer().getName()
+                                                                ): Arrays.asList("",""),
+                                                        firstPlayersGroupPlays.size()>=2?firstPlayersGroupPlays.get(0).getPoints():0
                                                 ),
                                                 new PlayersGroupDTO(
-                                                        battle.getPlayers().size()>2?
+                                                        secondPlayersGroupPlays.size()>=2?
                                                                 Arrays.asList(
-                                                                        battle.getPlayers().get(2).getPlayer().getName(),
-                                                                        battle.getPlayers().get(3).getPlayer().getName()
-                                                                ):
-                                                                Arrays.asList("",""),
-                                                        battle.getPlayers().size()>2?battle.getPlayers().get(2).getPoints():0
+                                                                        secondPlayersGroupPlays.get(0).getPlayer().getName(),
+                                                                        secondPlayersGroupPlays.get(1).getPlayer().getName()
+                                                                ): Arrays.asList("",""),
+                                                        secondPlayersGroupPlays.size()>=2?secondPlayersGroupPlays.get(0).getPoints():0
                                                 ),
                                                 battle.isFinished()
                                         )

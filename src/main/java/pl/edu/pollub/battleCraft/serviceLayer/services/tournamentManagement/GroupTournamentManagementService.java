@@ -48,7 +48,7 @@ public class GroupTournamentManagementService {
                 return groupTournamentProgressDTOMapper.map((GroupTournament) tournament);
             }
             else if(tournament.getStatus()==TournamentStatus.ACCEPTED){
-                return this.startTournament((GroupTournament) tournament);
+                return this.startTournament(tournament);
             }
             else{
                 throw new ThisObjectIsNotAcceptedException(Tournament.class,tournament.getName());
@@ -125,7 +125,7 @@ public class GroupTournamentManagementService {
             this.setPointsForPlayers(playersWithoutBattle,firstPlayersGroup,secondPlayersGroup,tournament,battleDTO);
         }
         else{
-            int firstPlayerTableNumber = tournament.getTableNumberForPlayer(firstPlayersGroup.get(0));
+            int firstPlayerTableNumber = tournament.getTableNumberForPlayer(firstPlayersGroup.get(0),battleDTO.getTourNumber());
             if(firstPlayerTableNumber == battleDTO.getTableNumber()){
                 this.setPointsForPlayers(playersWithoutBattle,firstPlayersGroup,secondPlayersGroup,tournament,battleDTO);
             }
@@ -181,7 +181,7 @@ public class GroupTournamentManagementService {
             tournament.getTourByNumber(battleDTO.getTourNumber()).setPoints(battleDTO,firstPlayersGroup,secondPlayersGroup);
         }
         else{
-            int secondPlayerTableNumber = tournament.getTableNumberForPlayer(secondPlayersGroup.get(0));
+            int secondPlayerTableNumber = tournament.getTableNumberForPlayer(secondPlayersGroup.get(0),battleDTO.getTourNumber());
             if(secondPlayerTableNumber == battleDTO.getTableNumber()){
                 tournament.getTourByNumber(battleDTO.getTourNumber()).setPoints(battleDTO,firstPlayersGroup,secondPlayersGroup);
             }
