@@ -26,6 +26,7 @@ public class UserResourcesController {
 
     @GetMapping("/get/user/avatar")
     public ResponseEntity<byte[]> getUserAvatarWeb(@RequestParam(value = "username") String name) throws IOException {
+        System.out.println("try to get avatar");
         byte[] image = userAccountResourcesService.getUserAvatar(name);
         return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(image);
     }

@@ -11,16 +11,16 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.Tour.Tour;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.TournamentProgress.PlayersGroupDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.TournamentProgress.Group.Battle.GroupBattleResponseDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.TournamentProgress.Group.GroupTournamentProgressResponseDTO;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.TournamentProgress.Group.Points.PlayersGroupWithPointsDTO;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
 public class GroupTournamentProgressDTOMapper {
     public GroupTournamentProgressResponseDTO map(GroupTournament tournament) {
         GroupTournamentProgressResponseDTO groupTournamentProgressResponseDTO = new GroupTournamentProgressResponseDTO();
+
         List<List<GroupBattleResponseDTO>> toursOfDTO = new ArrayList<>();
         tournament.getTours().forEach(
                 tour -> {
@@ -33,6 +33,7 @@ public class GroupTournamentProgressDTOMapper {
                         List<Play> secondPlayersGroupPlays = plays.stream()
                                 .filter(play -> play.getColorOfSideInBattle() == ColorOfSideInBattle.RED)
                                 .collect(Collectors.toList());
+
                                 battlesOfDTO.add(
                                         new GroupBattleResponseDTO(
                                             battle.getTableNumber(),
@@ -61,17 +62,21 @@ public class GroupTournamentProgressDTOMapper {
                 }
         );
         groupTournamentProgressResponseDTO.setTours(toursOfDTO);
-        groupTournamentProgressResponseDTO.setPlayersNamesWithPoints(tournament.getParticipation().stream()
-                .map(Participation::getPlayer).collect(Collectors.toMap(Player::getName,tournament::getPointsForPlayer)));
+
+        groupTournamentProgressResponseDTO.setPlayersNamesWithPoints(tournament.getGroupedPlayers().stream()
+                .map(playersGroup -> new PlayersGroupWithPointsDTO(
+                        Arrays.asList(playersGroup.get(0).getName(),playersGroup.get(1).getName()),
+                        tournament.getPointsForPlayer(playersGroup.get(0))))
+                .collect(Collectors.toList()));
+
         groupTournamentProgressResponseDTO.setPlayersWithoutBattles(
                 tournament.getActivatedTours().stream()
                 .collect(Collectors.toMap(
                         Tour::getNumber,
                         tour->tournament.getPlayersWithoutBattleInTour(tour.getNumber()).stream()
-                                .map(users -> new ArrayList<String>(){{
-                                    addAll(Arrays.asList(users.get(0).getName(),users.get(1).getName()));
-                                }})
+                                .map(users -> Arrays.asList(users.get(0).getName(),users.get(1).getName()))
                                 .collect(Collectors.toList()))));
+
         groupTournamentProgressResponseDTO.setCurrentTourNumber(tournament.getCurrentTourNumber());
         groupTournamentProgressResponseDTO.setTournamentStatus(tournament.getStatus());
         groupTournamentProgressResponseDTO.setPlayersCount(tournament.getParticipation().size()/2);

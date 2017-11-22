@@ -66,7 +66,7 @@ public class GameService {
 
         gameValidator.finishValidation(bindingResult);
 
-        gameToEdit.setName(gameRequestDTO.getName());
+        gameToEdit.setName(gameRequestDTO.getNameChange());
 
         if(!gameRequestDTO.getName().equals(gameRequestDTO.getNameChange()))
         gameResourcesService.renameGamesRules(gameRequestDTO.getName(),gameRequestDTO.getNameChange());
