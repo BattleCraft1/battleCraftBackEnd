@@ -8,6 +8,8 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.Address.Address;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.builder.TournamentCreator;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentType;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.builder.UserCreator;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Admin.Administrator;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Admin.builder.AdministratorBuilder;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Game.Game;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Game.enums.GameStatus;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.Tournament;
@@ -34,18 +36,20 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
     private final PlayerBuilder playerBuilder;
     private final OrganizerBuilder organizerBuilder;
     private final UserCreator userCreator;
+    private final AdministratorBuilder administratorBuilder;
 
     private final TournamentCreator tournamentCreator;
 
     private DateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 
     @Autowired
-    public DatabaseInitializer(TournamentRepository tournamentRepository, UserAccountRepository userAccountRepository, PlayerBuilder playerBuilder, OrganizerBuilder organizerBuilder, UserCreator userCreator, TournamentCreator tournamentCreator) {
+    public DatabaseInitializer(TournamentRepository tournamentRepository, UserAccountRepository userAccountRepository, PlayerBuilder playerBuilder, OrganizerBuilder organizerBuilder, UserCreator userCreator, AdministratorBuilder administratorBuilder, TournamentCreator tournamentCreator) {
         this.userAccountRepository = userAccountRepository;
         this.tournamentRepository = tournamentRepository;
         this.playerBuilder = playerBuilder;
         this.organizerBuilder = organizerBuilder;
         this.userCreator = userCreator;
+        this.administratorBuilder = administratorBuilder;
         this.tournamentCreator = tournamentCreator;
     }
 
@@ -75,49 +79,67 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
         Address testAddress19 = new Address("małopolskie", "Łódź", "Czarna", "33-303","");
         Address testAddress20 = new Address("dolnośląskie", "Białystok", "Rozpaczy", "40-304","");
         Address testAddress21 = new Address("opolskie", "Łódź", "Rozpaczy", "40-304","");
+        Address testAddress22 = new Address("opolskie", "Łódź", "Rozpaczy", "40-304","");
 
         Player testUser1 = playerBuilder
                 .create("Bartek", "Nowogrodzki", "bart2123", "bart2123@gmail.com")
+                .setPassword("bart2123")
                 .from(testAddress1)
                 .withPhoneNumber("123123123").build();
         Player testUser2 = playerBuilder
                 .create("Andrzej", "Bartoszewski", "art2123", "art2123@gmail.com")
+                .setPassword("art2123")
                 .from(testAddress2)
                 .withPhoneNumber("123123123").build();
         Player testUser3 = playerBuilder
                 .create("Artur", "Partoszewski", "part2123", "part2123@gmail.com")
+                .setPassword("part2123")
                 .from(testAddress3)
                 .withPhoneNumber("123123123").build();
         Player testUser4 = playerBuilder
                 .create("Jurek", "Jurkowski", "jur2123", "jur2123@gmail.com")
+                .setPassword("jur2123")
                 .from(testAddress4)
                 .withPhoneNumber("123123123").build();
         Player testUser5 = playerBuilder
                 .create("Anna", "Bielec", "biel2123", "biel2123@gmail.com")
+                .setPassword("biel2123")
                 .from(testAddress5).build();
         Player testUser6 = playerBuilder
                 .create("Tomasz", "Blawucki", "blaw2123", "blawl2123@gmail.com")
+                .setPassword("blaw2123")
                 .from(testAddress6).build();
         Organizer testUser7 = organizerBuilder
                 .create("Filip", "Begiello", "beg2123", "beg2123@gmail.com")
+                .setPassword("beg2123")
                 .from(testAddress7)
                 .withPhoneNumber("123123123").build();
         Organizer testUser8 = organizerBuilder
                 .create("Lukasz", "Depta", "dept2123", "dept2123@gmail.com")
+                .setPassword("dept2123")
                 .from(testAddress8)
                 .withPhoneNumber("123123123").build();
         Organizer testUser9 = organizerBuilder
                 .create("Albert", "Kwasny", "kwas2123", "kwas2123@gmail.com")
+                .setPassword("kwas2123")
                 .from(testAddress9)
                 .withPhoneNumber("123123123").build();
         Organizer testUser10 = organizerBuilder
                 .create("Anastazja", "Nijaka", "nijak2123", "nijak2123@gmail.com")
+                .setPassword("nijak2123")
                 .from(testAddress10)
                 .withPhoneNumber("123123123").build();
 
         UserAccount testUser11 = userCreator
                 .create("Pawel", "Maziarczuk", "mazi2123", "mazi2123@gmail.com")
+                .setPassword("mazi2123")
                 .from(testAddress21)
+                .withPhoneNumber("123123123").build();
+
+        Administrator testAdmin1 = administratorBuilder
+                .create("Admin", "Admin", "admin", "admin2123@gmail.com")
+                .setPassword("admin")
+                .from(testAddress22)
                 .withPhoneNumber("123123123").build();
 
 
@@ -246,6 +268,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
             tournamentRepository.save(testTournament10);
 
             userAccountRepository.save(testUser11);
+            userAccountRepository.save(testAdmin1);
         } catch (Exception e) {
             e.printStackTrace();
         }

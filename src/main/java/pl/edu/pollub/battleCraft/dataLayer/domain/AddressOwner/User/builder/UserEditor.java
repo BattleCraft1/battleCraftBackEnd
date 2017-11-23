@@ -26,11 +26,11 @@ public class UserEditor{
     }
 
     public UserEditor changeAddress(String province, String city, String street, String zipCode, String description) {
-        this.userBuilder.getInstance().changeAddress(province, city, street, zipCode, description);
+        this.userBuilder.build().changeAddress(province, city, street, zipCode, description);
         return this;
     }
 
     public UserAccount build() {
-        return userBuilder.getInstance();
+        return userBuilder.build();
     }
 }

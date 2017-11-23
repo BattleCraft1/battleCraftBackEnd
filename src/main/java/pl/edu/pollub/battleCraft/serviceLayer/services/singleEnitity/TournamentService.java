@@ -15,7 +15,6 @@ import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.*;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.EntityNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityValidation.EntityValidationException;
 import pl.edu.pollub.battleCraft.serviceLayer.services.validators.TournamentValidator;
-import pl.edu.pollub.battleCraft.serviceLayer.toResponseDTOsMappers.TournamentToResponseDTOMapper;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Tournament.TournamentRequestDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Tournament.TournamentResponseDTO;
 
@@ -32,19 +31,16 @@ public class TournamentService {
 
     private final TournamentEditor tournamentEditor;
 
-    private final TournamentToResponseDTOMapper tournamentToResponseDTOMapper;
-
     @Autowired
-    public TournamentService(TournamentRepository tournamentRepository, TournamentValidator tournamentValidator, TournamentCreator tournamentCreator, TournamentEditor tournamentEditor, TournamentToResponseDTOMapper tournamentToResponseDTOMapper) {
+    public TournamentService(TournamentRepository tournamentRepository, TournamentValidator tournamentValidator, TournamentCreator tournamentCreator, TournamentEditor tournamentEditor) {
         this.tournamentRepository = tournamentRepository;
         this.tournamentValidator = tournamentValidator;
         this.tournamentCreator = tournamentCreator;
         this.tournamentEditor = tournamentEditor;
-        this.tournamentToResponseDTOMapper = tournamentToResponseDTOMapper;
     }
 
     @Transactional(rollbackFor = {EntityValidationException.class,EntityNotFoundException.class})
-    public TournamentResponseDTO organizeTournament(TournamentRequestDTO tournamentWebDTO, BindingResult bindingResult) throws EntityValidationException {
+    public Tournament organizeTournament(TournamentRequestDTO tournamentWebDTO, BindingResult bindingResult) throws EntityValidationException {
 
         tournamentValidator.checkIfTournamentExist(tournamentWebDTO,bindingResult);
         tournamentValidator.validate(tournamentWebDTO,bindingResult);
@@ -73,11 +69,11 @@ public class TournamentService {
                 .inviteParticipants(participants)
                 .finishOrganize();
 
-        return tournamentToResponseDTOMapper.map(this.tournamentRepository.save(organizedTournament));
+        return this.tournamentRepository.save(organizedTournament);
     }
 
     @Transactional(rollbackFor = {EntityValidationException.class,EntityNotFoundException.class})
-    public TournamentResponseDTO editTournament(TournamentRequestDTO tournamentWebDTO, BindingResult bindingResult){
+    public Tournament editTournament(TournamentRequestDTO tournamentWebDTO, BindingResult bindingResult){
         //TO DO: check if this organizer is organizer of this tournament
 
         Tournament tournamentToEdit = tournamentValidator.getValidatedTournamentToEdit(tournamentWebDTO, bindingResult);
@@ -109,13 +105,11 @@ public class TournamentService {
                 .editParticipants(participants)
                 .finishEditing();
 
-        return tournamentToResponseDTOMapper.map(this.tournamentRepository.save(tournamentToEdit));
+        return this.tournamentRepository.save(tournamentToEdit);
     }
 
-    public TournamentResponseDTO getTournament(String tournamentUniqueName) {
-        Tournament tournamentToShow = Optional.ofNullable(tournamentRepository.findTournamentToEditByUniqueName(tournamentUniqueName))
+    public Tournament getTournament(String tournamentUniqueName) {
+        return Optional.ofNullable(tournamentRepository.findTournamentToEditByUniqueName(tournamentUniqueName))
                 .orElseThrow(() -> new EntityNotFoundException(Tournament.class,tournamentUniqueName));
-
-        return tournamentToResponseDTOMapper.map(tournamentToShow);
     }
 }

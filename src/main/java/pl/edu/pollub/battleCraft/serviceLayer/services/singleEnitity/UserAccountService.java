@@ -16,9 +16,7 @@ import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationToPa
 import pl.edu.pollub.battleCraft.serviceLayer.services.resources.UserAccountResourcesService;
 import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationDTO.InvitationDTO;
 import pl.edu.pollub.battleCraft.serviceLayer.services.validators.UserAccountValidator;
-import pl.edu.pollub.battleCraft.serviceLayer.toResponseDTOsMappers.UserAccountToResponseDTOMapper;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.UserAccountRequestDTO;
-import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.UserAccount.UserAccountResponseDTO;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,8 +32,6 @@ public class UserAccountService {
 
     private final UserEditor userEditor;
 
-    private final UserAccountToResponseDTOMapper userAccountToResponseDTOMapper;
-
     private final InvitationToParticipationService invitationToParticipationService;
 
     private final InvitationToOrganizationService invitationToOrganizationService;
@@ -43,19 +39,18 @@ public class UserAccountService {
     @Autowired
     public UserAccountService(UserAccountValidator userAccountValidator, UserAccountRepository userAccountRepository,
                               UserAccountResourcesService userAccountResourcesService, UserEditor userEditor,
-                              UserAccountToResponseDTOMapper userAccountToResponseDTOMapper, InvitationToParticipationService invitationToParticipationService,
+                              InvitationToParticipationService invitationToParticipationService,
                               InvitationToOrganizationService invitationToOrganizationService) {
         this.userAccountRepository = userAccountRepository;
         this.userAccountValidator = userAccountValidator;
         this.userAccountResourcesService = userAccountResourcesService;
         this.userEditor = userEditor;
-        this.userAccountToResponseDTOMapper = userAccountToResponseDTOMapper;
         this.invitationToParticipationService = invitationToParticipationService;
         this.invitationToOrganizationService = invitationToOrganizationService;
     }
 
     @Transactional(rollbackFor = {EntityValidationException.class, EntityNotFoundException.class})
-    public UserAccountResponseDTO editUserAccount(UserAccountRequestDTO userAccountRequestDTO, BindingResult bindingResult){
+    public UserAccount editUserAccount(UserAccountRequestDTO userAccountRequestDTO, BindingResult bindingResult){
         UserAccount userAccountToEdit = userAccountValidator.getValidatedUserAccountToEdit(userAccountRequestDTO, bindingResult);
 
         userAccountValidator.checkIfUserWithThisNameAlreadyExist(userAccountRequestDTO,bindingResult);
@@ -92,14 +87,12 @@ public class UserAccountService {
 
         if(!userAccountRequestDTO.getName().equals(userAccountRequestDTO.getNameChange()))
         userAccountResourcesService.renameUserAvatar(userAccountRequestDTO.getName(),userAccountRequestDTO.getNameChange());
-        UserAccount account = userAccountRepository.save(userAccountToEdit);
-        return userAccountToResponseDTOMapper.map(account);
+        return userAccountRepository.save(userAccountToEdit);
     }
 
-    public UserAccountResponseDTO getUserAccount(String userUniqueName) {
-        UserAccount userAccountToShow = Optional.ofNullable(userAccountRepository.findUserAccountByUniqueName(userUniqueName))
-                .orElseThrow(() -> new EntityNotFoundException(UserAccount.class,userUniqueName));
+    public UserAccount getUserAccount(String userUniqueName) {
 
-        return userAccountToResponseDTOMapper.map(userAccountToShow);
+        return Optional.ofNullable(userAccountRepository.findUserAccountByUniqueName(userUniqueName))
+                .orElseThrow(() -> new EntityNotFoundException(UserAccount.class,userUniqueName));
     }
 }

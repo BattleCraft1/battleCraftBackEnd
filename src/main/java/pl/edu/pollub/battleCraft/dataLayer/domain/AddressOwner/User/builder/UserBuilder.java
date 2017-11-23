@@ -1,17 +1,18 @@
 package pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.builder;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
 
 @Component
-public class UserBuilder {
+class UserBuilder {
     private UserAccount instance;
-
-    public UserAccount getInstance() {
+    private BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+    UserAccount build() {
         return instance;
     }
 
-    public void setInstance(UserAccount instance) {
+    void setInstance(UserAccount instance) {
         this.instance = instance;
     }
 
@@ -22,9 +23,13 @@ public class UserBuilder {
         this.instance.setEmail(email);
     }
 
-    public UserBuilder withPoneNumber(String phoneNumber) {
-        this.instance.setPhoneNumber(phoneNumber);
+    UserBuilder setPassword(String password){
+        this.instance.setPassword(bCryptPasswordEncoder.encode(password));
         return this;
     }
 
+    UserBuilder withPoneNumber(String phoneNumber) {
+        this.instance.setPhoneNumber(phoneNumber);
+        return this;
+    }
 }

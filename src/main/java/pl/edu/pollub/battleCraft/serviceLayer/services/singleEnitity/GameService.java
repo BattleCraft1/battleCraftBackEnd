@@ -12,9 +12,7 @@ import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.Obj
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityValidation.EntityValidationException;
 import pl.edu.pollub.battleCraft.serviceLayer.services.resources.GameResourcesService;
 import pl.edu.pollub.battleCraft.serviceLayer.services.validators.GameValidator;
-import pl.edu.pollub.battleCraft.serviceLayer.toResponseDTOsMappers.GameToResponseDTOMapper;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Game.GameRequestDTO;
-import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Game.GameResponseDTO;
 
 import java.util.Optional;
 
@@ -29,19 +27,16 @@ public class GameService {
 
     private final GameResourcesService gameResourcesService;
 
-    private final GameToResponseDTOMapper gameToResponseDTOMapper;
-
     @Autowired
-    public GameService(GameRepository gameRepository, GameValidator gameValidator, OrganizerRepository organizerRepository, GameResourcesService gameResourcesService, GameToResponseDTOMapper gameToResponseDTOMapper) {
+    public GameService(GameRepository gameRepository, GameValidator gameValidator, OrganizerRepository organizerRepository, GameResourcesService gameResourcesService) {
         this.gameRepository = gameRepository;
         this.gameValidator = gameValidator;
         this.organizerRepository = organizerRepository;
         this.gameResourcesService = gameResourcesService;
-        this.gameToResponseDTOMapper = gameToResponseDTOMapper;
     }
 
     @Transactional(rollbackFor = {EntityValidationException.class,EntityNotFoundException.class})
-    public GameResponseDTO addGame(GameRequestDTO gameRequestDTO, BindingResult bindingResult) {
+    public Game addGame(GameRequestDTO gameRequestDTO, BindingResult bindingResult) {
         Organizer mockOrganizerFromSession = organizerRepository.findByName("dept2123");
 
         gameValidator.checkIfGameExist(gameRequestDTO,bindingResult);
@@ -51,11 +46,11 @@ public class GameService {
 
         Game createdGame = new Game(gameRequestDTO.getName(),mockOrganizerFromSession);
 
-        return gameToResponseDTOMapper.map(this.gameRepository.save(createdGame));
+        return this.gameRepository.save(createdGame);
     }
 
     @Transactional(rollbackFor = {EntityValidationException.class,EntityNotFoundException.class})
-    public GameResponseDTO editGame(GameRequestDTO gameRequestDTO, BindingResult bindingResult) {
+    public Game editGame(GameRequestDTO gameRequestDTO, BindingResult bindingResult) {
 
         //TO DO: check if this organizer is creator of this game
 
@@ -71,13 +66,11 @@ public class GameService {
         if(!gameRequestDTO.getName().equals(gameRequestDTO.getNameChange()))
         gameResourcesService.renameGamesRules(gameRequestDTO.getName(),gameRequestDTO.getNameChange());
 
-        return gameToResponseDTOMapper.map(this.gameRepository.save(gameToEdit));
+        return this.gameRepository.save(gameToEdit);
     }
 
-    public GameResponseDTO getGame(String gameUniqueName) {
-        Game gameToShow = Optional.ofNullable(gameRepository.findNotBannedGameByUniqueName(gameUniqueName))
+    public Game getGame(String gameUniqueName) {
+        return Optional.ofNullable(gameRepository.findNotBannedGameByUniqueName(gameUniqueName))
                 .orElseThrow(() -> new EntityNotFoundException(Game.class,gameUniqueName));
-
-        return gameToResponseDTOMapper.map(gameToShow);
     }
 }

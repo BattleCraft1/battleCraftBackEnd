@@ -1,5 +1,6 @@
 package pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.builder;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Address.Address;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
@@ -7,6 +8,7 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.P
 @Component
 public class PlayerBuilder {
     private Player instance;
+    private BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
     public PlayerBuilder create(String firstname, String lastname, String name, String email) {
         this.instance = new Player();
@@ -14,6 +16,11 @@ public class PlayerBuilder {
         this.instance.setLastname(lastname);
         this.instance.setName(name);
         this.instance.setEmail(email);
+        return this;
+    }
+
+    public PlayerBuilder setPassword(String password){
+        this.instance.setPassword(bCryptPasswordEncoder.encode(password));
         return this;
     }
 

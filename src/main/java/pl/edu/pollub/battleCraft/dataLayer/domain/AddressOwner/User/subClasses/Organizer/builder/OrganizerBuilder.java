@@ -1,5 +1,6 @@
 package pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.builder;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Address.Address;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.Organizer;
@@ -7,6 +8,7 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.O
 @Component
 public class OrganizerBuilder {
     private Organizer instance;
+    private BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
     public OrganizerBuilder create(String firstname, String lastname, String name, String email) {
         this.instance = new Organizer();
@@ -14,6 +16,11 @@ public class OrganizerBuilder {
         this.instance.setLastname(lastname);
         this.instance.setName(name);
         this.instance.setEmail(email);
+        return this;
+    }
+
+    public OrganizerBuilder setPassword(String password){
+        this.instance.setPassword(bCryptPasswordEncoder.encode(password));
         return this;
     }
 

@@ -30,20 +30,19 @@ public class UserAccount extends AddressOwner{
     @Enumerated(EnumType.STRING)
     protected UserType status;
 
-    @Column(length = 20)
+    @Column(length = 20,nullable = false)
     protected String firstname;
 
-    @Column(length = 20)
+    @Column(length = 20,nullable = false)
     protected String lastname;
 
-    @Column(length = 30, unique = true)
+    @Column(length = 30, unique = true, nullable = false)
     protected String name;
 
-    @Column(length = 50, unique = true)
+    @Column(length = 50, unique = true, nullable = false)
     protected String email;
 
-    @JsonIgnore
-    @Column(length = 100)
+    @Column(nullable = false)
     protected String password;
 
     @Column(length = 11)

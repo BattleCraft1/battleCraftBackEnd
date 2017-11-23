@@ -1,5 +1,6 @@
 package pl.edu.pollub.battleCraft.serviceLayer.services.tournamentManagement;
 
+import org.assertj.core.util.Preconditions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.TournamentRepository;
@@ -11,54 +12,25 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.P
 import pl.edu.pollub.battleCraft.dataLayer.domain.Battle.Battle;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tour.Tour;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.EntityNotFoundException;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ThisObjectIsBannedException;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ThisObjectIsNotAcceptedException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentManagement.*;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentManagement.DuplicatedPlayersNamesException;
-import pl.edu.pollub.battleCraft.serviceLayer.toResponseDTOsMappers.TournamentProgress.GroupTournamentProgressDTOMapper;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.TournamentProgress.Group.Battle.GroupBattleRequestDTO;
-import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.TournamentProgress.Group.GroupTournamentProgressResponseDTO;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.lang.Math.floor;
 
 @Service
-public class GroupTournamentManagementService {
-
-    private final TournamentRepository tournamentRepository;
-
-    private final GroupTournamentProgressDTOMapper groupTournamentProgressDTOMapper;
+public class GroupTournamentManagementService extends TournamentManagementService{
 
     @Autowired
-    public GroupTournamentManagementService(TournamentRepository tournamentRepository, GroupTournamentProgressDTOMapper groupTournamentProgressDTOMapper) {
-        this.tournamentRepository = tournamentRepository;
-        this.groupTournamentProgressDTOMapper = groupTournamentProgressDTOMapper;
+    public GroupTournamentManagementService(TournamentRepository tournamentRepository) {
+        super(tournamentRepository);
     }
 
-    public GroupTournamentProgressResponseDTO getTournamentProgress(GroupTournament tournament) {
-        if(tournament.getPlayersOnTableCount() == 4){
-            if(tournament.isBanned()){
-                throw new ThisObjectIsBannedException(Tournament.class,tournament.getName());
-            }
-            else if(tournament.getStatus()==TournamentStatus.FINISHED || tournament.getStatus()==TournamentStatus.IN_PROGRESS){
-                return groupTournamentProgressDTOMapper.map((GroupTournament) tournament);
-            }
-            else if(tournament.getStatus()==TournamentStatus.ACCEPTED){
-                return this.startTournament(tournament);
-            }
-            else{
-                throw new ThisObjectIsNotAcceptedException(Tournament.class,tournament.getName());
-            }
-        }
-        else
-            throw new InvalidTypeOfTournament();
-    }
-
-    private GroupTournamentProgressResponseDTO startTournament(GroupTournament tournament) {
+    public GroupTournament startTournament(Tournament tournamentInput) {
+        GroupTournament tournament = this.castToGroupTournament(tournamentInput);
         this.checkIfTournamentCanStart(tournament);
         this.checkIfTournamentIsNotOutOfDate(tournament);
 
@@ -79,14 +51,14 @@ public class GroupTournamentManagementService {
         tournament.setToursCount(maxToursCount);
         tournament.setCurrentTourNumber(0);
 
-        return groupTournamentProgressDTOMapper.map(tournamentRepository.save(tournament));
+        return tournamentRepository.save(tournament);
     }
 
-    public GroupTournamentProgressResponseDTO setPoints(String tournamentName, GroupBattleRequestDTO battleDTO) {
+    public GroupTournament setPoints(String tournamentName, GroupBattleRequestDTO battleDTO) {
         if(battleDTO.containsDuplicatedNames())
             throw new DuplicatedPlayersNamesException();
 
-        GroupTournament tournament = this.findStartedTournamentByName(tournamentName);
+        GroupTournament tournament = this.castToGroupTournament(this.findStartedTournamentByName(tournamentName));
 
 
         if(battleDTO.getTourNumber()>tournament.getCurrentTourNumber())
@@ -94,7 +66,7 @@ public class GroupTournamentManagementService {
 
         if(battleDTO.containsEmptyName()){
             tournament.getTourByNumber(battleDTO.getTourNumber()).findBattleByTableNumber(battleDTO.getTableNumber()).clearPlayers();
-            return groupTournamentProgressDTOMapper.map(tournamentRepository.save(tournament));
+            return tournamentRepository.save(tournament);
         }
 
         if(tournament.getParticipation().size()/2%2!=0 && battleDTO.getTableNumber()==floor(tournament.getParticipation().size() / 4.0f))
@@ -136,11 +108,11 @@ public class GroupTournamentManagementService {
             }
         }
 
-        return groupTournamentProgressDTOMapper.map(tournamentRepository.save(tournament));
+        return tournamentRepository.save(tournament);
     }
 
-    public GroupTournamentProgressResponseDTO nextTour(String name) {
-        GroupTournament tournament = this.findStartedTournamentByName(name);
+    public GroupTournament nextTour(String name) {
+        GroupTournament tournament = this.castToGroupTournament(this.findStartedTournamentByName(name));
         tournament.checkIfAllBattlesAreFinished();
         tournament.setCurrentTourNumber(tournament.getCurrentTourNumber()+1);
         if (tournament.getCurrentTourNumber() >= tournament.getTours().size()){
@@ -150,20 +122,20 @@ public class GroupTournamentManagementService {
             List<List<Player>> playersGroupsSortedByPointsFromPreviousTours = tournament.sortPlayersByPointsFromPreviousTours();
             tournament.pairPlayersInNextTour(playersGroupsSortedByPointsFromPreviousTours);
         }
-        return groupTournamentProgressDTOMapper.map(tournamentRepository.save(tournament));
+        return tournamentRepository.save(tournament);
     }
 
-    public GroupTournamentProgressResponseDTO previousTour(String name) {
-        GroupTournament tournament = this.findStartedTournamentByName(name);
+    public GroupTournament previousTour(String name) {
+        GroupTournament tournament = this.castToGroupTournament(this.findStartedTournamentByName(name));
         if(tournament.getCurrentTourNumber() <= 0)
             throw new ItIsFirstTourOfTournament(name);
         tournament.getTourByNumber(tournament.getCurrentTourNumber()).getBattles().forEach(Battle::clearPlayers);
         tournament.setCurrentTourNumber(tournament.getCurrentTourNumber()-1);
-        return groupTournamentProgressDTOMapper.map(tournamentRepository.save(tournament));
+        return tournamentRepository.save(tournament);
     }
 
-    public GroupTournamentProgressResponseDTO finishTournament(String name) {
-        GroupTournament tournament = this.findStartedTournamentByName(name);
+    public GroupTournament finishTournament(String name) {
+        GroupTournament tournament = this.castToGroupTournament(this.findStartedTournamentByName(name));
         this.checkIfTournamentIsNotOutOfDate(tournament);
         tournament.checkIfAllBattlesAreFinished();
         int indexOfCurrentTour = tournament.getCurrentTourNumber();
@@ -171,7 +143,7 @@ public class GroupTournamentManagementService {
         if (indexOfNextTour != tournament.getTours().size())
             throw new TournamentCannotBeFinished(tournament.getName());
         tournament.setStatus(TournamentStatus.FINISHED);
-        return groupTournamentProgressDTOMapper.map(tournamentRepository.save(tournament));
+        return tournamentRepository.save(tournament);
     }
 
 
@@ -214,37 +186,9 @@ public class GroupTournamentManagementService {
         return number/4+1;
     }
 
-    private void checkIfTournamentCanStart(Tournament tournament){
-        if(tournament.getDateOfStart().before(new Date())){
-            throw new TournamentCannotStartYet(tournament.getName(),tournament.getDateOfStart());
-        }
-    }
-
-    private void checkIfTournamentIsNotOutOfDate(Tournament tournament){
-        if((new Date()).after(tournament.getDateOfEnd())){
-            tournament.setBanned(true);
-            tournamentRepository.save(tournament);
-            throw new TournamentIsOutOfDate(tournament.getName(),tournament.getDateOfEnd());
-        }
-    }
-
-    private GroupTournament findNotStartedTournamentByName(String tournamentName){
-        Tournament tournament = Optional.ofNullable(tournamentRepository.findTournamentToEditByUniqueName(tournamentName))
-                .orElseThrow(() -> new EntityNotFoundException(Tournament.class,tournamentName));
-        if(tournament.getStatus()!=TournamentStatus.ACCEPTED)
-            throw new TournamentNotAccepted(tournament.getName());
-        if(tournament.getPlayersOnTableCount() == 4)
-            return (GroupTournament)tournament;
-        else
-            throw new InvalidTypeOfTournament();
-    }
-
-    private GroupTournament findStartedTournamentByName(String tournamentName){
-        Tournament tournament = Optional.ofNullable(tournamentRepository.findStartedTournamentByUniqueName(tournamentName))
-                .orElseThrow(() -> new EntityNotFoundException(Tournament.class,tournamentName));
-        if(tournament.getPlayersOnTableCount() == 4)
-            return (GroupTournament)tournament;
-        else
-            throw new InvalidTypeOfTournament();
+    private GroupTournament castToGroupTournament(Tournament tournament){
+        Preconditions.checkArgument(tournament.getPlayersOnTableCount() != 4,
+                "Invalid type of tournament: %s.", tournament.getTournamentType());
+        return (GroupTournament)tournament;
     }
 }
