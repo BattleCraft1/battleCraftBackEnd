@@ -27,7 +27,7 @@ public class DuelTournamentManagementService extends TournamentManagementService
         super(tournamentRepository);
     }
 
-    public Tournament startTournament(Tournament tournamentInput) {
+    public DuelTournament startTournament(Tournament tournamentInput) {
         DuelTournament tournament = this.castToDuelTournament(tournamentInput);
         this.checkIfTournamentCanStart(tournament);
         this.checkIfTournamentIsNotOutOfDate(tournament);
@@ -167,7 +167,7 @@ public class DuelTournamentManagementService extends TournamentManagementService
 
 
     private DuelTournament castToDuelTournament(Tournament tournament){
-        Preconditions.checkArgument(tournament.getPlayersOnTableCount() != 2,
+        Preconditions.checkArgument(tournament.getPlayersOnTableCount() == 2,
                 "Invalid type of tournament: %s.", tournament.getTournamentType());
         return (DuelTournament)tournament;
     }

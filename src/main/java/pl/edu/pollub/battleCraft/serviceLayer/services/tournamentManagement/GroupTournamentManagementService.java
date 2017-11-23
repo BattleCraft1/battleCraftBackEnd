@@ -187,7 +187,7 @@ public class GroupTournamentManagementService extends TournamentManagementServic
     }
 
     private GroupTournament castToGroupTournament(Tournament tournament){
-        Preconditions.checkArgument(tournament.getPlayersOnTableCount() != 4,
+        Preconditions.checkArgument(tournament.getPlayersOnTableCount() == 4,
                 "Invalid type of tournament: %s.", tournament.getTournamentType());
         return (GroupTournament)tournament;
     }

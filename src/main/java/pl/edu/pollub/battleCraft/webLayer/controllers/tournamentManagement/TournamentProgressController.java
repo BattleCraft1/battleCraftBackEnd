@@ -53,22 +53,23 @@ public class TournamentProgressController {
         if(tournament.isBanned()){
             throw new ThisObjectIsBannedException(Tournament.class,tournament.getName());
         }
-        if(tournament.getStatus() == TournamentStatus.ACCEPTED){
+        if(tournament.getStatus()==TournamentStatus.FINISHED || tournament.getStatus()==TournamentStatus.IN_PROGRESS){
             if(tournament.getPlayersOnTableCount() == 2){
-                return duelTournamentProgressDTOMapper.map((DuelTournament) duelTournamentManagementService.startTournament(tournament));
+                return duelTournamentProgressDTOMapper.map(duelTournamentManagementService.startTournament(tournament));
             }
             else{
-                return groupTournamentProgressDTOMapper.map((GroupTournament) groupTournamentManagementService.startTournament(tournament));
+                return groupTournamentProgressDTOMapper.map(groupTournamentManagementService.startTournament(tournament));
             }
         }
         if(tournament.getStatus() == TournamentStatus.ACCEPTED){
             if(tournament.getPlayersOnTableCount() == 2){
-                return duelTournamentProgressDTOMapper.map((DuelTournament) duelTournamentManagementService.startTournament(tournament));
+                return duelTournamentProgressDTOMapper.map(duelTournamentManagementService.startTournament(tournament));
             }
             else{
-                return groupTournamentProgressDTOMapper.map((GroupTournament) groupTournamentManagementService.startTournament(tournament));
+                return groupTournamentProgressDTOMapper.map(groupTournamentManagementService.startTournament(tournament));
             }
         }
+
 
         throw new ThisObjectIsNotAcceptedException(Tournament.class,tournament.getName());
     }
