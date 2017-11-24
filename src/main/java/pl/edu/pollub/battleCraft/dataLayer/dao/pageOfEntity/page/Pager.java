@@ -22,12 +22,12 @@ public class Pager<V>{
     private Class<V> pagerClass;
 
     @SuppressWarnings("unchecked")
-    public Page createPage(Long countOfSuitableEntities, Criteria criteria, Pageable requestedPage) {
+    public Page createPage(Long countOfSuitableEntities, Criteria criteria, Pageable requestedPage, int searchCriteriaCount) {
         if (countOfSuitableEntities == 0) {
-            if (criteria.list().size() > 0)
+            if (searchCriteriaCount > 0)
                 throw new AnyEntityNotFoundException();
             else
-                throw new PageNotFoundException(requestedPage.getPageNumber() + 1);
+            throw new PageNotFoundException(requestedPage.getPageNumber() + 1);
         }
 
         requestedPage.getSort().forEach(order -> criteria.addOrder(order.getDirection() == Sort.Direction.ASC ? Order.asc(order.getProperty()) : Order.desc(order.getProperty())));

@@ -3,15 +3,16 @@ package pl.edu.pollub.battleCraft.dataLayer.domain.Battle;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.emuns.ColorOfSideInBattle;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Play.emuns.ColorOfSideInBattle;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tour.Tour;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Play;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Play.Play;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
@@ -45,7 +46,7 @@ public class Battle {
 
     @JsonIgnore
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "battle")
-    private List<Play> players = new ArrayList<>();
+    private Set<Play> players = new HashSet<>();
 
     boolean finished;
 

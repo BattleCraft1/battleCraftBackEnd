@@ -41,7 +41,7 @@ public class TournamentCreator{
     }
 
     public TournamentCreator in(Address address){
-        tournamentBuilder.getInstance().initAddress(address);
+        tournamentBuilder.getInstance().setAddressOnTwoSides(address);
         return this;
     }
 

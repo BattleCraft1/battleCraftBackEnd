@@ -9,12 +9,11 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.Tourna
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentStatus;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.subClasses.DuelTournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.subClasses.GroupTournament;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.EntityNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ThisObjectIsBannedException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ThisObjectIsNotAcceptedException;
 import pl.edu.pollub.battleCraft.serviceLayer.services.tournamentManagement.DuelTournamentManagementService;
 import pl.edu.pollub.battleCraft.serviceLayer.services.tournamentManagement.GroupTournamentManagementService;
-import pl.edu.pollub.battleCraft.serviceLayer.services.tournamentManagement.TournamentManagementService;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.TournamentProgress.TournamentProgressResponseDTO;
 import pl.edu.pollub.battleCraft.webLayer.toResponseDTOsMappers.TournamentProgress.DuelTournamentProgressDTOMapper;
 import pl.edu.pollub.battleCraft.webLayer.toResponseDTOsMappers.TournamentProgress.GroupTournamentProgressDTOMapper;
@@ -46,8 +45,8 @@ public class TournamentProgressController {
 
     @GetMapping(value ="/progress/tournament")
     public TournamentProgressResponseDTO getTournamentProgress(@RequestParam(value = "name") String name){
-        Tournament tournament = Optional.ofNullable(tournamentRepository.findTournamentToEditByUniqueName(name))
-                .orElseThrow(() -> new EntityNotFoundException(Tournament.class,name));
+        Tournament tournament = Optional.ofNullable(tournamentRepository.fetchEagerTournamentByUniqueName(name))
+                .orElseThrow(() -> new ObjectNotFoundException(Tournament.class,name));
 
 
         if(tournament.isBanned()){
@@ -55,10 +54,10 @@ public class TournamentProgressController {
         }
         if(tournament.getStatus()==TournamentStatus.FINISHED || tournament.getStatus()==TournamentStatus.IN_PROGRESS){
             if(tournament.getPlayersOnTableCount() == 2){
-                return duelTournamentProgressDTOMapper.map(duelTournamentManagementService.startTournament(tournament));
+                return duelTournamentProgressDTOMapper.map((DuelTournament)tournament);
             }
             else{
-                return groupTournamentProgressDTOMapper.map(groupTournamentManagementService.startTournament(tournament));
+                return groupTournamentProgressDTOMapper.map((GroupTournament)tournament);
             }
         }
         if(tournament.getStatus() == TournamentStatus.ACCEPTED){

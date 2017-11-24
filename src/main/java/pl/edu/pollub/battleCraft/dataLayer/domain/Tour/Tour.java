@@ -7,12 +7,12 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.Tourna
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.subClasses.DuelTournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.subClasses.GroupTournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Play;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Play.Play;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Battle.Battle;
 import javax.persistence.*;
 import java.util.*;
 import java.util.stream.Collectors;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.EntityNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentManagement.BattleOnTableNotFinishedYet;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentManagement.NotValidPointsNumber;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.TournamentProgress.Duel.Battle.DuelBattleRequestDTO;
@@ -48,7 +48,7 @@ public class Tour {
 
     @JsonIgnore
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "tour")
-    private List<Battle> battles = new ArrayList<>();
+    private Set<Battle> battles = new HashSet<>();
 
     public List<Player> getAllPlayersInTour(){
         return this.getBattles().stream()
@@ -75,7 +75,7 @@ public class Tour {
     public Battle findBattleByTableNumber(int tableNumber){
         return  this.battles.stream()
                 .filter(battle -> battle.getTableNumber()==tableNumber)
-                .findFirst().orElseThrow(() -> new EntityNotFoundException(Battle.class, String.valueOf(tableNumber)));
+                .findFirst().orElseThrow(() -> new ObjectNotFoundException(Battle.class, String.valueOf(tableNumber)));
     }
 
     public void checkIfAllBattlesAreFinished() {

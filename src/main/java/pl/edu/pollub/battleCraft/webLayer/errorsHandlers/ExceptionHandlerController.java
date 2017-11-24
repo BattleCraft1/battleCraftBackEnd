@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import pl.edu.pollub.battleCraft.serviceLayer.errors.ErrorResource;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.EntityNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityValidation.EntityValidationException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ThisObjectIsNotAcceptedException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.PageOfEntities.AnyEntityNotFoundException;
@@ -39,7 +39,7 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>("There are unrecognized problems on the server side. Please contact with administrator.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(value = {PageNotFoundException.class, EntityNotFoundException.class, StorageFileNotFoundException.class, AnyEntityNotFoundException.class})
+    @ExceptionHandler(value = {PageNotFoundException.class, ObjectNotFoundException.class, StorageFileNotFoundException.class, AnyEntityNotFoundException.class})
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     protected ResponseEntity<String> handleNotFoundException(Exception ex, WebRequest req) {
         System.out.println("exception: "+ex.getClass().getSimpleName()+" message: " + ex.getMessage());

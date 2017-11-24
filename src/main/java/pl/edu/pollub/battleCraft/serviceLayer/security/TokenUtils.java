@@ -18,7 +18,7 @@ public class TokenUtils {
     private final String AUDIENCE_MOBILE = "mobile";
     private final String AUDIENCE_TABLET = "tablet";
 
-    private String secret = "sssshhhh!";
+    private String secret = "bog nie istnieje, a zycie to cierpienie";
 
     private Long expiration = 604800L;
 

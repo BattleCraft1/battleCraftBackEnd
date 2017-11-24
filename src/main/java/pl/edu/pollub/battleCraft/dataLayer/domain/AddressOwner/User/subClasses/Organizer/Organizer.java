@@ -29,10 +29,10 @@ public class Organizer extends Player {
 
     @JsonIgnore
     @OneToMany(cascade = {CascadeType.ALL}, orphanRemoval = true, mappedBy = "organizer")
-    private List<Organization> organizations = new ArrayList<>();
+    private Set<Organization> organizations = new HashSet<>();
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "creator")
+    @OneToMany(mappedBy = "creator")
     private List<Game> createdGames = new ArrayList<>();
 
     public void addOrganizationByOneSide(Organization organization) {
@@ -54,7 +54,7 @@ public class Organizer extends Player {
         }
     }
 
-    private void setOrganizations(List<Organization> organizations){
+    private void setOrganizations(Set<Organization> organizations){
         this.organizations = organizations;
     }
 

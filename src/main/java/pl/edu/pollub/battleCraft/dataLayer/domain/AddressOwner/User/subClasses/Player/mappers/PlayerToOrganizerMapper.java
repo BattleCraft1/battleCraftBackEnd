@@ -1,11 +1,9 @@
 package pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.mappers;
 
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-import pl.edu.pollub.battleCraft.dataLayer.domain.Address.Address;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.Organizer;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation.Participation;
 
 import java.util.stream.Collectors;
 
@@ -21,9 +19,9 @@ public class PlayerToOrganizerMapper {
         organizer.setPassword(player.getPassword());
         organizer.setPhoneNumber(player.getPhoneNumber());
         organizer.setParticipation(
-                player.getParticipation().stream().map(Participation::copy).collect(Collectors.toList()));
+                player.getParticipation().stream().map(Participation::copy).collect(Collectors.toSet()));
 
-        organizer.initAddress(player.getAddress().copy());
+        organizer.setAddressOnTwoSides(player.getAddress().copy());
 
         return organizer;
     }

@@ -8,10 +8,10 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.Tourna
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentStatus;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.subClasses.GroupTournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation.Participation;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Battle.Battle;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tour.Tour;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.EntityNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentManagement.*;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentManagement.DuplicatedPlayersNamesException;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.TournamentProgress.Group.Battle.GroupBattleRequestDTO;
@@ -60,9 +60,8 @@ public class GroupTournamentManagementService extends TournamentManagementServic
 
         GroupTournament tournament = this.castToGroupTournament(this.findStartedTournamentByName(tournamentName));
 
-
         if(battleDTO.getTourNumber()>tournament.getCurrentTourNumber())
-            throw new EntityNotFoundException(Tour.class,String.valueOf(tournament.getCurrentTourNumber()));
+            throw new ObjectNotFoundException(Tour.class,String.valueOf(tournament.getCurrentTourNumber()));
 
         if(battleDTO.containsEmptyName()){
             tournament.getTourByNumber(battleDTO.getTourNumber()).findBattleByTableNumber(battleDTO.getTableNumber()).clearPlayers();
@@ -72,13 +71,12 @@ public class GroupTournamentManagementService extends TournamentManagementServic
         if(tournament.getParticipation().size()/2%2!=0 && battleDTO.getTableNumber()==floor(tournament.getParticipation().size() / 4.0f))
             throw new ThisTableIsReservedForAlonePlayer();
 
-        List<Participation> firstPlayersGroupParticipation =
-                battleDTO.getFirstPlayersGroup().getPlayersNames().stream().map(tournament::getParticipationByPlayerName)
-                        .collect(Collectors.toList());
+        List<Participation> firstPlayersGroupParticipation = battleDTO.getFirstPlayersGroup().getPlayersNames()
+                .stream().map(tournament::getParticipationByPlayerName).collect(Collectors.toList());
 
         List<Player> firstPlayersGroup = firstPlayersGroupParticipation.stream().map(Participation::getPlayer).collect(Collectors.toList());
 
-        if(!firstPlayersGroupParticipation.get(0).getGroupNumber().equals(firstPlayersGroupParticipation.get(1).getGroupNumber())){
+        if(!firstPlayersGroupParticipation.get(0).getParticipationGroup().equals(firstPlayersGroupParticipation.get(1).getParticipationGroup())){
             throw new ThisPlayersAreNotInTheSameGroup(firstPlayersGroup.get(0).getName(),firstPlayersGroup.get(1).getName());
         }
 
@@ -88,7 +86,7 @@ public class GroupTournamentManagementService extends TournamentManagementServic
 
         List<Player> secondPlayersGroup = secondPlayersGroupParticipation.stream().map(Participation::getPlayer).collect(Collectors.toList());
 
-        if(!secondPlayersGroupParticipation.get(0).getGroupNumber().equals(secondPlayersGroupParticipation.get(1).getGroupNumber())){
+        if(!secondPlayersGroupParticipation.get(0).getParticipationGroup().equals(secondPlayersGroupParticipation.get(1).getParticipationGroup())){
             throw new ThisPlayersAreNotInTheSameGroup(secondPlayersGroup.get(0).getName(),secondPlayersGroup.get(1).getName());
         }
 

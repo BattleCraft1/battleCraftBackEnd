@@ -30,7 +30,7 @@ public class PlayerBuilder {
     }
 
     public PlayerBuilder from(Address address) {
-        this.instance.initAddress(address);
+        this.instance.setAddressOnTwoSides(address);
         return this;
     }
 

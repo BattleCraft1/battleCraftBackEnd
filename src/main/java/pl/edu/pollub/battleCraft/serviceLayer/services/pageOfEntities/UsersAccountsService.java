@@ -45,7 +45,7 @@ public class UsersAccountsService {
     }
 
     public void deleteUsersAccounts(String... usersToDeleteUniqueNames){
-        List<String> validUniqueNames = userAccountRepository.selectUsersAccountsToDeleteUniqueNames(usersToDeleteUniqueNames);
+        List<String> validUniqueNames = userAccountRepository.selectUsersAccountsNamesToDeleteUniqueNames(usersToDeleteUniqueNames);
 
         uniqueNamesValidator.validateUniqueNamesElementsToDelete(validUniqueNames,usersToDeleteUniqueNames);
 
@@ -53,7 +53,7 @@ public class UsersAccountsService {
     }
 
     public void acceptUsersAccounts(String... usersToAcceptUniqueNames) {
-        List<String> validUniqueNames = userAccountRepository.selectUsersAccountsToAcceptUniqueNames(usersToAcceptUniqueNames);
+        List<String> validUniqueNames = userAccountRepository.selectUsersAccountsNamesToAcceptUniqueNames(usersToAcceptUniqueNames);
 
         uniqueNamesValidator.validateUniqueNamesElementsToAccept(validUniqueNames,usersToAcceptUniqueNames);
 
@@ -61,7 +61,7 @@ public class UsersAccountsService {
     }
 
     public void cancelAcceptUsersAccounts(String... usersToCancelAcceptUniqueNames) {
-        List<String> validUniqueNames = playerRepository.selectUsersAccountsToRejectUniqueNames(usersToCancelAcceptUniqueNames);
+        List<String> validUniqueNames = playerRepository.selectUsersAccountsNamesToRejectUniqueNames(usersToCancelAcceptUniqueNames);
 
         uniqueNamesValidator.validateUniqueNamesElementsToReject(validUniqueNames,usersToCancelAcceptUniqueNames);
 
@@ -69,7 +69,7 @@ public class UsersAccountsService {
     }
 
     public void advancePlayersToOrganizer(String... playersToAdvanceToOrganizersUniqueNames) {
-        List<String> validUniqueNames = playerRepository.selectUsersAccountsToAdvanceUniqueNames(playersToAdvanceToOrganizersUniqueNames);
+        List<String> validUniqueNames = playerRepository.selectUsersAccountsNamesToAdvanceUniqueNames(playersToAdvanceToOrganizersUniqueNames);
 
         uniqueNamesValidator.validateUniqueNamesElementsToAdvance(validUniqueNames,playersToAdvanceToOrganizersUniqueNames);
 
@@ -77,7 +77,7 @@ public class UsersAccountsService {
     }
 
     public void degradeOrganizerToPlayers(String... organizerToDegradeToPlayersUniqueNames) {
-        List<String> validUniqueNames = organizerRepository.selectUsersAccountsToDegadeUniqueNames(organizerToDegradeToPlayersUniqueNames);
+        List<String> validUniqueNames = organizerRepository.selectUsersAccountsNamesToDegadeUniqueNames(organizerToDegradeToPlayersUniqueNames);
 
         uniqueNamesValidator.validateUniqueNamesElementsToDegrade(validUniqueNames,organizerToDegradeToPlayersUniqueNames);
 

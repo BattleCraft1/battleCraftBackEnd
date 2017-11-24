@@ -37,7 +37,7 @@ public class GamesService {
     }
 
     public void deleteGames(String... gamesToDeleteUniqueNames) {
-        List<String> validUniqueNames = gameRepository.selectGamesToDeleteUniqueNames(gamesToDeleteUniqueNames);
+        List<String> validUniqueNames = gameRepository.selectGamesNamesToDeleteUniqueNames(gamesToDeleteUniqueNames);
 
         uniqueNamesValidator.validateUniqueNamesElementsToDelete(validUniqueNames,gamesToDeleteUniqueNames);
 
@@ -45,7 +45,7 @@ public class GamesService {
     }
 
     public void acceptGames(String... gamesToDeleteUniqueNames) {
-        List<String> validUniqueNames = gameRepository.selectGamesToAcceptUniqueNames(gamesToDeleteUniqueNames);
+        List<String> validUniqueNames = gameRepository.selectGamesNamesToAcceptUniqueNames(gamesToDeleteUniqueNames);
 
         uniqueNamesValidator.validateUniqueNamesElementsToAccept(validUniqueNames,gamesToDeleteUniqueNames);
 
@@ -53,7 +53,7 @@ public class GamesService {
     }
 
     public void cancelAcceptGames(String... gamesToDeleteUniqueNames) {
-        List<String> validUniqueNames = gameRepository.selectGamesToRejectUniqueNames(gamesToDeleteUniqueNames);
+        List<String> validUniqueNames = gameRepository.selectGamesNamesToRejectUniqueNames(gamesToDeleteUniqueNames);
 
         uniqueNamesValidator.validateUniqueNamesElementsToReject(validUniqueNames,gamesToDeleteUniqueNames);
 

@@ -21,7 +21,7 @@ public interface TournamentRepository extends JpaRepository<Tournament, Long> {
     void deleteOrganizationByTournamentsUniqueNames(String... tournamentsToDeleteUniqueNames);
 
     @Query("SELECT t.name FROM Tournament t WHERE t.banned = true AND t.name in ?1")
-    List<String> selectTournamentsToDeleteUniqueNames(String... tournamentsToDeleteUniqueNames);
+    List<String> selectTournamentsNamesToDeleteUniqueNames(String... tournamentsToDeleteUniqueNames);
 
     @Modifying
     @Query("DELETE FROM Tournament t WHERE t.name in ?1")
@@ -36,14 +36,14 @@ public interface TournamentRepository extends JpaRepository<Tournament, Long> {
     void banTournamentsByUniqueNames(String... tournamentsToBanUniqueNames);
 
     @Query("SELECT t.name FROM Tournament t WHERE t.name in ?1 AND t.status = 'NEW' AND t.banned = false")
-    List<String> selectTournamentsToAcceptUniqueNames(String... tournamentsToAcceptUniqueNames);
+    List<String> selectTournamentsNamesToAcceptUniqueNames(String... tournamentsToAcceptUniqueNames);
 
     @Modifying
     @Query("UPDATE Tournament t SET t.status = 'ACCEPTED' WHERE t.name in ?1")
     void acceptTournamentsByUniqueNames(String... tournamentsToAcceptUniqueNames);
 
     @Query("SELECT t.name FROM Tournament t WHERE t.name in ?1 AND t.status = 'ACCEPTED' AND t.banned = false")
-    List<String> selectTournamentsToRejectUniqueNames(String... tournamentsToRejectUniqueNames);
+    List<String> selectTournamentsNamesToRejectUniqueNames(String... tournamentsToRejectUniqueNames);
 
     @Modifying
     @Query("UPDATE Tournament t SET t.status = 'NEW' WHERE t.name in ?1")
@@ -85,26 +85,62 @@ public interface TournamentRepository extends JpaRepository<Tournament, Long> {
     @Query("DELETE FROM Tournament t WHERE t.id in ?1")
     void deleteTournamentsByIds(List<Long> tournamentsToDeleteIds);
 
-    @Query("SELECT t FROM Tournament t Where t.name = ?1")
-    Tournament findTournamentToEditByUniqueName(String tournamentUniqueName);
+    @Query("SELECT t.name FROM Tournament t Where t.name = ?1")
+    String checkIfTournamentWithThisNameAlreadyExist(String tournamentUniqueName);
 
-    @Query("SELECT t FROM Tournament t Where t.name in ?1 and (t.status='ACCEPTED' or t.status='NEW') and t.banned = false")
-    Tournament findTournamentByUniqueName(String tournamentUniqueNames);
+    @Query("SELECT t FROM Tournament t " +
+            "LEFT JOIN FETCH t.game g " +
+            "LEFT JOIN FETCH t.address a " +
+            "LEFT JOIN FETCH t.participation p " +
+            "LEFT JOIN FETCH p.participationGroup gr " +
+            "LEFT JOIN FETCH p.player pl " +
+            "LEFT JOIN FETCH pl.address plAd " +
+            "LEFT JOIN FETCH t.organizations o " +
+            "LEFT JOIN FETCH o.organizer org " +
+            "LEFT JOIN FETCH org.address orgAd "+
+            "LEFT JOIN FETCH t.tours tr " +
+            "LEFT JOIN FETCH tr.battles b " +
+            "LEFT JOIN FETCH b.players pl " +
+            "Where t.name = ?1")
+    Tournament fetchEagerTournamentByUniqueName(String tournamentUniqueName);
+
+    @Query("SELECT t FROM Tournament t " +
+            "LEFT JOIN FETCH t.game g " +
+            "LEFT JOIN FETCH t.address a " +
+            "LEFT JOIN FETCH t.participation p " +
+            "LEFT JOIN FETCH p.participationGroup gr " +
+            "LEFT JOIN FETCH gr.participationInGroup pInGr " +
+            "LEFT JOIN FETCH p.player pl " +
+            "LEFT JOIN FETCH pl.address plAd " +
+            "LEFT JOIN FETCH t.organizations o " +
+            "LEFT JOIN FETCH o.organizer org " +
+            "LEFT JOIN FETCH org.address orgAd "+
+            "Where t.name = ?1")
+    Tournament fetchEagerTournamentWithoutToursByUniqueName(String tournamentUniqueName);
 
     @Query("SELECT t FROM Tournament t Where t.name in ?1 and (t.status='ACCEPTED' or t.status='NEW') and t.banned = false")
     List<Tournament> findAcceptedOrNewTournamentsByUniqueNames(List<String> tournamentUniqueNames);
 
+    @Query("SELECT t FROM Tournament t " +
+            "LEFT JOIN FETCH t.participation p " +
+            "LEFT JOIN FETCH t.organizations o " +
+            "Where t.name in ?1 and (t.status='ACCEPTED' or t.status='NEW') and t.banned = false")
+    List<Tournament> fetchEagerAcceptedOrNewTournamentsByUniqueNames(List<String> tournamentUniqueNames);
+
     @Query("SELECT t FROM Tournament t Where (t.status='ACCEPTED' or t.status='NEW') and t.banned = false")
     List<Tournament> findAllAcceptedOrNewTournaments();
 
-    @Query("SELECT t FROM Tournament t Where t.name = ?1 and t.status='IN_PROGRESS' and t.banned = false")
+    @Query("SELECT t FROM Tournament t " +
+            "LEFT JOIN FETCH t.participation p " +
+            "LEFT JOIN FETCH t.organizations o  " +
+            "LEFT JOIN FETCH t.tours tr  " +
+            "LEFT JOIN FETCH tr.battles b  " +
+            "LEFT JOIN FETCH b.players pl " +
+            "Where t.name = ?1 and t.status='IN_PROGRESS' and t.banned = false")
     Tournament findStartedTournamentByUniqueName(String tournamentUniqueNames);
 
     @Query("SELECT t FROM Tournament t Where t.status='IN_PROGRESS' and t.banned = false")
     List<Tournament> findAllStartedTournament();
-
-    @Query("SELECT t FROM Tournament t Where t.name = ?1 and (t.status='IN_PROGRESS' or t.status='FINISHED') and t.banned = false")
-    Tournament findNotNewTournamentByUniqueName(String tournamentUniqueNames);
 
     Tournament findByName(String name);
 

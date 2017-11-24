@@ -13,7 +13,6 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = "id")
 @ToString
 public class Organization{
 
@@ -46,5 +45,27 @@ public class Organization{
     @JsonIgnore
     public Organization copy(){
         return new Organization(this.organizer,this.organizedTournament,this.accepted);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Organization)) return false;
+
+        Organization that = (Organization) o;
+
+        if (isAccepted() != that.isAccepted()) return false;
+        if (getOrganizer() != null ? getOrganizer().getName() != null ? !getOrganizer().getName().equals(that.getOrganizer().getName()) : getOrganizer().getName() != null : that.getOrganizer() != null)
+            return false;
+        return getOrganizedTournament() != null ? getOrganizedTournament().getName().equals(that.getOrganizedTournament().getName()) : that.getOrganizedTournament() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result =  0;
+        result = 31 * result + (getOrganizer() != null ? getOrganizer().getName().hashCode() : 0);
+        result = 31 * result + (getOrganizedTournament() != null ? getOrganizedTournament().getName().hashCode() : 0);
+        result = 31 * result + (isAccepted() ? 1 : 0);
+        return result;
     }
 }

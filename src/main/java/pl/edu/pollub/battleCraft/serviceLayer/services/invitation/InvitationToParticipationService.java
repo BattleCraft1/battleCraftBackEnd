@@ -2,11 +2,12 @@ package pl.edu.pollub.battleCraft.serviceLayer.services.invitation;
 
 import org.springframework.stereotype.Service;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.Tournament;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentStatus;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentType;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.nullObjectPattern.NullPlayer;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation.Participation;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation.group.ParticipationGroup;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationDTO.GroupTournamentInvitationDTO;
 import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationDTO.InvitationDTO;
 
@@ -34,7 +35,7 @@ public class InvitationToParticipationService {
                     InvitationDTO invitationDTO = this.findInvitationByTournamentName(tournament.getName(),invitationDTOS);
                     participation.setAccepted(invitationDTO.isAccepted());
                     if(tournament.getTournamentType() == TournamentType.GROUP){
-                        this.sendInvitationToSecondPlayer(player,participation.getGroupNumber(),
+                        this.sendInvitationToSecondPlayer(player,participation.getParticipationGroup(),
                                 (GroupTournamentInvitationDTO) invitationDTO);
                     }
                 });
@@ -47,9 +48,9 @@ public class InvitationToParticipationService {
                         .collect(Collectors.toList()).contains(tournament))
                 .map(tournament -> {
                     InvitationDTO invitationDTO = this.findInvitationByTournamentName(tournament.getName(),invitationDTOS);
-                    Participation participation = this.createNewParticipation(player,tournament,tournament.getNoExistingGroupNumber());
+                    Participation participation = this.createNewParticipation(player,tournament,new ParticipationGroup());
                     if(tournament.getTournamentType() == TournamentType.GROUP){
-                        this.sendInvitationToSecondPlayer(player,participation.getGroupNumber(),
+                        this.sendInvitationToSecondPlayer(player,participation.getParticipationGroup(),
                                 (GroupTournamentInvitationDTO) invitationDTO);
                     }
                     return participation; })
@@ -65,7 +66,7 @@ public class InvitationToParticipationService {
                 }).collect(Collectors.toList()));
     }
 
-    private void sendInvitationToSecondPlayer(Player firstPlayer, Long groupNumber,
+    private void sendInvitationToSecondPlayer(Player firstPlayer, ParticipationGroup group,
                                               GroupTournamentInvitationDTO groupTournamentInvitationDTO){
         Player secondPlayer = groupTournamentInvitationDTO.getSecondPlayer();
         Tournament tournament = groupTournamentInvitationDTO.getTournament();
@@ -74,36 +75,35 @@ public class InvitationToParticipationService {
                     .filter(participation -> participation.getPlayer().equals(secondPlayer))
                     .findFirst().orElse(null);
             if(secondPlayerParticipation==null){
-                Participation participationWithThisGroupNumber = tournament.getParticipation().stream()
-                        .filter(participation -> participation.getGroupNumber().equals(groupNumber) &&
+                Participation participationInThisGroup = tournament.getParticipation().stream()
+                        .filter(participation -> participation.getParticipationGroup().getId().equals(group.getId()) &&
                                 !participation.getPlayer().equals(firstPlayer))
                         .findFirst().orElse(null);
-                if(participationWithThisGroupNumber!=null){
-                    this.deleteParticipation(participationWithThisGroupNumber,tournament);
+                if(participationInThisGroup!=null){
+                    this.deleteParticipation(participationInThisGroup,tournament);
                 }
-                this.createNewParticipation(secondPlayer,tournament,groupNumber);
+                this.createNewParticipation(secondPlayer,tournament,group);
             }
         }
         else{
-            Participation participationWithThisGroupNumber = tournament.getParticipation().stream()
-                    .filter(participation -> participation.getGroupNumber().equals(groupNumber) &&
+            Participation participationInThisGroup = tournament.getParticipation().stream()
+                    .filter(participation -> participation.getParticipationGroup().getId().equals(group.getId()) &&
                             !participation.getPlayer().equals(firstPlayer))
                     .findFirst().orElse(null);
-            if(participationWithThisGroupNumber!=null){
-                this.deleteParticipation(participationWithThisGroupNumber,tournament);
+            if(participationInThisGroup!=null){
+                this.deleteParticipation(participationInThisGroup,tournament);
             }
         }
     }
 
     private InvitationDTO findInvitationByTournamentName(String tournamentName, List<InvitationDTO> invitationDTOS){
         return invitationDTOS.stream()
-                .filter(invitation -> invitation.getTournament().getName()
-                        .equals(tournamentName))
-                .findFirst().get();
+                .filter(invitation -> invitation.getTournament().getName().equals(tournamentName))
+                .findFirst().orElseThrow(()->new ObjectNotFoundException(Tournament.class,tournamentName));
     }
 
-    private Participation createNewParticipation(Player player, Tournament tournament, Long groupNumber){
-        Participation participation = new Participation(player, tournament, groupNumber);
+    private Participation createNewParticipation(Player player, Tournament tournament, ParticipationGroup group){
+        Participation participation = new Participation(player, tournament, group);
         tournament.addParticipationByOneSide(participation);
         return participation;
     }

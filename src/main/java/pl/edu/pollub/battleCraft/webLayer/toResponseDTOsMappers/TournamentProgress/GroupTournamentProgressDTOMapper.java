@@ -2,8 +2,8 @@ package pl.edu.pollub.battleCraft.webLayer.toResponseDTOsMappers.TournamentProgr
 
 import org.springframework.stereotype.Component;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.subClasses.GroupTournament;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Play;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.emuns.ColorOfSideInBattle;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Play.Play;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Play.emuns.ColorOfSideInBattle;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tour.Tour;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.TournamentProgress.PlayersGroupDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.TournamentProgress.Group.Battle.GroupBattleResponseDTO;
@@ -23,7 +23,7 @@ public class GroupTournamentProgressDTOMapper {
                 tour -> {
                     List<GroupBattleResponseDTO> battlesOfDTO = new ArrayList<>();
                     tour.getBattles().forEach(battle -> {
-                        List<Play> plays = battle.getPlayers();
+                        Set<Play> plays = battle.getPlayers();
                         List<Play> firstPlayersGroupPlays = plays.stream()
                                 .filter(play -> play.getColorOfSideInBattle() == ColorOfSideInBattle.BLUE)
                                 .collect(Collectors.toList());

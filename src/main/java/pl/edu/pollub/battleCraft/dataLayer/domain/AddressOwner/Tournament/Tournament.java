@@ -2,25 +2,26 @@ package pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.annotations.Formula;
+import org.hibernate.annotations.*;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.AddressOwner;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentType;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Play;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Play.Play;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Battle.Battle;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Game.Game;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentStatus;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.Organizer;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.relationships.Organization;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation.Participation;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tour.Tour;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.EntityNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,7 +29,6 @@ import java.util.stream.Collectors;
 @Entity
 @Getter
 @Setter
-@EqualsAndHashCode(callSuper = true)
 @ToString
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public abstract class Tournament extends AddressOwner{
@@ -53,7 +53,7 @@ public abstract class Tournament extends AddressOwner{
     private Date dateOfEnd;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn
     private Game game;
 
@@ -64,11 +64,11 @@ public abstract class Tournament extends AddressOwner{
 
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true, mappedBy = "participatedTournament")
-    protected List<Participation> participation = new ArrayList<>();
+    protected Set<Participation> participation = new HashSet<>();
 
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true, mappedBy = "organizedTournament")
-    private List<Organization> organizations = new ArrayList<>();
+    private Set<Organization> organizations = new HashSet<>();
 
     private int tablesCount;
 
@@ -98,19 +98,19 @@ public abstract class Tournament extends AddressOwner{
         return this.getParticipation().stream()
                 .map(Participation::getPlayer)
                 .filter(player -> player.getName().equals(playerName))
-                .findFirst().orElseThrow(() -> new EntityNotFoundException(Player.class,playerName));
+                .findFirst().orElseThrow(() -> new ObjectNotFoundException(Player.class,playerName));
     }
 
     public Participation getParticipationByPlayerName(String playerName){
         return this.getParticipation().stream()
                 .filter(participation -> participation.getPlayer().getName().equals(playerName))
-                .findFirst().orElseThrow(() -> new EntityNotFoundException(Player.class,playerName));
+                .findFirst().orElseThrow(() -> new ObjectNotFoundException(Player.class,playerName));
     }
 
     public Tour getTourByNumber(int number){
         return this.getTours().stream().filter(tour -> tour.getNumber() == number)
                 .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException(Tour.class,String.valueOf(currentTourNumber)));
+                .orElseThrow(() -> new ObjectNotFoundException(Tour.class,String.valueOf(currentTourNumber)));
     }
 
     public int getPointsForPlayer(Player player){
@@ -220,18 +220,6 @@ public abstract class Tournament extends AddressOwner{
         game.addTournamentByOneSide(this);
     }
 
-    public long getNoExistingGroupNumber(){
-        List<Long> groupsNumbers = this.participation.stream()
-                .map(Participation::getGroupNumber)
-                .distinct()
-                .collect(Collectors.toList());
-        long possibleGroupNumber = new Random().nextLong();
-        while (groupsNumbers.contains(possibleGroupNumber)){
-            possibleGroupNumber = new Random().nextLong();
-        }
-        return possibleGroupNumber;
-    }
-
     public TournamentType getTournamentType(){
         if(this.playersOnTableCount==2){
             return TournamentType.DUEL;
@@ -239,36 +227,72 @@ public abstract class Tournament extends AddressOwner{
         return TournamentType.GROUP;
     }
 
-    protected void setGame(Game game){
-        this.game = game;
-    }
-
-    private void setMaxPlayers(int maxPlayers){
-        this.maxPlayers = maxPlayers;
-    }
-
-    private void setPlayersNumber(int playersNumber) {
-        this.playersNumber = playersNumber;
-    }
-
-    private void setFreeSlots(int freeSlots) {
-        this.freeSlots = freeSlots;
-    }
-
-    private void setParticipation(List<Participation> participation){
-        this.participation = participation;
-    }
-
-    private void setOrganizations(List<Organization> organizations){
-        this.organizations = organizations;
-    }
-
     public int getTableNumberForPlayer(Player firstPlayer, int tourNumber) {
         return this.getTourByNumber(tourNumber).getBattles().stream()
                 .filter(battle -> battle.getPlayers().stream()
                         .filter(play -> play.getPlayer().equals(firstPlayer))
                         .findFirst().orElse(null)!=null)
-                .findFirst().orElseThrow(() -> new EntityNotFoundException(Battle.class,firstPlayer.getName()))
+                .findFirst().orElseThrow(() -> new ObjectNotFoundException(Battle.class,firstPlayer.getName()))
                 .getTableNumber();
+    }
+
+    protected void setGame(Game game){
+        this.game = game;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Tournament)) return false;
+        if (!super.equals(o)) return false;
+
+        Tournament that = (Tournament) o;
+
+        if (isBanned() != that.isBanned()) return false;
+        if (getTablesCount() != that.getTablesCount()) return false;
+        if (getPlayersOnTableCount() != that.getPlayersOnTableCount()) return false;
+        if (getToursCount() != that.getToursCount()) return false;
+        if (getMaxPlayers() != that.getMaxPlayers()) return false;
+        if (getPlayersNumber() != that.getPlayersNumber()) return false;
+        if (getOrganizersNumber() != that.getOrganizersNumber()) return false;
+        if (getFreeSlots() != that.getFreeSlots()) return false;
+        if (getCurrentTourNumber() != that.getCurrentTourNumber()) return false;
+        if (getId() != null ? !getId().equals(that.getId()) : that.getId() != null) return false;
+        if (getName() != null ? !getName().equals(that.getName()) : that.getName() != null) return false;
+        if (getDateOfStart() != null ? !getDateOfStart().equals(that.getDateOfStart()) : that.getDateOfStart() != null)
+            return false;
+        if (getDateOfEnd() != null ? !getDateOfEnd().equals(that.getDateOfEnd()) : that.getDateOfEnd() != null)
+            return false;
+        if (getGame() != null ? getGame().getName() != null ? !getGame().getName().equals(that.getGame().getName()) : getGame().getName() != null : that.getGame() != null) return false;
+        if (getStatus() != that.getStatus()) return false;
+        if (getParticipation() != null ? !getParticipation().equals(that.getParticipation()) : that.getParticipation() != null)
+            return false;
+        if (getOrganizations() != null ? !getOrganizations().equals(that.getOrganizations()) : that.getOrganizations() != null)
+            return false;
+        return getTours() != null ? getTours().equals(that.getTours()) : that.getTours() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (getId() != null ? getId().hashCode() : 0);
+        result = 31 * result + (getName() != null ? getName().hashCode() : 0);
+        result = 31 * result + (getDateOfStart() != null ? getDateOfStart().hashCode() : 0);
+        result = 31 * result + (getDateOfEnd() != null ? getDateOfEnd().hashCode() : 0);
+        result = 31 * result + (getGame() != null ? getGame().getName() != null ? getGame().getName().hashCode() : 0 : 0);
+        result = 31 * result + (getStatus() != null ? getStatus().hashCode() : 0);
+        result = 31 * result + (isBanned() ? 1 : 0);
+        result = 31 * result + (getParticipation() != null ? getParticipation().hashCode() : 0);
+        result = 31 * result + (getOrganizations() != null ? getOrganizations().hashCode() : 0);
+        result = 31 * result + getTablesCount();
+        result = 31 * result + getPlayersOnTableCount();
+        result = 31 * result + getToursCount();
+        result = 31 * result + getMaxPlayers();
+        result = 31 * result + getPlayersNumber();
+        result = 31 * result + getOrganizersNumber();
+        result = 31 * result + getFreeSlots();
+        result = 31 * result + (getTours() != null ? getTours().hashCode() : 0);
+        result = 31 * result + getCurrentTourNumber();
+        return result;
     }
 }

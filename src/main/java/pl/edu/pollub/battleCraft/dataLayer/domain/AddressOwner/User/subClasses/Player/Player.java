@@ -8,8 +8,8 @@ import lombok.Setter;
 import lombok.ToString;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.enums.UserType;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Play;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation.Participation;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Play.Play;
 
 import javax.persistence.*;
 import java.util.*;
@@ -36,11 +36,11 @@ public class Player extends UserAccount {
 
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true,  mappedBy = "player")
-    protected List<Participation> participation = new ArrayList<>();
+    protected Set<Participation> participation = new HashSet<>();
 
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "player")
-    protected List<Play> battles = new ArrayList<>();
+    protected Set<Play> battles = new HashSet<>();
 
     protected boolean banned;
 
@@ -71,7 +71,7 @@ public class Player extends UserAccount {
         this.battles.remove(battle);
     }
 
-    public void setParticipation(List<Participation> participation){
+    public void setParticipation(Set<Participation> participation){
         this.participation = participation;
     }
 }

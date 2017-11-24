@@ -22,22 +22,18 @@ public abstract class AddressOwner{
     @JsonIgnore
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    @OneToOne(cascade = {CascadeType.ALL})
     @JoinColumn
     private Address address;
 
     public AddressOwner(Address address) {
         this.address = address;
-        address.setAddressOwnerByOneSide(this);
+        address.setAddressOwner(this);
     }
 
-    public void initAddress(Address address){
+    public void setAddressOnTwoSides(Address address){
         this.address = address;
-        address.setAddressOwnerByOneSide(this);
-    }
-
-    private void setAddress(Address address){
-        this.address = address;
+        address.setAddressOwner(this);
     }
 
     public void changeAddress(String province, String city, String street, String zipCode, String description) {

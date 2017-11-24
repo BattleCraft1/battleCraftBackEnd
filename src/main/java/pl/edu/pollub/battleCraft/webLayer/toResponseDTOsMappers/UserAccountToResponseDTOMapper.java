@@ -7,10 +7,11 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.Organizer;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Play;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.nullObjectPattern.NullParticipation;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation.Participation;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Play.Play;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation.nullObjectPattern.NullParticipation;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Game.Game;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Invitation.PlayerFinishedInvitationResponse;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Invitation.PlayerGroupFinishedInvitationResponseDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Invitation.InvitationResponseDTO;
@@ -59,11 +60,9 @@ public class UserAccountToResponseDTOMapper {
                     if(tournament.getStatus() != TournamentStatus.IN_PROGRESS &&
                             tournament.getStatus() != TournamentStatus.FINISHED){
                         if(tournament.getTournamentType() == TournamentType.GROUP){
-                            Participation secondPlayerParticipation = tournament.getParticipation().stream()
-                                    .filter(participation1 ->
-                                            participation.getGroupNumber().equals(participation1.getGroupNumber()) &&
-                                            !participation1.getPlayer().equals(player))
-                                    .findFirst().orElse(new NullParticipation());
+                            Participation secondPlayerParticipation = participation.getParticipationGroup()
+                                    .getParticipationInGroup().stream().filter(participation1 -> !participation1.getPlayer().equals(player))
+                                    .findFirst().orElseThrow(() -> new ObjectNotFoundException(Player.class));
                             userAccountResponseDTO.getParticipatedTournaments()
                                     .add(new PlayerInvitationResponseDTO(secondPlayerParticipation.getPlayer().getName(),
                                             secondPlayerParticipation.isAccepted(),
@@ -76,13 +75,11 @@ public class UserAccountToResponseDTOMapper {
                     }
                     else{
                         if(tournament.getTournamentType() == TournamentType.GROUP){
-                            String secondPlayerName = tournament.getParticipation().stream()
-                                    .filter(participation1 -> participation.getGroupNumber().equals(participation1.getGroupNumber()) &&
-                                    !participation1.getPlayer().equals(player))
-                                    .map(participation1 -> participation1.getPlayer().getName())
-                                    .findFirst().orElse("");
+                            Participation secondPlayerParticipation = participation.getParticipationGroup()
+                                    .getParticipationInGroup().stream().filter(participation1 -> !participation1.getPlayer().equals(player))
+                                    .findFirst().orElseThrow(() -> new ObjectNotFoundException(Player.class));
                             userAccountResponseDTO.getFinishedParticipatedTournaments().add(
-                                    new PlayerGroupFinishedInvitationResponseDTO(tournament.getName(),secondPlayerName)
+                                    new PlayerGroupFinishedInvitationResponseDTO(tournament.getName(),secondPlayerParticipation.getPlayer().getName())
                             );
                         }
                         else{

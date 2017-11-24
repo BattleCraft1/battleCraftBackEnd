@@ -5,13 +5,12 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.Tourna
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentType;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.Organizer;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation.Participation;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation.group.ParticipationGroup;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Tournament.TournamentResponseDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Invitation.InvitationResponseDTO;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -52,7 +51,7 @@ public class TournamentToResponseDTOMapper {
         return tournamentResponseDTO;
     }
 
-    private List<List<InvitationResponseDTO>> createParticipantsForDuel(List<Participation> participation){
+    private List<List<InvitationResponseDTO>> createParticipantsForDuel(Set<Participation> participation){
         return participation.stream()
                 .map(participationElement -> {
                     Player player = participationElement.getPlayer();
@@ -61,32 +60,16 @@ public class TournamentToResponseDTOMapper {
                 .collect(Collectors.toList());
     }
 
-    private List<List<InvitationResponseDTO>> createParticipantsForGroup(List<Participation> participation){
-        List<List<InvitationResponseDTO>> playersGroups = new ArrayList<>();
-        List<String> includedPlayersNames = new ArrayList<>();
+    private List<List<InvitationResponseDTO>> createParticipantsForGroup(Set<Participation> participation){
+        Set<ParticipationGroup> groups = participation.stream().map(Participation::getParticipationGroup).collect(Collectors.toSet());
 
-        for(Participation participationElement:participation){
-            String playerName = participationElement.getPlayer().getName();
-            if(includedPlayersNames.contains(playerName))
-                continue;
+        return groups.stream().map(group -> {
+            List<InvitationResponseDTO> participants = new ArrayList<>();
 
-            List<InvitationResponseDTO> playersGroup = new ArrayList<>();
-            playersGroup.add(new InvitationResponseDTO(playerName,participationElement.isAccepted()));
-            includedPlayersNames.add(playerName);
+            group.getParticipationInGroup().forEach(
+                    participation1 -> participants.add(new InvitationResponseDTO(participation1.getPlayer().getName(),participation1.isAccepted())));
 
-            participation.stream().filter(participationElement2 ->
-                    participationElement2.getGroupNumber().equals(participationElement.getGroupNumber()) &&
-                    !includedPlayersNames.contains(participationElement2.getPlayer().getName()))
-                    .findFirst()
-                    .ifPresent(participationElement2 ->{
-                        String player2Name = participationElement2.getPlayer().getName();
-                        playersGroup.add(new InvitationResponseDTO(player2Name,participationElement2.isAccepted()));
-                        includedPlayersNames.add(player2Name);
-                    });
-
-            playersGroups.add(playersGroup);
-        }
-
-        return playersGroups;
+            return participants;}
+        ).collect(Collectors.toList());
     }
 }

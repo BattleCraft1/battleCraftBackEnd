@@ -38,7 +38,7 @@ public class TournamentsService {
     }
 
     public void deleteTournaments(String... tournamentsToDeleteUniqueNames) {
-        List<String> validUniqueNames = tournamentRepository.selectTournamentsToDeleteUniqueNames(tournamentsToDeleteUniqueNames);
+        List<String> validUniqueNames = tournamentRepository.selectTournamentsNamesToDeleteUniqueNames(tournamentsToDeleteUniqueNames);
 
         uniqueNamesValidator.validateUniqueNamesElementsToDelete(validUniqueNames,tournamentsToDeleteUniqueNames);
 
@@ -46,7 +46,7 @@ public class TournamentsService {
     }
 
     public void acceptTournaments(String... tournamentsToAcceptUniqueNames) {
-        List<String> validUniqueNames = tournamentRepository.selectTournamentsToAcceptUniqueNames(tournamentsToAcceptUniqueNames);
+        List<String> validUniqueNames = tournamentRepository.selectTournamentsNamesToAcceptUniqueNames(tournamentsToAcceptUniqueNames);
 
         uniqueNamesValidator.validateUniqueNamesElementsToAccept(validUniqueNames,tournamentsToAcceptUniqueNames);
 
@@ -54,7 +54,7 @@ public class TournamentsService {
     }
 
     public void cancelAcceptTournaments(String... tournamentsToCancelAcceptUniqueNames) {
-        List<String> validUniqueNames = tournamentRepository.selectTournamentsToRejectUniqueNames(tournamentsToCancelAcceptUniqueNames);
+        List<String> validUniqueNames = tournamentRepository.selectTournamentsNamesToRejectUniqueNames(tournamentsToCancelAcceptUniqueNames);
 
         uniqueNamesValidator.validateUniqueNamesElementsToAccept(validUniqueNames,tournamentsToCancelAcceptUniqueNames);
 

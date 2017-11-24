@@ -17,7 +17,7 @@ public interface UserAccountRepository extends JpaRepository<UserAccount, Long> 
     void deleteUsersAccountsByIds(List<Long> usersAccountsToDeleteIds);
 
     @Query("SELECT u.name FROM UserAccount u WHERE u.status = 'NEW' AND u.name in ?1")
-    List<String> selectUsersAccountsToAcceptUniqueNames(String... usersAccountsToAcceptUniqueNames);
+    List<String> selectUsersAccountsNamesToAcceptUniqueNames(String... usersAccountsToAcceptUniqueNames);
 
     @Query("SELECT u FROM UserAccount u WHERE u.name in ?1")
     List<UserAccount> findAllUsersAccountsByUniqueName(String... usersAccountsToAcceptUniqueNames);
@@ -30,13 +30,16 @@ public interface UserAccountRepository extends JpaRepository<UserAccount, Long> 
             "(SELECT name FROM  UserAccount u1 " +
             "WHERE ((u1.banned = true AND (u1.status = 'ACCEPTED' OR u1.status = 'ORGANIZER'))" +
             "OR u1.status = 'NEW') AND u.name in ?1)")
-    List<String> selectUsersAccountsToDeleteUniqueNames(String... usersAccountsToAcceptUniqueNames);
+    List<String> selectUsersAccountsNamesToDeleteUniqueNames(String... usersAccountsToAcceptUniqueNames);
 
     @Query("SELECT u.id FROM UserAccount u WHERE u.name in ?1")
     List<Long> selectIdsOfUsersToDelete(String... usersAccountsToAcceptUniqueNames);
 
     @Query("SELECT u FROM UserAccount u WHERE u.name = ?1")
     UserAccount findUserAccountByUniqueName(String userUniqueName);
+
+    @Query("SELECT u.name FROM UserAccount u WHERE u.name = ?1")
+    String checkIfUserAccountExist(String userUniqueName);
 
     @Query("SELECT u.name FROM UserAccount u WHERE u.name = ?1")
     String checkIfUserExist(String username);

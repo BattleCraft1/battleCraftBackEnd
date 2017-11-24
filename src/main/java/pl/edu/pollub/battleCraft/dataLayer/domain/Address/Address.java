@@ -36,7 +36,7 @@ public class Address{
     private String zipCode;
 
     @JsonIgnore
-    @OneToOne(mappedBy = "address", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    @OneToOne(mappedBy = "address", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     private AddressOwner addressOwner;
 
     @Column(length = 100)
@@ -58,15 +58,11 @@ public class Address{
         this.description = description;
     }
 
-    public void setAddressOwnerByOneSide(AddressOwner addressOwner){
-        this.addressOwner = addressOwner;
-    }
-
     public Address copy(){
         return new Address(this.province,this.city,this.street,this.zipCode,this.description);
     }
 
-    private void setAddressOwner(AddressOwner addressOwner){
+    public void setAddressOwner(AddressOwner addressOwner){
         this.addressOwner = addressOwner;
     }
 

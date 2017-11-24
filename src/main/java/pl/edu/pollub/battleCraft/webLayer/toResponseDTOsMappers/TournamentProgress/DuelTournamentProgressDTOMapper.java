@@ -4,9 +4,9 @@ import org.springframework.stereotype.Component;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.subClasses.DuelTournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Play;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.emuns.ColorOfSideInBattle;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation.Participation;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Play.Play;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Play.emuns.ColorOfSideInBattle;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tour.Tour;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.TournamentProgress.PlayerDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.TournamentProgress.Duel.Battle.DuelBattleResponseDTO;
@@ -14,6 +14,7 @@ import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.TournamentProgress.Due
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
@@ -25,7 +26,7 @@ public class DuelTournamentProgressDTOMapper {
                 tour -> {
                     List<DuelBattleResponseDTO> battlesOfDTO = new ArrayList<>();
                     tour.getBattles().forEach(battle -> {
-                        List<Play> plays = battle.getPlayers();
+                        Set<Play> plays = battle.getPlayers();
                         List<Play> firstPlayersGroupPlays = plays.stream()
                                 .filter(play -> play.getColorOfSideInBattle() == ColorOfSideInBattle.BLUE)
                                 .collect(Collectors.toList());

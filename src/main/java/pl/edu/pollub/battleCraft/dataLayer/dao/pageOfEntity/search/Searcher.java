@@ -46,6 +46,8 @@ public class Searcher{
     private String transactionId;
     private Class entityClass;
 
+    private int searchCriteriaCount;
+
     public Searcher select(Field... fields){
         this.projectionFields = fields;
         return this;
@@ -73,6 +75,7 @@ public class Searcher{
     }
 
     public Searcher where(List<SearchCriteria> searchCriteria){
+        this.searchCriteriaCount = searchCriteria.size();
         joins.forEach(join -> criteria.createAlias(getFieldFullName(join.getName()),join.getValue()));
         searchCriteria.forEach((condition) -> {
             String fieldName = condition.getName();
@@ -114,7 +117,7 @@ public class Searcher{
                 whereCondition -> criteria.add(whereCondition)
         );
         Long count = this.count(countProperty);
-        return this.paginator.createPage(count,criteria,requestedPage);
+        return this.paginator.createPage(count,criteria,requestedPage,searchCriteriaCount);
     }
 
     private Long count(String countProperty){

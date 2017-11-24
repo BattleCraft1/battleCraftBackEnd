@@ -7,8 +7,8 @@ import lombok.Setter;
 import lombok.ToString;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Play;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation.Participation;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Play.Play;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tour.Tour;
 
 import javax.persistence.Entity;
@@ -33,8 +33,7 @@ public class DuelTournament extends Tournament{
     public void addParticipants(List<Player> participants){
         this.participation.addAll(participants.stream()
                 .map(participant -> {
-                    Participation participation =
-                            new Participation(participant, this, this.getNoExistingGroupNumber());
+                    Participation participation = new Participation(participant, this);
                     participant.addParticipationByOneSide(participation);
                     return participation;
                 })
@@ -53,7 +52,7 @@ public class DuelTournament extends Tournament{
                         .collect(Collectors.toList()).contains(participant))
                 .map(participant -> {
                     Participation participation =
-                            new Participation(participant, this, this.getNoExistingGroupNumber());
+                            new Participation(participant, this);
                     participant.addParticipationByOneSide(participation);
                     return participation; })
                 .collect(Collectors.toList()));

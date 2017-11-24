@@ -1,8 +1,9 @@
-package pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.nullObjectPattern;
+package pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation.nullObjectPattern;
 
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.nullObjectPattern.NullTournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.nullObjectPattern.NullPlayer;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation.Participation;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation.group.ParticipationGroup;
 
 public class NullParticipation extends Participation {
     public NullParticipation(){
@@ -10,6 +11,6 @@ public class NullParticipation extends Participation {
         this.player = new NullPlayer();
         this.participatedTournament = new NullTournament(0);
         this.accepted = false;
-        this.groupNumber = 0L;
+        this.participationGroup = new ParticipationGroup();
     }
 }

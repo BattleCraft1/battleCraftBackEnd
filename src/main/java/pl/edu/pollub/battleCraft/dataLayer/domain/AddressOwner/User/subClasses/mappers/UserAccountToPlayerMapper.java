@@ -15,7 +15,7 @@ public class UserAccountToPlayerMapper {
         player.setEmail(userAccount.getEmail());
         player.setPassword(userAccount.getPassword());
         player.setPhoneNumber(userAccount.getPhoneNumber());
-        player.initAddress(userAccount.getAddress().copy());
+        player.setAddressOnTwoSides(userAccount.getAddress().copy());
 
         return player;
     }
