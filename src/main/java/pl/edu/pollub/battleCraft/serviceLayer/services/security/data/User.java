@@ -1,6 +1,5 @@
-package pl.edu.pollub.battleCraft.serviceLayer.security;
+package pl.edu.pollub.battleCraft.serviceLayer.services.security.data;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

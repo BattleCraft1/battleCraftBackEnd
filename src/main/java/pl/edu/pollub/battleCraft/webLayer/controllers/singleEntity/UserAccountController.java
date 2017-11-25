@@ -5,7 +5,7 @@ import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import pl.edu.pollub.battleCraft.serviceLayer.services.singleEnitity.UserAccountService;
-import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.UserAccountRequestDTO;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.Invitation.UserAccountWithInvitationsRequestDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.UserAccount.UserAccountResponseDTO;
 import pl.edu.pollub.battleCraft.webLayer.toResponseDTOsMappers.UserAccountToResponseDTOMapper;
 
@@ -23,7 +23,7 @@ public class UserAccountController {
     }
 
     @PostMapping(value = "/edit/user", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public UserAccountResponseDTO editUserAccount(@RequestBody UserAccountRequestDTO userAccountRequestDTO, BindingResult bindingResult){
+    public UserAccountResponseDTO editUserAccount(@RequestBody UserAccountWithInvitationsRequestDTO userAccountRequestDTO, BindingResult bindingResult){
         return userAccountToResponseDTOMapper.map(userAccountService.editUserAccount(userAccountRequestDTO, bindingResult));
     }
 

@@ -1,4 +1,4 @@
-package pl.edu.pollub.battleCraft.serviceLayer.security;
+package pl.edu.pollub.battleCraft.serviceLayer.services.security;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;

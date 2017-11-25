@@ -7,9 +7,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import pl.edu.pollub.battleCraft.serviceLayer.security.TokenUtils;
+import pl.edu.pollub.battleCraft.serviceLayer.services.security.utils.JWTTokenUtils;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -20,7 +19,7 @@ import java.io.IOException;
 public class AuthenticationTokenFilter extends UsernamePasswordAuthenticationFilter {
 
     @Autowired
-    private TokenUtils tokenUtils;
+    private JWTTokenUtils tokenUtils;
 
     @Autowired
     private UserDetailsService userDetailsService;
@@ -30,7 +29,7 @@ public class AuthenticationTokenFilter extends UsernamePasswordAuthenticationFil
             throws IOException, ServletException {
         tokenUtils = WebApplicationContextUtils
                 .getRequiredWebApplicationContext(this.getServletContext())
-                .getBean(TokenUtils.class);
+                .getBean(JWTTokenUtils.class);
         userDetailsService = WebApplicationContextUtils
                 .getRequiredWebApplicationContext(this.getServletContext())
                 .getBean(UserDetailsService.class);

@@ -1,4 +1,4 @@
-package pl.edu.pollub.battleCraft.serviceLayer.security;
+package pl.edu.pollub.battleCraft.serviceLayer.services.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,6 +12,7 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Admin.Administrator;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.Security.TooManyLoginAttempts;
+import pl.edu.pollub.battleCraft.serviceLayer.services.security.data.User;
 import pl.edu.pollub.battleCraft.serviceLayer.services.singleEnitity.UserAccountService;
 
 import javax.servlet.http.HttpServletRequest;

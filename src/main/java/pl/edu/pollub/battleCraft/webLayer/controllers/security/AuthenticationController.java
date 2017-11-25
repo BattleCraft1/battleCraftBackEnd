@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import pl.edu.pollub.battleCraft.serviceLayer.security.TokenUtils;
-import pl.edu.pollub.battleCraft.serviceLayer.security.User;
-import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.security.AuthRequestDTO;
+import pl.edu.pollub.battleCraft.serviceLayer.services.security.utils.JWTTokenUtils;
+import pl.edu.pollub.battleCraft.serviceLayer.services.security.data.User;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Security.AuthRequestDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.security.AuthResponseDTO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,12 +26,12 @@ public class AuthenticationController {
 
     private final AuthenticationManager authenticationManager;
 
-    private final TokenUtils tokenUtils;
+    private final JWTTokenUtils tokenUtils;
 
     private final UserDetailsService userDetailsService;
 
     @Autowired
-    public AuthenticationController(AuthenticationManager authenticationManager, TokenUtils tokenUtils, UserDetailsService userDetailsService) {
+    public AuthenticationController(AuthenticationManager authenticationManager, JWTTokenUtils tokenUtils, UserDetailsService userDetailsService) {
         this.authenticationManager = authenticationManager;
         this.tokenUtils = tokenUtils;
         this.userDetailsService = userDetailsService;

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.AddressOwner;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.enums.UserType;
+import pl.edu.pollub.battleCraft.dataLayer.domain.VerificationToken.VerificationToken;
 
 import javax.persistence.*;
 
@@ -47,5 +48,8 @@ public class UserAccount extends AddressOwner{
 
     @Column(length = 11)
     protected String phoneNumber;
+
+    @OneToOne(mappedBy = "user")
+    private VerificationToken token;
 
 }

@@ -1,4 +1,4 @@
-package pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.security;
+package pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Security;
 
 import lombok.*;
 

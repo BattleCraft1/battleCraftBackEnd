@@ -15,8 +15,8 @@ import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationToOr
 import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationToParticipationService;
 import pl.edu.pollub.battleCraft.serviceLayer.services.resources.UserAccountResourcesService;
 import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationDTO.InvitationDTO;
-import pl.edu.pollub.battleCraft.serviceLayer.services.validators.UserAccountValidator;
-import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.UserAccountRequestDTO;
+import pl.edu.pollub.battleCraft.serviceLayer.services.validators.UserAccountWithInvitationsValidator;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.Invitation.UserAccountWithInvitationsRequestDTO;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +24,7 @@ import java.util.Optional;
 @Service
 public class UserAccountService {
 
-    private final UserAccountValidator userAccountValidator;
+    private final UserAccountWithInvitationsValidator userAccountValidator;
 
     private final UserAccountRepository userAccountRepository;
 
@@ -37,7 +37,7 @@ public class UserAccountService {
     private final InvitationToOrganizationService invitationToOrganizationService;
 
     @Autowired
-    public UserAccountService(UserAccountValidator userAccountValidator, UserAccountRepository userAccountRepository,
+    public UserAccountService(UserAccountWithInvitationsValidator userAccountValidator, UserAccountRepository userAccountRepository,
                               UserAccountResourcesService userAccountResourcesService, UserEditor userEditor,
                               InvitationToParticipationService invitationToParticipationService,
                               InvitationToOrganizationService invitationToOrganizationService) {
@@ -50,7 +50,7 @@ public class UserAccountService {
     }
 
     @Transactional(rollbackFor = {EntityValidationException.class, EntityNotFoundException.class})
-    public UserAccount editUserAccount(UserAccountRequestDTO userAccountRequestDTO, BindingResult bindingResult){
+    public UserAccount editUserAccount(UserAccountWithInvitationsRequestDTO userAccountRequestDTO, BindingResult bindingResult){
         UserAccount userAccountToEdit = userAccountValidator.getValidatedUserAccountToEdit(userAccountRequestDTO, bindingResult);
 
         userAccountValidator.checkIfUserWithThisNameAlreadyExist(userAccountRequestDTO,bindingResult);

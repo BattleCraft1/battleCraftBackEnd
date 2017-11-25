@@ -1,17 +1,18 @@
-package pl.edu.pollub.battleCraft.serviceLayer.security;
+package pl.edu.pollub.battleCraft.serviceLayer.services.security.utils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import pl.edu.pollub.battleCraft.serviceLayer.services.security.data.User;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class TokenUtils {
+public class JWTTokenUtils {
 
     private final String AUDIENCE_UNKNOWN = "unknown";
     private final String AUDIENCE_WEB = "web";

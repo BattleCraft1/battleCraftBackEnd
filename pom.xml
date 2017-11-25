@@ -65,7 +65,7 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- security -->
+        <!-- Security -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
@@ -76,14 +76,34 @@
             <artifactId>jjwt</artifactId>
             <version>0.6.0</version>
         </dependency>
+
+        <!-- assertions -->
+
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
         </dependency>
+
+        <!-- guava -->
+
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>18.0</version>
+        </dependency>
+
+        <!-- mail -->
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>4.2.0.RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>1.4</version>
         </dependency>
 
     </dependencies>
