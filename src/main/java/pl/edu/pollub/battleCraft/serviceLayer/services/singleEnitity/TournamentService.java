@@ -12,11 +12,10 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.Tourna
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.Organizer;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.*;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.EntityNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityValidation.EntityValidationException;
 import pl.edu.pollub.battleCraft.serviceLayer.services.validators.TournamentValidator;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Tournament.TournamentRequestDTO;
-import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Tournament.TournamentResponseDTO;
 
 import java.util.List;
 import java.util.Optional;
@@ -39,7 +38,7 @@ public class TournamentService {
         this.tournamentEditor = tournamentEditor;
     }
 
-    @Transactional(rollbackFor = {EntityValidationException.class,EntityNotFoundException.class})
+    @Transactional(rollbackFor = {EntityValidationException.class,ObjectNotFoundException.class})
     public Tournament organizeTournament(TournamentRequestDTO tournamentWebDTO, BindingResult bindingResult) throws EntityValidationException {
 
         tournamentValidator.checkIfTournamentExist(tournamentWebDTO,bindingResult);
@@ -72,7 +71,7 @@ public class TournamentService {
         return this.tournamentRepository.save(organizedTournament);
     }
 
-    @Transactional(rollbackFor = {EntityValidationException.class,EntityNotFoundException.class})
+    @Transactional(rollbackFor = {EntityValidationException.class,ObjectNotFoundException.class})
     public Tournament editTournament(TournamentRequestDTO tournamentWebDTO, BindingResult bindingResult){
         //TO DO: check if this organizer is organizer of this tournament
 
@@ -110,6 +109,6 @@ public class TournamentService {
 
     public Tournament getTournament(String tournamentUniqueName) {
         return Optional.ofNullable(tournamentRepository.findTournamentToEditByUniqueName(tournamentUniqueName))
-                .orElseThrow(() -> new EntityNotFoundException(Tournament.class,tournamentUniqueName));
+                .orElseThrow(() -> new ObjectNotFoundException(Tournament.class,tournamentUniqueName));
     }
 }

@@ -13,7 +13,10 @@ import java.util.Date;
 
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+
 @Entity
+@Table(name = "vtoken")
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -27,7 +30,6 @@ public class VerificationToken {
         this.user = user;
         user.setToken(this);
         this.date = calculateExpiryDate(expiration).getTime();
-        this.used = false;
     }
 
 
@@ -45,9 +47,6 @@ public class VerificationToken {
 
     @NotNull
     private Long date;
-
-    @NotNull
-    private boolean used;
 
     private Date calculateExpiryDate(int expiryTimeInMinutes) {
         Calendar cal = Calendar.getInstance();

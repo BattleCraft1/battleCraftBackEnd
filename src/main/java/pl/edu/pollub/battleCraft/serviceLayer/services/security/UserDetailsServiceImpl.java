@@ -56,9 +56,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         } else {
             boolean accountNonLocked;
             boolean enabled;
-            if(userAccount instanceof Player){
+            if(userAccount instanceof Player && !userAccount.getStatus().equalsName("NEW")){
                 enabled = true;
-                accountNonLocked = ((Player) userAccount).isBanned();
+                accountNonLocked = !((Player) userAccount).isBanned();
             }
             else if(userAccount instanceof Administrator){
                 enabled = true;

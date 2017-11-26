@@ -3,7 +3,7 @@ package pl.edu.pollub.battleCraft.serviceLayer.services.tournamentManagement;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.TournamentRepository;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.Tournament;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.EntityNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentManagement.TournamentCannotStartYet;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentManagement.TournamentIsOutOfDate;
 
@@ -25,7 +25,7 @@ public abstract class TournamentManagementService {
 
     Tournament findStartedTournamentByName(String tournamentName){
         return Optional.ofNullable(tournamentRepository.findStartedTournamentByUniqueName(tournamentName))
-                .orElseThrow(() -> new EntityNotFoundException(Tournament.class,tournamentName));
+                .orElseThrow(() -> new ObjectNotFoundException(Tournament.class,tournamentName));
     }
 
     void checkIfTournamentCanStart(Tournament tournament){

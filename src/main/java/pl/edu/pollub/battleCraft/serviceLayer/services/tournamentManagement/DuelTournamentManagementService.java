@@ -10,7 +10,7 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.subCla
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Battle.Battle;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tour.Tour;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.EntityNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentManagement.*;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentManagement.DuplicatedPlayersNamesException;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.TournamentProgress.Duel.Battle.DuelBattleRequestDTO;
@@ -61,7 +61,7 @@ public class DuelTournamentManagementService extends TournamentManagementService
         DuelTournament tournament = this.castToDuelTournament(this.findStartedTournamentByName(tournamentName));
 
         if(battleDTO.getTourNumber()>tournament.getCurrentTourNumber())
-            throw new EntityNotFoundException(Tour.class,new StringBuilder(tournament.getCurrentTourNumber()).toString());
+            throw new ObjectNotFoundException(Tour.class,new StringBuilder(tournament.getCurrentTourNumber()).toString());
 
         if(containsEmptyNames){
             tournament.getTourByNumber(battleDTO.getTourNumber()).findBattleByTableNumber(battleDTO.getTableNumber()).clearPlayers();

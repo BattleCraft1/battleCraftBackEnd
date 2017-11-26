@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+    <style type="text/css" rel="stylesheet" media="all">
+        /* Media Queries */
+        @media only screen and (max-width: 500px) {
+            .button {
+                width: 100% !important;
+            }
+        }
+    </style>
+</head>
+
+    #set ($style = {
+        'body' : 'margin: 0; padding: 0; width: 100%; background-color: #000000; color: #FFFFFF',
+        'emailWrapper' : 'width: 100%; margin: 0; padding: 0; background-color: #000000;',
+        'emailMasthead' : 'padding: 25px 0; text-align: center; box-sizing:border-box; background:#45341d; box-shadow:inset 0 0 4px #9c7239;
+            border-collapse: separate; border:1px solid; color:rgb(204, 126, 69); border-top-color: #E0BA51; border-bottom-color: #614722;
+            border-right-color: #805D2C; border-left-color: #e3ca86',
+        'emailMastheadName' : 'font-size: 20px; font-weight: bold; text-decoration: none; text-shadow: 0 1px 0 white; color: #FFFFFF',
+        'emailBody' : 'width: 100%; margin: 0; padding: 0; background-color: #a58e60; color: #FFFFFF',
+        'emailBodyInner' : 'width: auto; max-width: 570px; margin: 0 auto; padding: 0;',
+        'emailBodyCell' : 'padding: 35px;',
+        'emailFooter' : 'width: auto; width: 100%; margin: 0 auto; padding: 0; text-align: center;',
+        'emailFooterCell' : 'color: #FFFFFF; padding: 35px; text-align: center; box-sizing:border-box; background:#45341d; box-shadow:inset 0 0 4px #9c7239;
+            border-collapse: separate; border:1px solid; color:rgb(204, 126, 69); border-top-color: #E0BA51; border-bottom-color: #614722;
+            border-right-color: #805D2C; border-left-color: #e3ca86',
+        'bodyAction' : 'width: 100%; margin: 30px auto; padding: 0; text-align: center;',
+        'bodySub' : 'margin-top: 25px; padding-top: 25px; border-top: 1px solid #EDEFF2;',
+        'anchor' : 'color: #FFFFFF;',
+        'header1' : 'margin-top: 0; font-size: 19px; font-weight: bold; text-align: center; color: #FFFFFF',
+        'paragraphX' : 'margin-top: 0; font-size: 16px; color: #FFFFFF; line-height: 1.5em; text-decoration: none;' ,
+        'paragraphSub' : 'margin-top: 0; color: #FFFFFF; font-size: 12px; line-height: 1.5em;',
+        'paragraphCenter' : 'text-align: center;',
+        'button' : 'display: block; display: inline-block; width: 200px; min-height: 20px; padding: 10px; text-align:center;
+        border-top-color: #E0BA51; border-bottom-color: #E0BA51; border-right-color: #805D2C; border-left-color: #e3ca86;
+        background-image: linear-gradient(#f66060, #7d150e, #5b0f0a); box-shadow: inset 0 0 7px #9c7239;
+        background-color: #3869D4; outline:0; border-radius: 2px; color: #ffffff; font-size: 15px; line-height: 25px;
+        textAlign: center; text-decoration: none; -webkit-text-size-adjust: none;'})
+
+    #set ($fontFamily = 'font-family: Arial, Helvetica Neue, Helvetica, sans-serif;')
+<body style="${style.body}">
+<table width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+        <td style="${style.emailWrapper}" align="center">
+            <table width="100%" cellpadding="0" cellspacing="0">
+                <!-- Logo -->
+                <tr>
+                    <td style="${style.emailMasthead}">
+                        <a style="${fontFamily} ${style.emailMastheadName}" href="http:/localhost:8080/" target="_blank">
+                            BattleCraft
+                        </a>
+                    </td>
+                </tr>
+
+                <!-- Email Body -->
+                <tr>
+                    <td style="${style.emailBody}" width="100%">
+                        <table style="${style.emailBodyInner}" align="center" width="570" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td style="${fontFamily} ${style.emailBodyCell}">
+
+                                    <!-- Greeting -->
+                                    <h1 style="${style.header1}">
+
+                                        Welcome to BattleCraft!
+
+                                    </h1>
+
+                                    <!-- Intro -->
+
+                                    <p style="${style.paragraphX}">
+                                        Congratulation!
+                                    </p>
+
+                                    <p style="${style.paragraphX}">
+                                        You successfully confirm you account
+                                    </p>
+
+                                    <p style="${style.paragraphX}">
+                                        Now you can login to your account and use our system
+                                    </p>
+
+                                    <!-- Salutation -->
+                                    <p style="${style.paragraphX}">
+                                        Regards,<br>BattleCraft
+                                    </p>
+
+                                    <!-- Sub Copy -->
+                                    <table style="${style.bodySub}">
+                                        <tr>
+                                            <td style="${fontFamily}">
+                                                <p style="${style.paragraphSub}">
+                                                    If you have any questions, please send mail on address:
+                                                    battlecraftsystem@gmail.com
+                                                </p>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <!-- Footer -->
+                <tr>
+                    <td>
+                        <table style="${style.emailFooter}" align="center" width="570" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td style="${fontFamily} ${style.emailFooterCell}">
+                                    <p style="${style.paragraphSub}">&copy; $date
+                                        <a style="${style.anchor}" href="http:/localhost:8080/" target="_blank">BattleCraft</a>.
+                                        All rights reserved.
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

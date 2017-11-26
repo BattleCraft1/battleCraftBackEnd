@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.UserAccountRepository;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.EntityNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.File.UserAvatar.InvalidUserAvatarExtension;
 import pl.edu.pollub.battleCraft.serviceLayer.services.file.FileService;
 import pl.edu.pollub.battleCraft.serviceLayer.services.image.ImageService;
@@ -62,7 +62,7 @@ public class UserAccountResourcesService {
 
     public void saveUserAvatar(@NotNull @NotBlank String username,@NotNull @NotBlank MultipartFile file) throws IOException {
         String name = Optional.ofNullable(userAccountRepository.checkIfUserExist(username))
-                .orElseThrow(() -> new EntityNotFoundException(UserAccount.class,username));
+                .orElseThrow(() -> new ObjectNotFoundException(UserAccount.class,username));
 
         fileService.deleteFilesRelatedWithEntities(DEFAULT_USER_AVATARS_DIRECTORY_NAME,name);
 

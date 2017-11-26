@@ -10,4 +10,5 @@ import lombok.*;
 @AllArgsConstructor
 public class AuthResponseDTO {
     private String token;
+    private String role;
 }

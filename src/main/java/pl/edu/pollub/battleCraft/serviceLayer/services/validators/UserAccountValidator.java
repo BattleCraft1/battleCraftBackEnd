@@ -1,13 +1,8 @@
 package pl.edu.pollub.battleCraft.serviceLayer.services.validators;
 
 import org.springframework.stereotype.Component;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.UserAccountRepository;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.EntityNotFoundException;
-import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.Invitation.UserAccountWithInvitationsRequestDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.UserAccountRequestDTO;
 
 import java.util.Optional;
@@ -19,11 +14,8 @@ public class UserAccountValidator implements Validator {
 
     private final AddressValidator addressValidator;
 
-    private final UserAccountRepository userAccountRepository;
-
-    public UserAccountValidator(AddressValidator addressValidator, UserAccountRepository userAccountRepository) {
+    public UserAccountValidator(AddressValidator addressValidator) {
         this.addressValidator = addressValidator;
-        this.userAccountRepository = userAccountRepository;
     }
 
     @Override
@@ -34,7 +26,7 @@ public class UserAccountValidator implements Validator {
     @Override
     public void validate(Object o, Errors errors) {
         this.errors = errors;
-        UserAccountWithInvitationsRequestDTO userAccountRequestDTO = (UserAccountWithInvitationsRequestDTO) o;
+        UserAccountRequestDTO userAccountRequestDTO = (UserAccountRequestDTO) o;
         this.validateName(userAccountRequestDTO.getName());
         this.validateName(userAccountRequestDTO.getNameChange());
         this.validateEMail(userAccountRequestDTO.getEmail());
@@ -67,18 +59,5 @@ public class UserAccountValidator implements Validator {
     private void validateEMail(String email){
         if(email==null || !email.matches("(^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.+[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@+(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$)"))
             errors.rejectValue("email","","Invalid email");
-    }
-
-    public void checkIfUserWithThisNameAlreadyExist(UserAccountRequestDTO userAccountRequestDTO, BindingResult bindingResult){
-        if(!userAccountRequestDTO.getName().equals(userAccountRequestDTO.getNameChange())) {
-            UserAccount userExist = userAccountRepository.findUserAccountByUniqueName(userAccountRequestDTO.getNameChange());
-            if (userExist != null)
-                bindingResult.rejectValue("nameChange", "", "User with this name already exist.");
-        }
-    }
-
-    public UserAccount getValidatedUserAccountToEdit(UserAccountWithInvitationsRequestDTO userAccountRequestDTO, BindingResult bindingResult){
-        return Optional.ofNullable(userAccountRepository.findUserAccountByUniqueName(userAccountRequestDTO.getName()))//TO DO: if player is administrator
-                .orElseThrow(() -> new EntityNotFoundException(UserAccount.class,userAccountRequestDTO.getName()));
     }
 }

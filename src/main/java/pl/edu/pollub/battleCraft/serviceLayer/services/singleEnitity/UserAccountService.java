@@ -9,7 +9,7 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.builder.User
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.Organizer;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.UserAccountRepository;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.EntityNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityValidation.EntityValidationException;
 import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationToOrganizationService;
 import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationToParticipationService;
@@ -49,11 +49,11 @@ public class UserAccountService {
         this.invitationToOrganizationService = invitationToOrganizationService;
     }
 
-    @Transactional(rollbackFor = {EntityValidationException.class, EntityNotFoundException.class})
+    @Transactional(rollbackFor = {EntityValidationException.class, ObjectNotFoundException.class})
     public UserAccount editUserAccount(UserAccountWithInvitationsRequestDTO userAccountRequestDTO, BindingResult bindingResult){
         UserAccount userAccountToEdit = userAccountValidator.getValidatedUserAccountToEdit(userAccountRequestDTO, bindingResult);
 
-        userAccountValidator.checkIfUserWithThisNameAlreadyExist(userAccountRequestDTO,bindingResult);
+        userAccountValidator.checkIfUserWithThisNameOrEmailAlreadyExist(userAccountRequestDTO,bindingResult);
         userAccountValidator.validate(userAccountRequestDTO, bindingResult);
 
         userEditor.edit(userAccountToEdit,
@@ -93,6 +93,6 @@ public class UserAccountService {
     public UserAccount getUserAccount(String userUniqueName) {
 
         return Optional.ofNullable(userAccountRepository.findUserAccountByUniqueName(userUniqueName))
-                .orElseThrow(() -> new EntityNotFoundException(UserAccount.class,userUniqueName));
+                .orElseThrow(() -> new ObjectNotFoundException(UserAccount.class,userUniqueName));
     }
 }

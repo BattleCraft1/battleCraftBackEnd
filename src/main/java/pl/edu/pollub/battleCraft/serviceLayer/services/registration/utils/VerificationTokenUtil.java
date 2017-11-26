@@ -1,5 +1,6 @@
 package pl.edu.pollub.battleCraft.serviceLayer.services.registration.utils;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.VerificationTokenRepository;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
@@ -16,14 +17,16 @@ public class VerificationTokenUtil {
 
     private final VerificationTokenRepository verificationTokenRepository;
 
+    @Autowired
     public VerificationTokenUtil(VerificationTokenRepository verificationTokenRepository) {
         this.verificationTokenRepository = verificationTokenRepository;
     }
 
-    public void createVerificationToken(UserAccount user) {
+    public String createVerificationToken(UserAccount user) {
         String token = UUID.randomUUID().toString();
-        VerificationToken myToken = new VerificationToken(token, user, EXPIRATION);
-        verificationTokenRepository.save(myToken);
+        VerificationToken verificationToken = new VerificationToken(token, user, EXPIRATION);
+        verificationTokenRepository.save(verificationToken);
+        return token;
     }
 
     public VerificationToken generateNewVerificationToken(UserAccount user) {
@@ -42,5 +45,9 @@ public class VerificationTokenUtil {
         if ((verificationToken.getDate() - cal.getTime().getTime()) <= 0) {
             throw new VerificationException("Token is expired, please try to resend it");
         }
+    }
+
+    public void removeToken(VerificationToken verificationToken) {
+        this.verificationTokenRepository.delete(verificationToken);
     }
 }

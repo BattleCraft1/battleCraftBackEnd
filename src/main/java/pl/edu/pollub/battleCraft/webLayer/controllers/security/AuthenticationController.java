@@ -2,10 +2,12 @@ package pl.edu.pollub.battleCraft.webLayer.controllers.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.Security.AnyRoleNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.services.security.utils.JWTTokenUtils;
 import pl.edu.pollub.battleCraft.serviceLayer.services.security.data.User;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Security.AuthRequestDTO;
@@ -54,8 +57,10 @@ public class AuthenticationController {
         UserDetails userDetails = this.userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
         String token = this.tokenUtils.generateToken(userDetails);
 
+        String role = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).findFirst().orElseThrow(AnyRoleNotFoundException::new);
+
         // Return the token
-        return ResponseEntity.ok(new AuthResponseDTO(token));
+        return ResponseEntity.ok(new AuthResponseDTO(token,role));
     }
 
     @RequestMapping(value = "refresh", method = RequestMethod.GET)
@@ -65,7 +70,8 @@ public class AuthenticationController {
         User user = (User) this.userDetailsService.loadUserByUsername(username);
         if (this.tokenUtils.canTokenBeRefreshed(token, user.getLastPasswordReset())) {
             String refreshedToken = this.tokenUtils.refreshToken(token);
-            return ResponseEntity.ok(new AuthResponseDTO(refreshedToken));
+            String role = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).findFirst().orElseThrow(AnyRoleNotFoundException::new);
+            return ResponseEntity.ok(new AuthResponseDTO(refreshedToken,role));
         } else {
             return ResponseEntity.badRequest().body(null);
         }

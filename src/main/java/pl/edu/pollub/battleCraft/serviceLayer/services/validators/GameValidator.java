@@ -8,7 +8,7 @@ import org.springframework.validation.Validator;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Game.Game;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Game.enums.GameStatus;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.GameRepository;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.EntityNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityValidation.EntityValidationException;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Game.GameRequestDTO;
 
@@ -61,7 +61,7 @@ public class GameValidator implements Validator {
 
     public Game getValidatedGameToEdit(GameRequestDTO gameRequestDTO,BindingResult bindingResult){
         Game gameToEdit = Optional.ofNullable(gameRepository.findGameByUniqueName(gameRequestDTO.getName()))
-                .orElseThrow(() -> new EntityNotFoundException(Game.class,gameRequestDTO.getName()));
+                .orElseThrow(() -> new ObjectNotFoundException(Game.class,gameRequestDTO.getName()));
         if(gameToEdit.isBanned() || (gameToEdit.getStatus()!= GameStatus.ACCEPTED && gameToEdit.getStatus()!=GameStatus.NEW)){
             bindingResult.rejectValue("nameChange","","This game is not accepted");
         }

@@ -10,8 +10,8 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.*;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.EntityNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityValidation.EntityValidationException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationDTO.DuelTournamentInvitationDTO;
 import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationDTO.GroupTournamentInvitationDTO;
 import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationDTO.InvitationDTO;
@@ -29,11 +29,14 @@ public class UserAccountWithInvitationsValidator implements Validator {
 
     private final PlayerRepository playerRepository;
 
+    private final UserAccountRepository userAccountRepository;
+
     private final UserAccountValidator userAccountValidator;
 
-    public UserAccountWithInvitationsValidator(TournamentRepository tournamentRepository, PlayerRepository playerRepository, UserAccountValidator userAccountValidator) {
+    public UserAccountWithInvitationsValidator(TournamentRepository tournamentRepository, PlayerRepository playerRepository, UserAccountRepository userAccountRepository, UserAccountValidator userAccountValidator) {
         this.tournamentRepository = tournamentRepository;
         this.playerRepository = playerRepository;
+        this.userAccountRepository = userAccountRepository;
         this.userAccountValidator = userAccountValidator;
     }
 
@@ -48,12 +51,24 @@ public class UserAccountWithInvitationsValidator implements Validator {
         userAccountValidator.validate(userAccountRequestDTO,errors);
     }
 
-    public void checkIfUserWithThisNameAlreadyExist(UserAccountWithInvitationsRequestDTO userAccountRequestDTO, BindingResult bindingResult){
-        userAccountValidator.checkIfUserWithThisNameAlreadyExist(userAccountRequestDTO,bindingResult);
+    public UserAccount getValidatedUserAccountToEdit(UserAccountWithInvitationsRequestDTO userAccountRequestDTO, BindingResult bindingResult){
+        return Optional.ofNullable(userAccountRepository.findUserAccountByUniqueName(userAccountRequestDTO.getName()))//TO DO: if player is administrator
+                .orElseThrow(() -> new ObjectNotFoundException(UserAccount.class,userAccountRequestDTO.getName()));
     }
 
-    public UserAccount getValidatedUserAccountToEdit(UserAccountWithInvitationsRequestDTO userAccountRequestDTO, BindingResult bindingResult){
-        return userAccountValidator.getValidatedUserAccountToEdit(userAccountRequestDTO,bindingResult);
+    public void checkIfUserWithThisNameOrEmailAlreadyExist(UserAccountWithInvitationsRequestDTO userAccountRequestDTO, BindingResult bindingResult){
+        if(!userAccountRequestDTO.getName().equals(userAccountRequestDTO.getNameChange())) {
+            UserAccount userExist = userAccountRepository.findUserAccountByUniqueNameOrEmail(userAccountRequestDTO.getNameChange(),userAccountRequestDTO.getEmail());
+            if (userExist.getName().equals(userAccountRequestDTO.getName()))
+                bindingResult.rejectValue("nameChange", "", "User with this name already exist.");
+            if (userExist.getEmail().equals(userAccountRequestDTO.getEmail()))
+                bindingResult.rejectValue("email", "", "User with this email already exist.");
+        }
+        else{
+            UserAccount userExist = userAccountRepository.findUserAccountByUniqueNameOrEmail(userAccountRequestDTO.getNameChange(),userAccountRequestDTO.getEmail());
+            if (userExist.getEmail().equals(userAccountRequestDTO.getEmail()))
+                bindingResult.rejectValue("email", "", "User with this email already exist.");
+        }
     }
 
     public List<InvitationDTO> getValidatedPlayersInvitations(UserAccountWithInvitationsRequestDTO userAccountRequestDTO, BindingResult bindingResult){

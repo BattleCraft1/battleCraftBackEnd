@@ -15,7 +15,7 @@ import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.GameRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.OrganizerRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.PlayerRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.TournamentRepository;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.EntityNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityValidation.EntityValidationException;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Tournament.TournamentRequestDTO;
 
@@ -129,7 +129,7 @@ public class TournamentValidator implements Validator {
 
     public Tournament getValidatedTournamentToEdit(TournamentRequestDTO tournamentWebDTO,BindingResult bindingResult){
         Tournament tournamentToEdit = Optional.ofNullable(tournamentRepository.findByName(tournamentWebDTO.getName()))
-                .orElseThrow(() -> new EntityNotFoundException(Tournament.class,tournamentWebDTO.getName()));//TO DO: if player is administrator
+                .orElseThrow(() -> new ObjectNotFoundException(Tournament.class,tournamentWebDTO.getName()));//TO DO: if player is administrator
         if(tournamentToEdit.isBanned() || (tournamentToEdit.getStatus()!= TournamentStatus.ACCEPTED && tournamentToEdit.getStatus()!=TournamentStatus.NEW)){
             bindingResult.rejectValue("nameChange","","This tournament is not accepted or new");
         }

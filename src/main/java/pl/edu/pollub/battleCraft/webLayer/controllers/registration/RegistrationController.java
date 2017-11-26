@@ -26,14 +26,14 @@ public class RegistrationController {
 
     @PostMapping(value = "/registration", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public void registration(@RequestBody RegistrationDTO registrationDTO, BindingResult bindingResult, HttpServletRequest request) {
-        registrationService.register(registrationDTO,bindingResult,request);
+    public void registration(@RequestBody RegistrationDTO registrationDTO, BindingResult bindingResult) {
+        registrationService.register(registrationDTO,bindingResult);
     }
 
     @GetMapping(value = "/registration/resendToken")
     @ResponseStatus(HttpStatus.OK)
-    public void resendToken(@RequestParam(value = "name") String name, HttpServletRequest request){
-        registrationService.resendToken(name,request);
+    public void resendToken(@RequestParam(value = "name") String username){
+        registrationService.resendToken(username);
     }
 
     @GetMapping(value = "/registration/confirm")

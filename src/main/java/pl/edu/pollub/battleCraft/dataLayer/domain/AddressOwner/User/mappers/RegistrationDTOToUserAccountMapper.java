@@ -15,7 +15,7 @@ public class RegistrationDTOToUserAccountMapper {
         UserAccount userAccount = new UserAccount();
         userAccount.setFirstname(registrationDTO.getFirstname());
         userAccount.setLastname(registrationDTO.getLastname());
-        userAccount.setName(registrationDTO.getName());
+        userAccount.setName(registrationDTO.getNameChange());
         userAccount.setEmail(registrationDTO.getEmail());
         userAccount.setPassword(registrationDTO.getPassword());
         userAccount.setPhoneNumber(registrationDTO.getPhoneNumber());

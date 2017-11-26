@@ -8,7 +8,7 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.Game.Game;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.Organizer;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.GameRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.OrganizerRepository;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.EntityNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityValidation.EntityValidationException;
 import pl.edu.pollub.battleCraft.serviceLayer.services.resources.GameResourcesService;
 import pl.edu.pollub.battleCraft.serviceLayer.services.validators.GameValidator;
@@ -35,7 +35,7 @@ public class GameService {
         this.gameResourcesService = gameResourcesService;
     }
 
-    @Transactional(rollbackFor = {EntityValidationException.class,EntityNotFoundException.class})
+    @Transactional(rollbackFor = {EntityValidationException.class,ObjectNotFoundException.class})
     public Game addGame(GameRequestDTO gameRequestDTO, BindingResult bindingResult) {
         Organizer mockOrganizerFromSession = organizerRepository.findByName("dept2123");
 
@@ -49,7 +49,7 @@ public class GameService {
         return this.gameRepository.save(createdGame);
     }
 
-    @Transactional(rollbackFor = {EntityValidationException.class,EntityNotFoundException.class})
+    @Transactional(rollbackFor = {EntityValidationException.class,ObjectNotFoundException.class})
     public Game editGame(GameRequestDTO gameRequestDTO, BindingResult bindingResult) {
 
         //TO DO: check if this organizer is creator of this game
@@ -71,6 +71,6 @@ public class GameService {
 
     public Game getGame(String gameUniqueName) {
         return Optional.ofNullable(gameRepository.findNotBannedGameByUniqueName(gameUniqueName))
-                .orElseThrow(() -> new EntityNotFoundException(Game.class,gameUniqueName));
+                .orElseThrow(() -> new ObjectNotFoundException(Game.class,gameUniqueName));
     }
 }

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Game.Game;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.GameRepository;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.EntityNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.File.GameRules.InvalidGameRulesExtension;
 import pl.edu.pollub.battleCraft.serviceLayer.services.file.FileService;
 
@@ -42,7 +42,7 @@ public class GameResourcesService {
 
     public void saveGameRules(@NotNull @NotBlank String gameName, @NotNull @NotBlank MultipartFile file){
         String name = Optional.ofNullable(gameRepository.checkIfGameExist(gameName))
-                .orElseThrow(() -> new EntityNotFoundException(Game.class,gameName));
+                .orElseThrow(() -> new ObjectNotFoundException(Game.class,gameName));
 
         fileService.deleteFilesRelatedWithEntities(DEFAULT_GAME_RULES_DIRECTORY_NAME,name);
 

@@ -18,7 +18,7 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.O
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tour.Tour;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.EntityNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 
 import javax.persistence.*;
 import java.util.*;
@@ -98,19 +98,19 @@ public abstract class Tournament extends AddressOwner{
         return this.getParticipation().stream()
                 .map(Participation::getPlayer)
                 .filter(player -> player.getName().equals(playerName))
-                .findFirst().orElseThrow(() -> new EntityNotFoundException(Player.class,playerName));
+                .findFirst().orElseThrow(() -> new ObjectNotFoundException(Player.class,playerName));
     }
 
     public Participation getParticipationByPlayerName(String playerName){
         return this.getParticipation().stream()
                 .filter(participation -> participation.getPlayer().getName().equals(playerName))
-                .findFirst().orElseThrow(() -> new EntityNotFoundException(Player.class,playerName));
+                .findFirst().orElseThrow(() -> new ObjectNotFoundException(Player.class,playerName));
     }
 
     public Tour getTourByNumber(int number){
         return this.getTours().stream().filter(tour -> tour.getNumber() == number)
                 .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException(Tour.class,String.valueOf(currentTourNumber)));
+                .orElseThrow(() -> new ObjectNotFoundException(Tour.class,String.valueOf(currentTourNumber)));
     }
 
     public int getPointsForPlayer(Player player){
@@ -268,7 +268,7 @@ public abstract class Tournament extends AddressOwner{
                 .filter(battle -> battle.getPlayers().stream()
                         .filter(play -> play.getPlayer().equals(firstPlayer))
                         .findFirst().orElse(null)!=null)
-                .findFirst().orElseThrow(() -> new EntityNotFoundException(Battle.class,firstPlayer.getName()))
+                .findFirst().orElseThrow(() -> new ObjectNotFoundException(Battle.class,firstPlayer.getName()))
                 .getTableNumber();
     }
 }
