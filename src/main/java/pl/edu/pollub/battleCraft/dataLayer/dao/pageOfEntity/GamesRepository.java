@@ -84,5 +84,6 @@ public class GamesRepository {
 
     public void cancelAcceptGames(String... gamesToCancelAcceptUniqueNames) {
         gameRepository.cancelAcceptGamesUniqueNames(gamesToCancelAcceptUniqueNames);
+        tournamentRepository.banTournamentsRelatedWithGame(gamesToCancelAcceptUniqueNames);
     }
 }

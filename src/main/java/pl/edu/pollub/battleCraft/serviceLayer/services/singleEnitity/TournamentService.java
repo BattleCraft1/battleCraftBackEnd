@@ -83,9 +83,10 @@ public class TournamentService {
     @Transactional(rollbackFor = {EntityValidationException.class,ObjectNotFoundException.class})
     public Tournament editTournament(TournamentRequestDTO tournamentWebDTO, BindingResult bindingResult){
 
-        Tournament tournamentToEdit = tournamentValidator.getValidatedTournamentToEdit(tournamentWebDTO, bindingResult);
+        Tournament tournamentToEdit = Optional.ofNullable(tournamentRepository.findByName(tournamentWebDTO.getName()))
+                .orElseThrow(() -> new ObjectNotFoundException(Tournament.class,tournamentWebDTO.getName()));
 
-        this.checkIfCurrentUserIsOrganizerOfTournament(tournamentToEdit);
+        authorityRecognizer.checkIfCurrentUserIsOrganizerOfTournament(tournamentToEdit);
 
         tournamentValidator.checkIfTournamentWithThisNameAlreadyExist(tournamentWebDTO,bindingResult);
         tournamentValidator.validate(tournamentWebDTO,bindingResult);
@@ -114,7 +115,7 @@ public class TournamentService {
                 .editParticipants(participants)
                 .finishEditing();
 
-        this.checkIfEditedTournamentNeedReAcceptation(tournamentToEdit);
+        authorityRecognizer.checkIfEditedTournamentNeedReAcceptation(tournamentToEdit);
 
         return this.tournamentRepository.save(tournamentToEdit);
     }
@@ -122,25 +123,5 @@ public class TournamentService {
     public Tournament getTournament(String tournamentUniqueName) {
         return Optional.ofNullable(tournamentRepository.findTournamentToEditByUniqueName(tournamentUniqueName))
                 .orElseThrow(() -> new ObjectNotFoundException(Tournament.class,tournamentUniqueName));
-    }
-
-    private void checkIfCurrentUserIsOrganizerOfTournament(Tournament tournament){
-        String role = authorityRecognizer.getCurrentUserRoleFromContext();
-
-        if(!role.equals("ROLE_ADMIN")){
-            List<String> organizersNames = tournament.getOrganizations().stream()
-                    .map(organization -> organization.getOrganizer().getName())
-                    .collect(Collectors.toList());
-            if(!organizersNames.contains(authorityRecognizer.getCurrentUserNameFromContext()))
-                throw new YouAreNotOwnerOfThisObjectException(Tournament.class,tournament.getName());
-        }
-    }
-
-    private void checkIfEditedTournamentNeedReAcceptation(Tournament tournament){
-        String role = authorityRecognizer.getCurrentUserRoleFromContext();
-
-        if(!role.equals("ROLE_ADMIN")){
-            tournament.setStatus(TournamentStatus.NEW);
-        }
     }
 }

@@ -57,11 +57,11 @@ public class GamesService {
         gamesRepository.acceptGames(gamesToDeleteUniqueNames);
     }
 
-    public void cancelAcceptGames(String... gamesToDeleteUniqueNames) {
-        List<String> validUniqueNames = gameRepository.selectGamesToRejectUniqueNames(gamesToDeleteUniqueNames);
+    public void cancelAcceptGames(String... gamesToRejectUniqueNames) {
+        List<String> validUniqueNames = gameRepository.selectGamesToRejectUniqueNames(gamesToRejectUniqueNames);
 
-        uniqueNamesValidator.validateUniqueNamesElementsToReject(validUniqueNames,gamesToDeleteUniqueNames);
+        uniqueNamesValidator.validateUniqueNamesElementsToReject(validUniqueNames,gamesToRejectUniqueNames);
 
-        gamesRepository.cancelAcceptGames(gamesToDeleteUniqueNames);
+        gamesRepository.cancelAcceptGames(gamesToRejectUniqueNames);
     }
 }

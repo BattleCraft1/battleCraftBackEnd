@@ -13,8 +13,8 @@ import java.util.List;
 @Transactional
 public interface OrganizerRepository extends JpaRepository<Organizer, Long> {
 
-    @Query("SELECT o.name FROM Organizer o WHERE o.name in ?1 AND o.status = 'ORGANIZER'")
-    List<String> selectUsersAccountsToDegadeUniqueNames(String... organizerToDegradeToPlayersUniqueNames);
+    @Query("SELECT o FROM Organizer o WHERE o.name in ?1 AND o.status = 'ORGANIZER'")
+    List<Organizer> selectUsersAccountsToDegradeByUniqueNames(String... organizerToDegradeToPlayersUniqueNames);
 
     @Modifying
     @Query("UPDATE Organizer o SET o.status = 'ACCEPTED' WHERE o.name in ?1")

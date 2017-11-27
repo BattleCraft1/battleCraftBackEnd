@@ -9,6 +9,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.ui.velocity.VelocityEngineUtils;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Report.ReportDTO;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -48,6 +49,16 @@ public class MailUtil {
         Map<String,Object> model = new HashMap();
         model.put("date", Calendar.getInstance().get(Calendar.YEAR));
        this.sendVelocityMail(recipientAddress, model, "registrationCompletedTemplate.vm");
+    }
+
+    public void sendReportToAdmin(String userWhoReportName, ReportDTO reportDTO, String adminEmail){
+        Map<String,Object> model = new HashMap();
+        model.put("date", Calendar.getInstance().get(Calendar.YEAR));
+        model.put("reportUserName", userWhoReportName);
+        model.put("objectType", reportDTO.getObjectType());
+        model.put("objectName", reportDTO.getObjectName());
+        model.put("reportMessage", reportDTO.getReportMessage());
+        this.sendVelocityMail(adminEmail, model, "reportTemplate.vm");
     }
 
     @Async

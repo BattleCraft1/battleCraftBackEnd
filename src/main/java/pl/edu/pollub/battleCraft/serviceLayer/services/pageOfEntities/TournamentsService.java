@@ -12,6 +12,7 @@ import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.TournamentsRepositor
 import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.search.criteria.SearchCriteria;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.Organizer;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Game.enums.GameStatus;
 import pl.edu.pollub.battleCraft.serviceLayer.services.security.AuthorityRecognizer;
 import pl.edu.pollub.battleCraft.serviceLayer.services.validators.UniqueNamesValidator;
 
@@ -20,6 +21,7 @@ import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -48,7 +50,21 @@ public class TournamentsService {
     }
 
     public void unlockTournaments(String... tournamentsToBanUniqueNames) {
-        tournamentsRepository.unlockTournaments(tournamentsToBanUniqueNames);
+        List<Tournament> tournaments  = tournamentRepository.findBannedTournamentsByUniqueNames(tournamentsToBanUniqueNames);
+
+        List<String> namesOfTournamentsWhichCannotBeUnlock = new ArrayList<>();
+        tournaments.forEach(
+                tournament -> {
+                    if(tournament.getGame().getStatus() == GameStatus.NEW || tournament.getGame().isBanned())
+                        namesOfTournamentsWhichCannotBeUnlock.add(tournament.getName());
+                }
+        );
+
+        List<String> validNames = tournaments.stream().map(tournament -> tournament.getName()).collect(Collectors.toList());
+        validNames.removeAll(namesOfTournamentsWhichCannotBeUnlock);
+        uniqueNamesValidator.validateUniqueNamesOfTournamentsToUnlock(validNames,tournamentsToBanUniqueNames);
+
+        tournamentsRepository.unlockTournaments(tournamentsToBanUniqueNames); //only tournaments with accepted game can be unlocked
     }
 
     public void deleteTournaments(String... tournamentsToDeleteUniqueNames) {

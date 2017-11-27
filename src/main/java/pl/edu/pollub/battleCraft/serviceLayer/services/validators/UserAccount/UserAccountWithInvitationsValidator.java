@@ -51,11 +51,7 @@ public class UserAccountWithInvitationsValidator implements Validator {
         userAccountValidator.validate(userAccountRequestDTO,errors);
     }
 
-    //TO DO: Eliminate n+1 problem with criteria api
-    public UserAccount getValidatedUserAccountToEdit(UserAccountWithInvitationsRequestDTO userAccountRequestDTO, BindingResult bindingResult){
-        return Optional.ofNullable(userAccountRepository.findUserAccountByUniqueName(userAccountRequestDTO.getName()))//TO DO: if player is administrator
-                .orElseThrow(() -> new ObjectNotFoundException(UserAccount.class,userAccountRequestDTO.getName()));
-    }
+    //
 
     public void checkIfUserWithThisNameOrEmailAlreadyExist(UserAccountWithInvitationsRequestDTO userAccountRequestDTO, BindingResult bindingResult){
         if(!userAccountRequestDTO.getName().equals(userAccountRequestDTO.getNameChange())) {
@@ -93,7 +89,7 @@ public class UserAccountWithInvitationsValidator implements Validator {
                     player = null;
                 else
                     player = playerRepository.findNotBannedPlayerByUniqueName(invitation.getSecondPlayerName());
-                this.checkIfPlayerHaveAlreadyHaveParticipation(tournament,player,userAccountRequestDTO.getName(),bindingResult);
+                this.checkIfPlayerAlreadyHaveParticipation(tournament,player,userAccountRequestDTO.getName(),bindingResult);
                 this.checkIfPlayersCountIsGreaterThanLimit(tournamentsNamesWithTooManyPlayers,tournament,userAccountRequestDTO.getName(),2);
                 return new GroupTournamentInvitationDTO(tournament, invitation.isAccepted(),player);
             }
@@ -163,7 +159,7 @@ public class UserAccountWithInvitationsValidator implements Validator {
             }
     }
 
-    private void checkIfPlayerHaveAlreadyHaveParticipation(Tournament tournament,Player secondPlayer,String userName,BindingResult bindingResult){
+    private void checkIfPlayerAlreadyHaveParticipation(Tournament tournament, Player secondPlayer, String userName, BindingResult bindingResult){
         Participation participationOfSecondPlayer = tournament.getParticipation().stream()
                 .filter(participation -> participation.getPlayer().equals(secondPlayer)).findFirst().orElse(null);
         if(participationOfSecondPlayer!=null){

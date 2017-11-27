@@ -18,10 +18,14 @@ import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.GameRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.TournamentRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.search.criteria.SearchCriteria;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.Tournament;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentStatus;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.Organizer;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Game.Game;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Game.enums.GameStatus;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ThisObjectIsBannedException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ThisTournamentIsAlreadyStarted;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.Security.AnyRoleNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.Security.YouAreNotOwnerOfThisObjectException;
 
@@ -29,6 +33,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -136,7 +141,7 @@ public class AuthorityRecognizer {
         String role = this.getCurrentUserRoleFromContext();
 
         if(!role.equals("ROLE_ADMIN")){
-            if(!game.getCreator().getName().equals(this.getCurrentUserNameFromContext()))
+            if(game.isBanned() || game.getStatus()==GameStatus.ACCEPTED || !game.getCreator().getName().equals(this.getCurrentUserNameFromContext()))
                 throw new YouAreNotOwnerOfThisObjectException(Game.class,game.getName());
         }
     }
@@ -159,5 +164,44 @@ public class AuthorityRecognizer {
                 throw new YouAreNotOwnerOfThisObjectException("Account",user.getName());
         }
 
+    }
+
+    public void checkIfCurrentUserIsOrganizerOfTournament(Tournament tournament){
+        String role = this.getCurrentUserRoleFromContext();
+
+        if(tournament.getStatus()!= TournamentStatus.ACCEPTED && tournament.getStatus()!=TournamentStatus.NEW)
+            throw new ThisTournamentIsAlreadyStarted();
+
+        if(!role.equals("ROLE_ADMIN")){
+            if(tournament.isBanned())
+                throw new ThisObjectIsBannedException(Tournament.class,tournament.getName());
+            List<String> organizersNames = tournament.getOrganizations().stream()
+                    .map(organization -> organization.getOrganizer().getName())
+                    .collect(Collectors.toList());
+            if(!organizersNames.contains(this.getCurrentUserNameFromContext()))
+                throw new YouAreNotOwnerOfThisObjectException(Tournament.class,tournament.getName());
+        }
+    }
+
+    public void checkIfEditedTournamentNeedReAcceptation(Tournament tournament){
+        String role = this.getCurrentUserRoleFromContext();
+
+        if(!role.equals("ROLE_ADMIN")){
+            tournament.setStatus(TournamentStatus.NEW);
+        }
+    }
+
+    public void checkIfCurrentUserIsOwnerOfAccount(UserAccount user){
+        String role = this.getCurrentUserRoleFromContext();
+
+        if(!role.equals("ROLE_ADMIN")){
+            if(user instanceof Player){
+                if(((Player)user).isBanned())
+                    throw new ThisObjectIsBannedException(Player.class,user.getName());
+            }
+
+            if(!user.getName().equals(this.getCurrentUserNameFromContext()))
+                throw new YouAreNotOwnerOfThisObjectException("Account",user.getName());
+        }
     }
 }

@@ -16,8 +16,8 @@ public interface UserAccountRepository extends JpaRepository<UserAccount, Long> 
     @Query("DELETE FROM UserAccount u WHERE u.id in ?1")
     void deleteUsersAccountsByIds(List<Long> usersAccountsToDeleteIds);
 
-    @Query("SELECT u.name FROM UserAccount u WHERE u.status = 'NEW' AND u.name in ?1")
-    List<String> selectUsersAccountsToAcceptUniqueNames(String... usersAccountsToAcceptUniqueNames);
+    @Query("SELECT u FROM UserAccount u WHERE u.status = 'NEW' AND u.name in ?1")
+    List<UserAccount> selectUsersAccountsToAcceptByUniqueNames(String... usersAccountsToAcceptUniqueNames);
 
     @Query("SELECT u FROM UserAccount u WHERE u.status = 'NEW' AND u.name = ?1")
     UserAccount findNotAcceptedUserByUniqueName(String uniqueName);
@@ -29,10 +29,8 @@ public interface UserAccountRepository extends JpaRepository<UserAccount, Long> 
     @Query("DELETE FROM Address a WHERE (SELECT ao.id FROM AddressOwner ao WHERE ao.address=a.id) in ?1")
     void deleteRelatedAddress(List<Long> usersAccountsToDeleteIds);
 
-    @Query("SELECT u.name FROM UserAccount u WHERE u.name in" +
-            "(SELECT name FROM  UserAccount u1 " +
-            "WHERE u.name in ?1)")
-    List<String> selectUsersAccountsToDeleteUniqueNames(String... usersAccountsToAcceptUniqueNames);
+    @Query("SELECT u FROM UserAccount u WHERE u.name in ?1")
+    List<UserAccount> selectUsersAccountsToDeleteByUniqueNames(String... usersAccountsToAcceptUniqueNames);
 
     @Query("SELECT u.id FROM UserAccount u WHERE u.name in ?1")
     List<Long> selectIdsOfUsersToDelete(String... usersAccountsToAcceptUniqueNames);

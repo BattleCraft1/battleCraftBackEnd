@@ -29,7 +29,7 @@ public class GameController {
         return gameToResponseDTOMapper.map(gameService.addGame(gameRequestDTO, bindingResult));
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ORGANIZER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping(value = "/edit/game", consumes = MediaType.APPLICATION_JSON_VALUE)
     public GameResponseDTO editTournament(@RequestBody GameRequestDTO gameRequestDTO, BindingResult bindingResult){
         return gameToResponseDTOMapper.map(gameService.editGame(gameRequestDTO, bindingResult));

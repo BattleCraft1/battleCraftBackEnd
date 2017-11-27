@@ -5,9 +5,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.UserAccountRepository;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Game.Game;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.File.UserAvatar.InvalidUserAvatarExtension;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ThisObjectIsBannedException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.Security.YouAreNotOwnerOfThisObjectException;
 import pl.edu.pollub.battleCraft.serviceLayer.services.file.FileService;
 import pl.edu.pollub.battleCraft.serviceLayer.services.image.ImageService;
@@ -69,6 +71,11 @@ public class UserAccountResourcesService {
     public void saveUserAvatar(@NotNull @NotBlank String username,@NotNull @NotBlank MultipartFile file) throws IOException {
         UserAccount user = Optional.ofNullable(userAccountRepository.checkIfUserExist(username))
                 .orElseThrow(() -> new ObjectNotFoundException(UserAccount.class,username));
+
+        if(user instanceof Player){
+            if(((Player) user).isBanned())
+                throw new ThisObjectIsBannedException(Player.class,user.getName());
+        }
 
         authorityRecognizer.checkIfCurrentUserIsOwnerOfAvatar(user);
 

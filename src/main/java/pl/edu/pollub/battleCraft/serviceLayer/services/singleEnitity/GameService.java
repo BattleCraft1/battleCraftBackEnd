@@ -43,14 +43,16 @@ public class GameService {
 
     @Transactional(rollbackFor = {EntityValidationException.class,ObjectNotFoundException.class})
     public Game addGame(GameRequestDTO gameRequestDTO, BindingResult bindingResult) {
-        Organizer mockOrganizerFromSession = organizerRepository.findByName("dept2123");
+        String organizerName = authorityRecognizer.getCurrentUserNameFromContext();
+        Organizer organizer = Optional.ofNullable(organizerRepository.findByName(organizerName))
+                .orElseThrow(() -> new ObjectNotFoundException(Organizer.class,organizerName));
 
         gameValidator.checkIfGameExist(gameRequestDTO,bindingResult);
         gameValidator.validate(gameRequestDTO,bindingResult);
 
         gameValidator.finishValidation(bindingResult);
 
-        Game createdGame = new Game(gameRequestDTO.getName(),mockOrganizerFromSession);
+        Game createdGame = new Game(gameRequestDTO.getName(),organizer);
 
         return this.gameRepository.save(createdGame);
     }
@@ -58,9 +60,10 @@ public class GameService {
     @Transactional(rollbackFor = {EntityValidationException.class,ObjectNotFoundException.class})
     public Game editGame(GameRequestDTO gameRequestDTO, BindingResult bindingResult) {
 
-        Game gameToEdit = gameValidator.getValidatedGameToEdit(gameRequestDTO, bindingResult);
+        Game gameToEdit = Optional.ofNullable(gameRepository.findGameByUniqueName(gameRequestDTO.getName()))
+                .orElseThrow(() -> new ObjectNotFoundException(Game.class,gameRequestDTO.getName()));
 
-        this.checkIfCurrentUserIsCreatorOfGame(gameToEdit);
+        authorityRecognizer.checkIfCurrentUserIsCreatorOfGame(gameToEdit);
 
         gameValidator.checkIfGameToEditExist(gameRequestDTO,bindingResult);
         gameValidator.validate(gameRequestDTO,bindingResult);
@@ -72,30 +75,11 @@ public class GameService {
         if(!gameRequestDTO.getName().equals(gameRequestDTO.getNameChange()))
         gameResourcesService.renameGamesRules(gameRequestDTO.getName(),gameRequestDTO.getNameChange());
 
-        this.checkIfEditedGameNeedReAcceptation(gameToEdit);
-
         return this.gameRepository.save(gameToEdit);
     }
 
     public Game getGame(String gameUniqueName) {
         return Optional.ofNullable(gameRepository.findNotBannedGameByUniqueName(gameUniqueName))
                 .orElseThrow(() -> new ObjectNotFoundException(Game.class,gameUniqueName));
-    }
-
-    private void checkIfCurrentUserIsCreatorOfGame(Game game){
-        String role = authorityRecognizer.getCurrentUserRoleFromContext();
-
-        if(!role.equals("ROLE_ADMIN")){
-            if(!game.getCreator().getName().equals(authorityRecognizer.getCurrentUserNameFromContext()))
-                throw new YouAreNotOwnerOfThisObjectException(Game.class,game.getName());
-        }
-    }
-
-    private void checkIfEditedGameNeedReAcceptation(Game game){
-        String role = authorityRecognizer.getCurrentUserRoleFromContext();
-
-        if(!role.equals("ROLE_ADMIN")){
-            game.setStatus(GameStatus.NEW);
-        }
     }
 }

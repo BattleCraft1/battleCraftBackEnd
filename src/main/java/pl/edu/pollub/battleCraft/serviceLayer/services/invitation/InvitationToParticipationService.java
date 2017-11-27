@@ -45,6 +45,7 @@ public class InvitationToParticipationService {
                 .filter(tournament -> !player.getParticipation().stream()
                         .map(Participation::getParticipatedTournament)
                         .collect(Collectors.toList()).contains(tournament))
+                .filter(tournament -> !tournament.isBanned())
                 .map(tournament -> {
                     InvitationDTO invitationDTO = this.findInvitationByTournamentName(tournament.getName(),invitationDTOS);
                     Participation participation = this.createNewParticipation(player,tournament,tournament.getNoExistingGroupNumber());

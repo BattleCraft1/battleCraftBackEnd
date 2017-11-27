@@ -10,6 +10,7 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.Game.enums.GameStatus;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.GameRepository;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityValidation.EntityValidationException;
+import pl.edu.pollub.battleCraft.serviceLayer.services.security.AuthorityRecognizer;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Game.GameRequestDTO;
 
 import java.util.Optional;
@@ -56,15 +57,5 @@ public class GameValidator implements Validator {
             if (gameExist != null)
                 bindingResult.rejectValue("nameChange", "", "Game with this name already exist.");
         }
-    }
-
-    //TO DO: Eliminate n+1 problem with criteria api
-    public Game getValidatedGameToEdit(GameRequestDTO gameRequestDTO,BindingResult bindingResult){
-        Game gameToEdit = Optional.ofNullable(gameRepository.findGameByUniqueName(gameRequestDTO.getName()))
-                .orElseThrow(() -> new ObjectNotFoundException(Game.class,gameRequestDTO.getName()));
-        if(gameToEdit.isBanned() || (gameToEdit.getStatus()!= GameStatus.ACCEPTED && gameToEdit.getStatus()!=GameStatus.NEW)){
-            bindingResult.rejectValue("nameChange","","This game is not accepted or new");
-        }
-        return gameToEdit;
     }
 }

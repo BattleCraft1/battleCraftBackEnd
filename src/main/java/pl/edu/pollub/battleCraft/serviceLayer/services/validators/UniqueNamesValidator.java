@@ -11,12 +11,28 @@ import java.util.List;
 public class UniqueNamesValidator{
 
     public void validateUniqueNamesElementsToDelete(List<String> validUniqueNames, String... uniqueNamesToValidate){
-        List<String> notValidUniqueNames =
-                this.validateUniqueNamesBeforeOperationOnDatabase(validUniqueNames,uniqueNamesToValidate);
+        List<String> notValidUniqueNames = this.validateUniqueNamesBeforeOperationOnDatabase(validUniqueNames,uniqueNamesToValidate);
 
         if(notValidUniqueNames.size()>0)
             throw new OperationOnPageFailedException(new StringBuilder("Elements: ").append(String.join(", ", notValidUniqueNames))
                             .append(" are not deleted because you are not owner of this elements").toString());
+    }
+
+    public void validateUniqueNamesOfTournamentsToUnlock(List<String> validUniqueNames, String... uniqueNamesToValidate){
+        List<String> notValidUniqueNames = this.validateUniqueNamesBeforeOperationOnDatabase(validUniqueNames,uniqueNamesToValidate);
+
+        if(notValidUniqueNames.size()>0)
+            throw new OperationOnPageFailedException(new StringBuilder("Tournaments: ").append(String.join(", ", notValidUniqueNames))
+                    .append(" are not unlocked because they have not accepted games").toString());
+    }
+
+    public void validateUniqueNamesOfUsersToDelete(List<String> validUniqueNames, String... uniqueNamesToValidate){
+        List<String> notValidUniqueNames =
+                this.validateUniqueNamesBeforeOperationOnDatabase(validUniqueNames,uniqueNamesToValidate);
+
+        if(notValidUniqueNames.size()>0)
+            throw new OperationOnPageFailedException(new StringBuilder("Users: ").append(String.join(", ", notValidUniqueNames))
+                    .append(" are not deleted because you cannot delete users who have tournaments in progress").toString());
     }
 
     public void validateUniqueNamesElementsToAccept(List<String> validUniqueNames, String... uniqueNamesToValidate){

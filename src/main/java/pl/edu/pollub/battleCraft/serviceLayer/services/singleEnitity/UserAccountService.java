@@ -11,6 +11,7 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.P
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.UserAccountRepository;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityValidation.EntityValidationException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ThisObjectIsBannedException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.Security.YouAreNotOwnerOfThisObjectException;
 import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationToOrganizationService;
 import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationToParticipationService;
@@ -56,9 +57,10 @@ public class UserAccountService {
 
     @Transactional(rollbackFor = {EntityValidationException.class, ObjectNotFoundException.class})
     public UserAccount editUserAccount(UserAccountWithInvitationsRequestDTO userAccountRequestDTO, BindingResult bindingResult){
-        UserAccount userAccountToEdit = userAccountValidator.getValidatedUserAccountToEdit(userAccountRequestDTO, bindingResult);
+        UserAccount userAccountToEdit = Optional.ofNullable(userAccountRepository.findUserAccountByUniqueName(userAccountRequestDTO.getName()))
+                .orElseThrow(() -> new ObjectNotFoundException(UserAccount.class,userAccountRequestDTO.getName()));
 
-        this.checkIfCurrentUserIsOwnerOfAccount(userAccountToEdit);
+        authorityRecognizer.checkIfCurrentUserIsOwnerOfAccount(userAccountToEdit);
 
         userAccountValidator.checkIfUserWithThisNameOrEmailAlreadyExist(userAccountRequestDTO,bindingResult);
         userAccountValidator.validate(userAccountRequestDTO, bindingResult);
@@ -101,15 +103,5 @@ public class UserAccountService {
 
         return Optional.ofNullable(userAccountRepository.findUserAccountByUniqueName(userUniqueName))
                 .orElseThrow(() -> new ObjectNotFoundException(UserAccount.class,userUniqueName));
-    }
-
-
-    private void checkIfCurrentUserIsOwnerOfAccount(UserAccount user){
-        String role = authorityRecognizer.getCurrentUserRoleFromContext();
-
-        if(!role.equals("ROLE_ADMIN")){
-            if(!user.getName().equals(authorityRecognizer.getCurrentUserNameFromContext()))
-                throw new YouAreNotOwnerOfThisObjectException("Account",user.getName());
-        }
     }
 }

@@ -91,7 +91,7 @@ public interface TournamentRepository extends JpaRepository<Tournament, Long> {
     @Query("SELECT t FROM Tournament t Where t.name in ?1 and (t.status='ACCEPTED' or t.status='NEW') and t.banned = false")
     Tournament findTournamentByUniqueName(String tournamentUniqueNames);
 
-    @Query("SELECT t FROM Tournament t Where t.name in ?1 and (t.status='ACCEPTED' or t.status='NEW') and t.banned = false")
+    @Query("SELECT t FROM Tournament t Where t.name in ?1 and (t.status='ACCEPTED' or t.status='NEW')")
     List<Tournament> findAcceptedOrNewTournamentsByUniqueNames(List<String> tournamentUniqueNames);
 
     @Query("SELECT t FROM Tournament t Where (t.status='ACCEPTED' or t.status='NEW') and t.banned = false")
@@ -103,6 +103,9 @@ public interface TournamentRepository extends JpaRepository<Tournament, Long> {
     @Query("SELECT t FROM Tournament t Where t.status='IN_PROGRESS' and t.banned = false")
     List<Tournament> findAllStartedTournament();
 
+    @Query("SELECT t FROM Tournament t Where t.banned = true ")
+    List<Tournament> findBannedTournamentsByUniqueNames(String... uniqueNames);
+
     @Query("SELECT t FROM Tournament t Where t.name = ?1 and (t.status='IN_PROGRESS' or t.status='FINISHED') and t.banned = false")
     Tournament findNotNewTournamentByUniqueName(String tournamentUniqueNames);
 
@@ -111,4 +114,5 @@ public interface TournamentRepository extends JpaRepository<Tournament, Long> {
     @Modifying
     @Query("UPDATE Tournament t SET t.banned = true WHERE (SELECT g.name FROM Game g WHERE t.game=g.id) IN ?1")
     void banTournamentsRelatedWithGame(String... bannedGamesList);
+
 }

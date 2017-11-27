@@ -8,7 +8,6 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Game.Game;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.Tournament;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentStatus;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.Organizer;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.GameRepository;
@@ -17,6 +16,7 @@ import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.PlayerRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.TournamentRepository;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityValidation.EntityValidationException;
+import pl.edu.pollub.battleCraft.serviceLayer.services.security.AuthorityRecognizer;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Tournament.TournamentRequestDTO;
 
 import java.util.*;
@@ -35,6 +35,7 @@ public class TournamentValidator implements Validator {
     private final PlayerRepository playerRepository;
 
     private final GameRepository gameRepository;
+
 
     public TournamentValidator(TournamentRepository tournamentRepository, AddressValidator addressValidator, OrganizerRepository organizerRepository, PlayerRepository playerRepository, GameRepository gameRepository) {
         this.tournamentRepository = tournamentRepository;
@@ -90,8 +91,7 @@ public class TournamentValidator implements Validator {
         int maxPlayers = (2 * tablesCount);
         int maxToursNumber = maxPlayers - 1;
         if(toursCount>maxToursNumber)
-            errors.rejectValue("toursCount","",
-                    new StringBuilder("Max tours number in this tournament is: ").append(maxToursNumber).toString());
+            errors.rejectValue("toursCount","", new StringBuilder("Max tours number in this tournament is: ").append(maxToursNumber).toString());
     }
 
     private void validateStartDate(Date startDate){
@@ -125,16 +125,6 @@ public class TournamentValidator implements Validator {
             if (tournamentExist != null)
                 bindingResult.rejectValue("nameChange", "", "Tournament with this name already exist.");
         }
-    }
-
-    //TO DO: Eliminate n+1 problem with criteria api
-    public Tournament getValidatedTournamentToEdit(TournamentRequestDTO tournamentWebDTO,BindingResult bindingResult){
-        Tournament tournamentToEdit = Optional.ofNullable(tournamentRepository.findByName(tournamentWebDTO.getName()))
-                .orElseThrow(() -> new ObjectNotFoundException(Tournament.class,tournamentWebDTO.getName()));//TO DO: if player is administrator
-        if(tournamentToEdit.isBanned() || (tournamentToEdit.getStatus()!= TournamentStatus.ACCEPTED && tournamentToEdit.getStatus()!=TournamentStatus.NEW)){
-            bindingResult.rejectValue("nameChange","","This tournament is not accepted or new");
-        }
-        return tournamentToEdit;
     }
 
     public Game getValidatedGame(TournamentRequestDTO tournamentWebDTO,BindingResult bindingResult){

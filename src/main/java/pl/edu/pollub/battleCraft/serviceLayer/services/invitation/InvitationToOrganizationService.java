@@ -37,6 +37,7 @@ public class InvitationToOrganizationService {
                 .filter(tournament -> !organizer.getOrganizations().stream()
                         .map(Organization::getOrganizedTournament)
                         .collect(Collectors.toList()).contains(tournament))
+                .filter(tournament -> !tournament.isBanned())
                 .map(tournament -> {
                     boolean accepted = this.checkIfInvitationIsAccepted(tournament.getName(), invitationDTOS);
                     Organization organization = new Organization(organizer, tournament, accepted);

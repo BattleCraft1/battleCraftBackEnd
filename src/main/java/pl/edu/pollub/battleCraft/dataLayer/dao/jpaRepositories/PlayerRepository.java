@@ -20,18 +20,22 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
     @Query("UPDATE Player p SET p.banned = true WHERE p.name in ?1")
     void banUserAccountsByUniqueNames(String... usersToBanUniqueNames);
 
-    @Query("SELECT p.name FROM Player p WHERE  p.status = 'ACCEPTED' and p.name in ?1")
-    List<String> selectUsersAccountsToRejectUniqueNames(String... usersToCancelAcceptUniqueNames);
+    @Query("SELECT p FROM Player p WHERE  p.status = 'ACCEPTED' and p.name in ?1")
+    List<Player> selectUsersAccountsToRejectByUniqueNames(String... usersToCancelAcceptUniqueNames);
 
     @Modifying
     @Query("UPDATE Player p SET p.status = 'NEW' WHERE p.name in ?1")
     void cancelAcceptationOfUsersAccountsByUniqueNames(String... usersToCancelAcceptUniqueNames);
 
-    @Query("SELECT p.name FROM Player p WHERE p.status = 'ACCEPTED' AND p.name in ?1 and p.banned = false")
-    List<String> selectUsersAccountsToAdvanceUniqueNames(String... playersNames);
+    @Query("SELECT p FROM Player p WHERE p.status = 'ACCEPTED' AND p.name in ?1 and p.banned = false")
+    List<Player> selectUsersAccountsToAdvanceByUniqueNames(String... playersNames);
 
     @Query("SELECT p FROM Player p WHERE p.name in ?1")
     List<Player> findPlayersByUniqueName(String... playersNames);
+
+
+    @Query("SELECT p FROM Player p WHERE p.banned = false AND p.name in ?1")
+    List<Player> findNotBannedPlayersByUniqueName(String... playersNames);
 
     @Query("SELECT p FROM Player p WHERE p.name in ?1")
     List<Player> findPlayersByUniqueName(List<String> playersNames);

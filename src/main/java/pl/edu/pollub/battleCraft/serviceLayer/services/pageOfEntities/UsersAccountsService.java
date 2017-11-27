@@ -9,11 +9,18 @@ import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.PlayerRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.UserAccountRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.UsersAccountsRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.search.criteria.SearchCriteria;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentStatus;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.Organizer;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.relationships.Organization;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation;
 import pl.edu.pollub.battleCraft.serviceLayer.services.security.AuthorityRecognizer;
 import pl.edu.pollub.battleCraft.serviceLayer.services.validators.UniqueNamesValidator;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UsersAccountsService {
@@ -41,7 +48,8 @@ public class UsersAccountsService {
     }
 
     public void banUsersAccounts(String... usersToBanUniqueNames) {
-        userAccountsRepository.banUsersAccounts(usersToBanUniqueNames);
+        List<Player> usersToBan = playerRepository.findNotBannedPlayersByUniqueName(usersToBanUniqueNames);
+        userAccountsRepository.banUsersAccounts(usersToBan);
     }
 
     public void unlockUsersAccounts(String... usersToUnlockUniqueNames) {
@@ -49,42 +57,68 @@ public class UsersAccountsService {
     }
 
     public void deleteUsersAccounts(String... usersToDeleteUniqueNames){
-        List<String> validUniqueNames = userAccountRepository.selectUsersAccountsToDeleteUniqueNames(usersToDeleteUniqueNames);
+        List<UserAccount> validObjects = userAccountRepository.selectUsersAccountsToDeleteByUniqueNames(usersToDeleteUniqueNames);
 
-        uniqueNamesValidator.validateUniqueNamesElementsToDelete(validUniqueNames,usersToDeleteUniqueNames);
+        List<String> uniqueNamesOfUsersWhoHaveTournamentsInProgress = new ArrayList<>();
+
+        validObjects.forEach(
+                userAccount -> {
+                    if(userAccount instanceof Player){
+                        Player player = (Player) userAccount;
+                        player.getParticipation().stream().map(Participation::getParticipatedTournament)
+                                .filter(tournament -> tournament.getStatus() == TournamentStatus.IN_PROGRESS)
+                                .findAny().ifPresent(tournament -> uniqueNamesOfUsersWhoHaveTournamentsInProgress.add(player.getName()));
+                    }
+
+                    if(userAccount instanceof Organizer){
+                        Organizer organizer = (Organizer) userAccount;
+                        organizer.getOrganizations().stream().map(Organization::getOrganizedTournament)
+                                .filter(tournament -> tournament.getStatus() == TournamentStatus.IN_PROGRESS)
+                                .findAny().ifPresent(tournament -> uniqueNamesOfUsersWhoHaveTournamentsInProgress.add(organizer.getName()));
+                    }
+                }
+        );
+
+        List<String> validUniqueNames = validObjects.stream().map(UserAccount::getName).collect(Collectors.toList());
+        validUniqueNames.removeAll(uniqueNamesOfUsersWhoHaveTournamentsInProgress);
+        uniqueNamesValidator.validateUniqueNamesOfUsersToDelete(validUniqueNames,usersToDeleteUniqueNames);
 
         userAccountsRepository.deleteUsersAccounts(usersToDeleteUniqueNames);
     }
 
     public void acceptUsersAccounts(String... usersToAcceptUniqueNames) {
-        List<String> validUniqueNames = userAccountRepository.selectUsersAccountsToAcceptUniqueNames(usersToAcceptUniqueNames);
+        List<UserAccount> validObjects = userAccountRepository.selectUsersAccountsToAcceptByUniqueNames(usersToAcceptUniqueNames);
 
+        List<String> validUniqueNames = validObjects.stream().map(UserAccount::getName).collect(Collectors.toList());
         uniqueNamesValidator.validateUniqueNamesElementsToAccept(validUniqueNames,usersToAcceptUniqueNames);
 
-        userAccountsRepository.acceptUsersAccounts(usersToAcceptUniqueNames);
+        userAccountsRepository.acceptUsersAccounts(validObjects);
     }
 
     public void cancelAcceptUsersAccounts(String... usersToCancelAcceptUniqueNames) {
-        List<String> validUniqueNames = playerRepository.selectUsersAccountsToRejectUniqueNames(usersToCancelAcceptUniqueNames);
+        List<Player> validObjects = playerRepository.selectUsersAccountsToRejectByUniqueNames(usersToCancelAcceptUniqueNames);
 
+        List<String> validUniqueNames = validObjects.stream().map(UserAccount::getName).collect(Collectors.toList());
         uniqueNamesValidator.validateUniqueNamesElementsToReject(validUniqueNames,usersToCancelAcceptUniqueNames);
 
-        userAccountsRepository.cancelAcceptUsersAccounts(usersToCancelAcceptUniqueNames);
+        userAccountsRepository.cancelAcceptUsersAccounts(validObjects);
     }
 
     public void advancePlayersToOrganizer(String... playersToAdvanceToOrganizersUniqueNames) {
-        List<String> validUniqueNames = playerRepository.selectUsersAccountsToAdvanceUniqueNames(playersToAdvanceToOrganizersUniqueNames);
+        List<Player> validObjects = playerRepository.selectUsersAccountsToAdvanceByUniqueNames(playersToAdvanceToOrganizersUniqueNames);
 
+        List<String> validUniqueNames = validObjects.stream().map(UserAccount::getName).collect(Collectors.toList());
         uniqueNamesValidator.validateUniqueNamesElementsToAdvance(validUniqueNames,playersToAdvanceToOrganizersUniqueNames);
 
-        userAccountsRepository.advancePlayersToOrganizer(playersToAdvanceToOrganizersUniqueNames);
+        userAccountsRepository.advancePlayersToOrganizer(validObjects);
     }
 
     public void degradeOrganizerToPlayers(String... organizerToDegradeToPlayersUniqueNames) {
-        List<String> validUniqueNames = organizerRepository.selectUsersAccountsToDegadeUniqueNames(organizerToDegradeToPlayersUniqueNames);
+        List<Organizer> validObjects = organizerRepository.selectUsersAccountsToDegradeByUniqueNames(organizerToDegradeToPlayersUniqueNames);
 
+        List<String> validUniqueNames = validObjects.stream().map(UserAccount::getName).collect(Collectors.toList());
         uniqueNamesValidator.validateUniqueNamesElementsToDegrade(validUniqueNames,organizerToDegradeToPlayersUniqueNames);
 
-        userAccountsRepository.degradeOrganizerToPlayers(organizerToDegradeToPlayersUniqueNames);
+        userAccountsRepository.degradeOrganizerToPlayers(validObjects);
     }
 }

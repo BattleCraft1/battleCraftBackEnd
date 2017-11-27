@@ -33,7 +33,7 @@
         'bodySub' : 'margin-top: 25px; padding-top: 25px; border-top: 1px solid #EDEFF2;',
         'anchor' : 'color: #FFFFFF;',
         'header1' : 'margin-top: 0; font-size: 19px; font-weight: bold; text-align: center; color: #FFFFFF',
-        'paragraphX' : 'margin-top: 0; font-size: 16px; color: #FFFFFF; line-height: 1.5em;' ,
+        'paragraphX' : 'margin-top: 0; font-size: 16px; color: #FFFFFF; line-height: 1.5em; text-decoration: none;' ,
         'paragraphSub' : 'margin-top: 0; color: #FFFFFF; font-size: 12px; line-height: 1.5em;',
         'paragraphCenter' : 'text-align: center;',
         'button' : 'display: block; display: inline-block; width: 200px; min-height: 20px; padding: 10px; text-align:center;
@@ -67,55 +67,36 @@
                                     <!-- Greeting -->
                                     <h1 style="${style.header1}">
 
-                                        Welcome to BattleCraft!
+                                        BattleCraft report
 
                                     </h1>
 
-                                        <!-- Intro -->
+                                    <!-- Intro -->
 
                                     <p style="${style.paragraphX}">
-                                        This is the confirmation e-mail.
+                                        User: $reportUserName ask for ban for $objectType with name $objectName because:
                                     </p>
+
                                     <p style="${style.paragraphX}">
-                                        Thank you for signing up to our service.
+                                        $reportMessage
                                     </p>
+
                                     <p style="${style.paragraphX}">
-                                        You will need to confirm your account. To do so, please press the button below and wait for the next mail.
+                                        You should take a look for this element of system.
                                     </p>
 
-
-                                        <!-- Action Button -->
-                                    <table style="${style.bodyAction}" align="center" width="100%" cellpadding="0" cellspacing="0">
-                                        <tr>
-                                            <td align="center">
-                                                <a href="${confirmationUrl}"
-                                                   style="${fontFamily} ${style.button}"
-                                                   class="button"
-                                                   target="_blank">
-                                                Confirm
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    </table>
-
-                                        <!-- Salutation -->
+                                    <!-- Salutation -->
                                     <p style="${style.paragraphX}">
                                         Regards,<br>BattleCraft
                                     </p>
 
-                                        <!-- Sub Copy -->
+                                    <!-- Sub Copy -->
                                     <table style="${style.bodySub}">
                                         <tr>
                                             <td style="${fontFamily}">
                                                 <p style="${style.paragraphSub}">
-                                                    If you are having trouble clicking the button,
-                                                    copy and paste the URL below into your web browser:
-                                                </p>
-
-                                                <p style="${style.paragraphSub}">
-                                                    <a style="${style.anchor}" href="${confirmationUrl}" target="_blank">
-                                                        ${confirmationUrl}
-                                                    </a>
+                                                    If you have any questions, please send mail on address:
+                                                    battlecraftsystem@gmail.com
                                                 </p>
                                             </td>
                                         </tr>
