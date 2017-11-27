@@ -5,10 +5,12 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
+import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.AdminRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.PlayerRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.UserAccountRepository;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.mappers.RegistrationDTOToUserAccountMapper;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Admin.Administrator;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.mappers.UserAccountToPlayerMapper;
 import pl.edu.pollub.battleCraft.dataLayer.domain.VerificationToken.VerificationToken;
@@ -29,6 +31,8 @@ public class RegistrationService {
 
     private final UserAccountRepository userAccountRepository;
 
+    private final AdminRepository adminRepository;
+
     private final PlayerRepository playerRepository;
 
     private final ApplicationEventPublisher eventPublisher;
@@ -42,9 +46,10 @@ public class RegistrationService {
     private final UserAccountToPlayerMapper userAccountToPlayerMapper;
 
     @Autowired
-    public RegistrationService(RegistrationValidator registrationValidator, UserAccountRepository userAccountRepository, PlayerRepository playerRepository, ApplicationEventPublisher eventPublisher, RegistrationDTOToUserAccountMapper registrationDTOToUserAccountMapper, VerificationTokenUtil verificationTokenUtil, MailUtil mailUtil, UserAccountToPlayerMapper userAccountToPlayerMapper) {
+    public RegistrationService(RegistrationValidator registrationValidator, UserAccountRepository userAccountRepository, AdminRepository adminRepository, PlayerRepository playerRepository, ApplicationEventPublisher eventPublisher, RegistrationDTOToUserAccountMapper registrationDTOToUserAccountMapper, VerificationTokenUtil verificationTokenUtil, MailUtil mailUtil, UserAccountToPlayerMapper userAccountToPlayerMapper) {
         this.registrationValidator = registrationValidator;
         this.userAccountRepository = userAccountRepository;
+        this.adminRepository = adminRepository;
         this.playerRepository = playerRepository;
         this.eventPublisher = eventPublisher;
         this.registrationDTOToUserAccountMapper = registrationDTOToUserAccountMapper;
@@ -62,8 +67,17 @@ public class RegistrationService {
     }
 
     @Transactional
+    public void createAdminAccount(RegistrationDTO registrationDTO, BindingResult bindingResult){
+        registrationValidator.validate(registrationDTO, bindingResult);
+        registrationValidator.checkIfUserWithThisNameAlreadyExist(registrationDTO,bindingResult);
+        registrationValidator.finishValidation(bindingResult);
+        Administrator admin = registrationDTOToUserAccountMapper.mapToAdmin(registrationDTO);
+        adminRepository.save(admin);
+    }
+
+    @Transactional
     void saveNewUserAccount(RegistrationDTO registrationDTO){
-        UserAccount userAccount = registrationDTOToUserAccountMapper.map(registrationDTO);
+        UserAccount userAccount = registrationDTOToUserAccountMapper.mapToUser(registrationDTO);
         userAccountRepository.save(userAccount);
         eventPublisher.publishEvent(new OnRegistrationCompleteEvent(userAccount));
     }

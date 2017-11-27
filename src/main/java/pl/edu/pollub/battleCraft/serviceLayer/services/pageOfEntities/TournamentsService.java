@@ -45,6 +45,16 @@ public class TournamentsService {
         return tournamentsRepository.getPageOfTournaments(searchCriteria, requestedPage);
     }
 
+    public Page getPageOfTournamentsParticipatedByUser(Pageable requestedPage, List<SearchCriteria> searchCriteria) {
+        authorityRecognizer.modifySearchCriteriaForCurrentPlayer(searchCriteria);
+        return tournamentsRepository.getPageOfTournaments(searchCriteria, requestedPage);
+    }
+
+    public Page getPageOfTournamentsOrganizedByUser(Pageable requestedPage, List<SearchCriteria> searchCriteria) {
+        authorityRecognizer.modifySearchCriteriaForCurrentOrganizer(searchCriteria);
+        return tournamentsRepository.getPageOfTournaments(searchCriteria, requestedPage);
+    }
+
     public void banTournaments(String... tournamentsToBanUniqueNames) {
         tournamentsRepository.banTournaments(tournamentsToBanUniqueNames);
     }

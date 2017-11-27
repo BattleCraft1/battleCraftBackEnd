@@ -87,6 +87,30 @@ public class AuthorityRecognizer {
         }
     }
 
+    public void modifySearchCriteriaForCurrentPlayer(List<SearchCriteria> searchCriteria){
+        String username = this.getCurrentUserNameFromContext();
+
+        searchCriteria.add(
+                new SearchCriteria(
+                        Collections.singletonList("participated by"),
+                        ":",
+                        Collections.singletonList(username)
+                )
+        );
+    }
+
+    public void modifySearchCriteriaForCurrentOrganizer(List<SearchCriteria> searchCriteria){
+        String username = this.getCurrentUserNameFromContext();
+
+        searchCriteria.add(
+                new SearchCriteria(
+                        Collections.singletonList("organized by"),
+                        ":",
+                        Collections.singletonList(username)
+                )
+        );
+    }
+
     public List<String> getGamesNamesForCurrentUser(){
         String role = this.getCurrentUserRoleFromContext();
         if(!role.equals("ROLE_ADMIN")){

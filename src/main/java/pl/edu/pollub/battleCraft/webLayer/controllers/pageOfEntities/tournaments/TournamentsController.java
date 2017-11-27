@@ -1,4 +1,4 @@
-package pl.edu.pollub.battleCraft.webLayer.controllers.pageOfEntities;
+package pl.edu.pollub.battleCraft.webLayer.controllers.pageOfEntities.tournaments;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

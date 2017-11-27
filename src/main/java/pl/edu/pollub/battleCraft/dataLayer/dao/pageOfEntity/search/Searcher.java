@@ -15,6 +15,8 @@ import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.search.field.Join;
 import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.search.field.Field;
 import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.search.criteria.SearchCriteria;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.Tournament;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.Organizer;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.PageOfEntities.AnyEntityNotFoundException;
 
 import javax.persistence.EntityManager;
@@ -25,7 +27,6 @@ import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -91,8 +92,12 @@ public class Searcher{
                 whereConditions.add(Restrictions.le(fieldName, fieldValue.get(0)));
             else if (operationOnField.equalsIgnoreCase("not in"))
                 whereConditions.add(Restrictions.not(Restrictions.in(fieldName, fieldValue)));
+            else if (operationOnField.equalsIgnoreCase("participated by"))
+                whereConditions.add(Subqueries.in("name", this.tournamentsNamesParticipatedByUser(fieldValue.get(0))));
+            else if (operationOnField.equalsIgnoreCase("organized by"))
+                whereConditions.add(Subqueries.in("name", this.tournamentsNamesOrganizedByUser(fieldValue.get(0))));
             else if (operationOnField.equalsIgnoreCase("not participate"))
-                whereConditions.add(Subqueries.propertyNotIn("name", this.notParticipateSubQuery(fieldValue)));
+                whereConditions.add(Subqueries.propertyNotIn("name", this.userNamesWhoNotParticipateToThisTournamentSubQuery(fieldValue.get(0))));
             else
                 whereConditions.add(Restrictions.eq(fieldName, fieldValue.get(0)));
         });
@@ -138,11 +143,29 @@ public class Searcher{
             return new StringBuilder(transactionId).append(".").append(fieldName).toString();
     }
 
-    private DetachedCriteria notParticipateSubQuery(List<Object> fieldValue){
+    private DetachedCriteria tournamentsNamesOrganizedByUser(Object fieldValue){
+        return DetachedCriteria.forClass(Organizer.class)
+                .createAlias("organizations","organizations")
+                .createAlias("organizations.organizedTournament","organizedTournament")
+                .add(Restrictions.like("name", fieldValue))
+                .setProjection(Projections.property("organizedTournament.name"))
+                .setProjection(Projections.groupProperty("organizedTournament.name"));
+    }
+
+    private DetachedCriteria tournamentsNamesParticipatedByUser(Object fieldValue){
+        return DetachedCriteria.forClass(Player.class)
+                .createAlias("participation","participation")
+                .createAlias("participation.participatedTournament","participatedTournament")
+                .add(Restrictions.like("name", fieldValue))
+                .setProjection(Projections.property("participatedTournament.name"))
+                .setProjection(Projections.groupProperty("participatedTournament.name"));
+    }
+
+    private DetachedCriteria userNamesWhoNotParticipateToThisTournamentSubQuery(Object fieldValue){
         return DetachedCriteria.forClass(Tournament.class)
                 .createAlias("participation","participation")
                 .createAlias("participation.player","player")
-                .add(Restrictions.like("name", fieldValue.get(0)))
+                .add(Restrictions.like("name", fieldValue))
                 .setProjection(Projections.property("player.name"))
                 .setProjection(Projections.groupProperty("player.name"));
     }
