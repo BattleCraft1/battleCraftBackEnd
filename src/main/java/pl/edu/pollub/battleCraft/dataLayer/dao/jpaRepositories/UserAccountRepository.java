@@ -31,8 +31,7 @@ public interface UserAccountRepository extends JpaRepository<UserAccount, Long> 
 
     @Query("SELECT u.name FROM UserAccount u WHERE u.name in" +
             "(SELECT name FROM  UserAccount u1 " +
-            "WHERE ((u1.banned = true AND (u1.status = 'ACCEPTED' OR u1.status = 'ORGANIZER'))" +
-            "OR u1.status = 'NEW') AND u.name in ?1)")
+            "WHERE u.name in ?1)")
     List<String> selectUsersAccountsToDeleteUniqueNames(String... usersAccountsToAcceptUniqueNames);
 
     @Query("SELECT u.id FROM UserAccount u WHERE u.name in ?1")
@@ -44,6 +43,6 @@ public interface UserAccountRepository extends JpaRepository<UserAccount, Long> 
     @Query("SELECT u FROM UserAccount u WHERE u.name = ?1 OR u.email = ?2")
     UserAccount findUserAccountByUniqueNameOrEmail(String userUniqueName, String email);
 
-    @Query("SELECT u.name FROM UserAccount u WHERE u.name = ?1")
-    String checkIfUserExist(String username);
+    @Query("SELECT u FROM UserAccount u WHERE u.name = ?1")
+    UserAccount checkIfUserExist(String username);
 }

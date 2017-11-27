@@ -15,7 +15,10 @@ public interface GameRepository extends JpaRepository<Game, Long> {
     @Query("SELECT DISTINCT g.name from Game g WHERE g.banned = false AND g.status = 'ACCEPTED'")
     List<String> getAllAcceptedGamesNames();
 
-    @Query("SELECT g.name FROM Game g WHERE g.banned = true AND g.name in ?1")
+    @Query("SELECT DISTINCT g.name from Game g")
+    List<String> getAllGamesNames();
+
+    @Query("SELECT g.name FROM Game g WHERE g.name in ?1")
     List<String> selectGamesToDeleteUniqueNames(String... gamesToDeleteUniqueNames);
 
     @Modifying
@@ -53,6 +56,6 @@ public interface GameRepository extends JpaRepository<Game, Long> {
     @Query("SELECT g from Game g WHERE g.name = ?1")
     Game findGameByUniqueName(String gameName);
 
-    @Query("SELECT g.name from Game g WHERE g.name = ?1 and g.banned = false")
-    String checkIfGameExist(String gameName);
+    @Query("SELECT g from Game g WHERE g.name = ?1 and g.banned = false")
+    Game checkIfGameExist(String gameName);
 }

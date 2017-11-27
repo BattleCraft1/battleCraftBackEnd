@@ -52,10 +52,10 @@ public class TournamentProgressController {
         }
         if(tournament.getStatus()==TournamentStatus.FINISHED || tournament.getStatus()==TournamentStatus.IN_PROGRESS){
             if(tournament.getPlayersOnTableCount() == 2){
-                return duelTournamentProgressDTOMapper.map(duelTournamentManagementService.startTournament(tournament));
+                return duelTournamentProgressDTOMapper.map(duelTournamentManagementService.castToDuelTournament(tournament));
             }
             else{
-                return groupTournamentProgressDTOMapper.map(groupTournamentManagementService.startTournament(tournament));
+                return groupTournamentProgressDTOMapper.map(groupTournamentManagementService.castToGroupTournament(tournament));
             }
         }
         if(tournament.getStatus() == TournamentStatus.ACCEPTED){

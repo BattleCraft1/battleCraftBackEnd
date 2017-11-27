@@ -19,6 +19,6 @@ public class GameEnumsController {
 
     @GetMapping("/get/allGames/names")
     public List<String> getAllGamesClassesNames() {
-        return gameEnumsService.getAllAcceptedGamesNames();
+        return gameEnumsService.getAllGamesNames();
     }
 }

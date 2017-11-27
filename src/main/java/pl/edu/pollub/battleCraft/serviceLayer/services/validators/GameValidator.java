@@ -58,12 +58,12 @@ public class GameValidator implements Validator {
         }
     }
 
-
+    //TO DO: Eliminate n+1 problem with criteria api
     public Game getValidatedGameToEdit(GameRequestDTO gameRequestDTO,BindingResult bindingResult){
         Game gameToEdit = Optional.ofNullable(gameRepository.findGameByUniqueName(gameRequestDTO.getName()))
                 .orElseThrow(() -> new ObjectNotFoundException(Game.class,gameRequestDTO.getName()));
         if(gameToEdit.isBanned() || (gameToEdit.getStatus()!= GameStatus.ACCEPTED && gameToEdit.getStatus()!=GameStatus.NEW)){
-            bindingResult.rejectValue("nameChange","","This game is not accepted");
+            bindingResult.rejectValue("nameChange","","This game is not accepted or new");
         }
         return gameToEdit;
     }

@@ -8,9 +8,12 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.Game.Game;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.Organizer;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.GameRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.OrganizerRepository;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Game.enums.GameStatus;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityValidation.EntityValidationException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.Security.YouAreNotOwnerOfThisObjectException;
 import pl.edu.pollub.battleCraft.serviceLayer.services.resources.GameResourcesService;
+import pl.edu.pollub.battleCraft.serviceLayer.services.security.AuthorityRecognizer;
 import pl.edu.pollub.battleCraft.serviceLayer.services.validators.GameValidator;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Game.GameRequestDTO;
 
@@ -27,12 +30,15 @@ public class GameService {
 
     private final GameResourcesService gameResourcesService;
 
+    private final AuthorityRecognizer authorityRecognizer;
+
     @Autowired
-    public GameService(GameRepository gameRepository, GameValidator gameValidator, OrganizerRepository organizerRepository, GameResourcesService gameResourcesService) {
+    public GameService(GameRepository gameRepository, GameValidator gameValidator, OrganizerRepository organizerRepository, GameResourcesService gameResourcesService, AuthorityRecognizer authorityRecognizer) {
         this.gameRepository = gameRepository;
         this.gameValidator = gameValidator;
         this.organizerRepository = organizerRepository;
         this.gameResourcesService = gameResourcesService;
+        this.authorityRecognizer = authorityRecognizer;
     }
 
     @Transactional(rollbackFor = {EntityValidationException.class,ObjectNotFoundException.class})
@@ -52,9 +58,9 @@ public class GameService {
     @Transactional(rollbackFor = {EntityValidationException.class,ObjectNotFoundException.class})
     public Game editGame(GameRequestDTO gameRequestDTO, BindingResult bindingResult) {
 
-        //TO DO: check if this organizer is creator of this game
-
         Game gameToEdit = gameValidator.getValidatedGameToEdit(gameRequestDTO, bindingResult);
+
+        this.checkIfCurrentUserIsCreatorOfGame(gameToEdit);
 
         gameValidator.checkIfGameToEditExist(gameRequestDTO,bindingResult);
         gameValidator.validate(gameRequestDTO,bindingResult);
@@ -66,11 +72,30 @@ public class GameService {
         if(!gameRequestDTO.getName().equals(gameRequestDTO.getNameChange()))
         gameResourcesService.renameGamesRules(gameRequestDTO.getName(),gameRequestDTO.getNameChange());
 
+        this.checkIfEditedGameNeedReAcceptation(gameToEdit);
+
         return this.gameRepository.save(gameToEdit);
     }
 
     public Game getGame(String gameUniqueName) {
         return Optional.ofNullable(gameRepository.findNotBannedGameByUniqueName(gameUniqueName))
                 .orElseThrow(() -> new ObjectNotFoundException(Game.class,gameUniqueName));
+    }
+
+    private void checkIfCurrentUserIsCreatorOfGame(Game game){
+        String role = authorityRecognizer.getCurrentUserRoleFromContext();
+
+        if(!role.equals("ROLE_ADMIN")){
+            if(!game.getCreator().getName().equals(authorityRecognizer.getCurrentUserNameFromContext()))
+                throw new YouAreNotOwnerOfThisObjectException(Game.class,game.getName());
+        }
+    }
+
+    private void checkIfEditedGameNeedReAcceptation(Game game){
+        String role = authorityRecognizer.getCurrentUserRoleFromContext();
+
+        if(!role.equals("ROLE_ADMIN")){
+            game.setStatus(GameStatus.NEW);
+        }
     }
 }

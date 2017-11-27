@@ -30,20 +30,6 @@ public class RankingRepository{
 
     @Transactional(rollbackFor = {AnyEntityNotFoundException.class,PageNotFoundException.class})
     public Page getPageOfRanking(List<SearchCriteria> searchCriteria, Pageable requestedPage) {
-        searchCriteria.add(
-                new SearchCriteria(
-                        Arrays.asList("tour", "tournament", "banned"),
-                        ":",
-                        Collections.singletonList(false)
-                )
-        );
-        searchCriteria.add(
-                new SearchCriteria(
-                        Arrays.asList("tour", "tournament", "status"),
-                        ":",
-                        Collections.singletonList("FINISHED")
-                )
-        );
         return searcher
                 .select(
                         new Field("player.name", "name"),

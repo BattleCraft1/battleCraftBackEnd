@@ -3,6 +3,7 @@ package pl.edu.pollub.battleCraft.webLayer.controllers.pageOfEntities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.edu.pollub.battleCraft.serviceLayer.services.pageOfEntities.GamesService;
 import pl.edu.pollub.battleCraft.serviceLayer.services.resources.GameResourcesService;
@@ -30,6 +31,7 @@ public class GamesController {
                 getPageObjectsDTO.getSearchCriteria());
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping(value = "/ban/games", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Page banTournaments(@RequestBody GetPageAndModifyDataDTO getPageAndModifyDataDTO) {
         gameService.banGames(getPageAndModifyDataDTO.getNamesOfObjectsToModify());
@@ -38,6 +40,7 @@ public class GamesController {
                 getPageObjectsDTO.getSearchCriteria());
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping(value = "/unlock/games", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Page unlockTournaments(@RequestBody GetPageAndModifyDataDTO getPageAndModifyDataDTO) {
         gameService.unlockGames(getPageAndModifyDataDTO.getNamesOfObjectsToModify());
@@ -46,6 +49,7 @@ public class GamesController {
                 getPageObjectsDTO.getSearchCriteria());
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping(value = "/delete/games", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Page deleteTournaments(@RequestBody GetPageAndModifyDataDTO getPageAndModifyDataDTO) {
         gameService.deleteGames(getPageAndModifyDataDTO.getNamesOfObjectsToModify());
@@ -55,6 +59,7 @@ public class GamesController {
                 getPageObjectsDTO.getSearchCriteria());
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping(value = "/accept/games", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Page acceptTournaments(@RequestBody GetPageAndModifyDataDTO getPageAndModifyDataDTO) {
         gameService.acceptGames(getPageAndModifyDataDTO.getNamesOfObjectsToModify());
@@ -63,6 +68,7 @@ public class GamesController {
                 getPageObjectsDTO.getSearchCriteria());
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping(value = "/cancel/accept/games", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Page cancelAcceptTournaments(@RequestBody GetPageAndModifyDataDTO getPageAndModifyDataDTO) {
         gameService.cancelAcceptGames(getPageAndModifyDataDTO.getNamesOfObjectsToModify());

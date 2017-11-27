@@ -7,8 +7,10 @@ import org.springframework.stereotype.Service;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.GameRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.GamesRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.search.criteria.SearchCriteria;
+import pl.edu.pollub.battleCraft.serviceLayer.services.security.AuthorityRecognizer;
 import pl.edu.pollub.battleCraft.serviceLayer.services.validators.UniqueNamesValidator;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -16,15 +18,18 @@ public class GamesService {
     private final GamesRepository gamesRepository;
     private final GameRepository gameRepository;
     private final UniqueNamesValidator uniqueNamesValidator;
+    private final AuthorityRecognizer roleRecognizer;
 
     @Autowired
-    public GamesService(GamesRepository gamesRepository, GameRepository gameRepository, UniqueNamesValidator uniqueNamesValidator) {
+    public GamesService(GamesRepository gamesRepository, GameRepository gameRepository, UniqueNamesValidator uniqueNamesValidator, AuthorityRecognizer roleRecognizer) {
         this.gamesRepository = gamesRepository;
         this.gameRepository = gameRepository;
         this.uniqueNamesValidator = uniqueNamesValidator;
+        this.roleRecognizer = roleRecognizer;
     }
 
     public Page getPageOfGames(Pageable requestedPage, List<SearchCriteria> searchCriteria) {
+        roleRecognizer.modifySearchCriteriaForCurrentUserRole(searchCriteria);
         return gamesRepository.getPageOfGames(searchCriteria, requestedPage);
     }
 

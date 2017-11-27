@@ -46,17 +46,6 @@ public class UsersAccountsRepository{
 
     @Transactional
     public Page getPageOfUserAccounts(List<SearchCriteria> searchCriteria, Pageable requestedPage) {
-        SearchCriteria ifParticipateSearchCriteria = searchCriteria.stream()
-                .filter(searchCriteria1 -> searchCriteria1.getOperation().equalsIgnoreCase("not participate"))
-                .findFirst().orElse(null);
-        Join[] joins;
-        if(ifParticipateSearchCriteria!=null){
-            joins = new Join[]{new Join("address", "address"),
-                    new Join("participation", "participation")};
-        }
-        else{
-            joins = new Join[]{new Join("address", "address")};
-        }
         return searcher
                 .select(
                         new Field("firstname", "firstname"),
@@ -70,7 +59,7 @@ public class UsersAccountsRepository{
                         new Field("banned", "banned")
                 )
                 .join(
-                        joins
+                        this.generateJoins(searchCriteria)
                 )
                 .from(UserAccount.class)
                 .where(searchCriteria)
@@ -87,8 +76,7 @@ public class UsersAccountsRepository{
     }
 
     public void acceptUsersAccounts(String... usersAccountsToAcceptUniqueNames) {
-        List<UserAccount> userAccountsToAccept =
-                userAccountRepository.findAllUsersAccountsByUniqueName(usersAccountsToAcceptUniqueNames);
+        List<UserAccount> userAccountsToAccept = userAccountRepository.findAllUsersAccountsByUniqueName(usersAccountsToAcceptUniqueNames);
         userAccountRepository.delete(userAccountsToAccept);
         List<Player> acceptedUserAccounts = this.advanceUsersToPlayers(userAccountsToAccept);
         playerRepository.save(acceptedUserAccounts);
@@ -139,5 +127,19 @@ public class UsersAccountsRepository{
                 }
         );
         return organizers;
+    }
+
+    private Join[] generateJoins(List<SearchCriteria> searchCriteria){
+        SearchCriteria ifParticipateSearchCriteria = searchCriteria.stream()
+                .filter(searchCriteria1 -> searchCriteria1.getOperation().equalsIgnoreCase("not participate"))
+                .findFirst().orElse(null);
+
+        if(ifParticipateSearchCriteria!=null){
+            return  new Join[]{new Join("address", "address"),
+                    new Join("participation", "participation")};
+        }
+        else{
+            return new Join[]{new Join("address", "address")};
+        }
     }
 }

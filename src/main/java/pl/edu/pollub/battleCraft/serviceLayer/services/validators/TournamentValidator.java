@@ -108,7 +108,7 @@ public class TournamentValidator implements Validator {
         calendar.setTime(startDate);
         calendar.add(Calendar.DATE,3);
         Date maxEndDate = calendar.getTime();
-        if(endDate.after(maxEndDate)){
+        if(endDate!=null && endDate.after(maxEndDate)){
             errors.rejectValue("dateOfEnd","","Duration of tournament cannnot be longer than 3 days");
         }
     }
@@ -127,6 +127,7 @@ public class TournamentValidator implements Validator {
         }
     }
 
+    //TO DO: Eliminate n+1 problem with criteria api
     public Tournament getValidatedTournamentToEdit(TournamentRequestDTO tournamentWebDTO,BindingResult bindingResult){
         Tournament tournamentToEdit = Optional.ofNullable(tournamentRepository.findByName(tournamentWebDTO.getName()))
                 .orElseThrow(() -> new ObjectNotFoundException(Tournament.class,tournamentWebDTO.getName()));//TO DO: if player is administrator
@@ -144,6 +145,7 @@ public class TournamentValidator implements Validator {
         return tournamentGame;
     }
 
+    //TO DO: Eliminate n+1 problem with criteria api
     public List<List<Player>> getValidatedParticipants(TournamentRequestDTO tournamentWebDTO,BindingResult bindingResult){
         if(tournamentWebDTO.getParticipants().size()==0)
             return new ArrayList<>();

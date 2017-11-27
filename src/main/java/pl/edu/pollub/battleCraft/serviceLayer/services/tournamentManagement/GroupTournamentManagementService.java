@@ -3,17 +3,20 @@ package pl.edu.pollub.battleCraft.serviceLayer.services.tournamentManagement;
 import org.assertj.core.util.Preconditions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.OrganizerRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.TournamentRepository;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentStatus;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.subClasses.GroupTournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.mappers.PlayerToOrganizerMapper;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Battle.Battle;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tour.Tour;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentManagement.*;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentManagement.DuplicatedPlayersNamesException;
+import pl.edu.pollub.battleCraft.serviceLayer.services.security.AuthorityRecognizer;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.TournamentProgress.Group.Battle.GroupBattleRequestDTO;
 
 import java.util.List;
@@ -25,12 +28,14 @@ import static java.lang.Math.floor;
 public class GroupTournamentManagementService extends TournamentManagementService{
 
     @Autowired
-    public GroupTournamentManagementService(TournamentRepository tournamentRepository) {
-        super(tournamentRepository);
+    public GroupTournamentManagementService(TournamentRepository tournamentRepository, PlayerToOrganizerMapper playerToOrganizerMapper,
+                                            OrganizerRepository organizerRepository, AuthorityRecognizer authorityRecognizer) {
+        super(tournamentRepository, authorityRecognizer, playerToOrganizerMapper, organizerRepository);
     }
 
     public GroupTournament startTournament(Tournament tournamentInput) {
         GroupTournament tournament = this.castToGroupTournament(tournamentInput);
+        authorityRecognizer.checkIfUserIsOrganizerOfTournament(tournament);
         this.checkIfTournamentCanStart(tournament);
         this.checkIfTournamentIsNotOutOfDate(tournament);
 
@@ -59,7 +64,7 @@ public class GroupTournamentManagementService extends TournamentManagementServic
             throw new DuplicatedPlayersNamesException();
 
         GroupTournament tournament = this.castToGroupTournament(this.findStartedTournamentByName(tournamentName));
-
+        authorityRecognizer.checkIfUserIsAdminOrOrganizerOfTournament(tournament);
 
         if(battleDTO.getTourNumber()>tournament.getCurrentTourNumber())
             throw new ObjectNotFoundException(Tour.class,String.valueOf(tournament.getCurrentTourNumber()));
@@ -113,6 +118,7 @@ public class GroupTournamentManagementService extends TournamentManagementServic
 
     public GroupTournament nextTour(String name) {
         GroupTournament tournament = this.castToGroupTournament(this.findStartedTournamentByName(name));
+        authorityRecognizer.checkIfUserIsOrganizerOfTournament(tournament);
         tournament.checkIfAllBattlesAreFinished();
         tournament.setCurrentTourNumber(tournament.getCurrentTourNumber()+1);
         if (tournament.getCurrentTourNumber() >= tournament.getTours().size()){
@@ -127,6 +133,7 @@ public class GroupTournamentManagementService extends TournamentManagementServic
 
     public GroupTournament previousTour(String name) {
         GroupTournament tournament = this.castToGroupTournament(this.findStartedTournamentByName(name));
+        authorityRecognizer.checkIfUserIsOrganizerOfTournament(tournament);
         if(tournament.getCurrentTourNumber() <= 0)
             throw new ItIsFirstTourOfTournament(name);
         tournament.getTourByNumber(tournament.getCurrentTourNumber()).getBattles().forEach(Battle::clearPlayers);
@@ -136,6 +143,7 @@ public class GroupTournamentManagementService extends TournamentManagementServic
 
     public GroupTournament finishTournament(String name) {
         GroupTournament tournament = this.castToGroupTournament(this.findStartedTournamentByName(name));
+        authorityRecognizer.checkIfUserIsOrganizerOfTournament(tournament);
         this.checkIfTournamentIsNotOutOfDate(tournament);
         tournament.checkIfAllBattlesAreFinished();
         int indexOfCurrentTour = tournament.getCurrentTourNumber();
@@ -143,9 +151,15 @@ public class GroupTournamentManagementService extends TournamentManagementServic
         if (indexOfNextTour != tournament.getTours().size())
             throw new TournamentCannotBeFinished(tournament.getName());
         tournament.setStatus(TournamentStatus.FINISHED);
+        this.advancePlayersToOrganizers(tournament);
         return tournamentRepository.save(tournament);
     }
 
+    public GroupTournament castToGroupTournament(Tournament tournament){
+        Preconditions.checkArgument(tournament.getPlayersOnTableCount() == 4,
+                "Invalid type of tournament: %s.", tournament.getTournamentType());
+        return (GroupTournament)tournament;
+    }
 
     private void setPointsForPlayers(List<List<Player>> playersWithoutBattle, List<Player> firstPlayersGroup, List<Player> secondPlayersGroup,
                                     Tournament tournament, GroupBattleRequestDTO battleDTO){
@@ -186,9 +200,4 @@ public class GroupTournamentManagementService extends TournamentManagementServic
         return number/4+1;
     }
 
-    private GroupTournament castToGroupTournament(Tournament tournament){
-        Preconditions.checkArgument(tournament.getPlayersOnTableCount() == 4,
-                "Invalid type of tournament: %s.", tournament.getTournamentType());
-        return (GroupTournament)tournament;
-    }
 }

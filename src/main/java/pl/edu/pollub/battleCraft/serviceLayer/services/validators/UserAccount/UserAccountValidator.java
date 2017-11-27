@@ -1,8 +1,9 @@
-package pl.edu.pollub.battleCraft.serviceLayer.services.validators;
+package pl.edu.pollub.battleCraft.serviceLayer.services.validators.UserAccount;
 
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
+import pl.edu.pollub.battleCraft.serviceLayer.services.validators.AddressValidator;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.UserAccountRequestDTO;
 
 import java.util.Optional;

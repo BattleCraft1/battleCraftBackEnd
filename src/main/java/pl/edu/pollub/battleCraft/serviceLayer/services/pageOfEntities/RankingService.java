@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.RankingRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.search.criteria.SearchCriteria;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -18,6 +20,20 @@ public class RankingService {
     }
 
     public Page getPageOfRanking(Pageable pageable, List<SearchCriteria> searchCriteria) {
+        searchCriteria.add(
+                new SearchCriteria(
+                        Arrays.asList("tour", "tournament", "banned"),
+                        ":",
+                        Collections.singletonList(false)
+                )
+        );
+        searchCriteria.add(
+                new SearchCriteria(
+                        Arrays.asList("tour", "tournament", "status"),
+                        ":",
+                        Collections.singletonList("FINISHED")
+                )
+        );
         return rankingRepository.getPageOfRanking(searchCriteria,pageable);
     }
 }

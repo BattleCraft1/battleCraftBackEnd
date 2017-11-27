@@ -6,9 +6,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Game.Game;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.GameRepository;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Game.enums.GameStatus;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.File.GameRules.InvalidGameRulesExtension;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.Security.YouAreNotOwnerOfThisObjectException;
 import pl.edu.pollub.battleCraft.serviceLayer.services.file.FileService;
+import pl.edu.pollub.battleCraft.serviceLayer.services.security.AuthorityRecognizer;
 
 import javax.validation.constraints.NotNull;
 import java.util.Optional;
@@ -21,10 +24,12 @@ public class GameResourcesService {
     private final FileService fileService;
 
     private final GameRepository gameRepository;
+    private final AuthorityRecognizer authorityRecognizer;
 
-    public GameResourcesService(FileService fileService, GameRepository gameRepository) {
+    public GameResourcesService(FileService fileService, GameRepository gameRepository, AuthorityRecognizer authorityRecognizer) {
         this.fileService = fileService;
         this.gameRepository = gameRepository;
+        this.authorityRecognizer = authorityRecognizer;
     }
 
     public Resource getGameRules(String gameName) {
@@ -41,16 +46,21 @@ public class GameResourcesService {
     }
 
     public void saveGameRules(@NotNull @NotBlank String gameName, @NotNull @NotBlank MultipartFile file){
-        String name = Optional.ofNullable(gameRepository.checkIfGameExist(gameName))
+        Game game = Optional.ofNullable(gameRepository.checkIfGameExist(gameName))
                 .orElseThrow(() -> new ObjectNotFoundException(Game.class,gameName));
 
-        fileService.deleteFilesRelatedWithEntities(DEFAULT_GAME_RULES_DIRECTORY_NAME,name);
+        authorityRecognizer.checkIfCurrentUserIsCreatorOfGame(game);
+
+        fileService.deleteFilesRelatedWithEntities(DEFAULT_GAME_RULES_DIRECTORY_NAME,game.getName());
 
         String extension = file.getOriginalFilename().split("\\.")[1];
 
         if(!extension.equals("pdf"))
             throw new InvalidGameRulesExtension(extension);
 
-        fileService.store(file,new StringBuilder(DEFAULT_GAME_RULES_DIRECTORY_NAME).append("/").append(name).toString(),extension);
+        fileService.store(file,new StringBuilder(DEFAULT_GAME_RULES_DIRECTORY_NAME).append("/").append(game.getName()).toString(),extension);
+
+        authorityRecognizer.checkIfGameWithEditedRulesNeedReAcceptation(game);
     }
+
 }

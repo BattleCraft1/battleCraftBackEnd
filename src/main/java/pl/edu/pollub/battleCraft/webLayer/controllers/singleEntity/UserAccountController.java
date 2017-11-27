@@ -2,6 +2,7 @@ package pl.edu.pollub.battleCraft.webLayer.controllers.singleEntity;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import pl.edu.pollub.battleCraft.serviceLayer.services.singleEnitity.UserAccountService;
@@ -22,6 +23,7 @@ public class UserAccountController {
         this.userAccountToResponseDTOMapper = userAccountToResponseDTOMapper;
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ORGANIZER','ROLE_ACCEPTED')")
     @PostMapping(value = "/edit/user", consumes = MediaType.APPLICATION_JSON_VALUE)
     public UserAccountResponseDTO editUserAccount(@RequestBody UserAccountWithInvitationsRequestDTO userAccountRequestDTO, BindingResult bindingResult){
         return userAccountToResponseDTOMapper.map(userAccountService.editUserAccount(userAccountRequestDTO, bindingResult));

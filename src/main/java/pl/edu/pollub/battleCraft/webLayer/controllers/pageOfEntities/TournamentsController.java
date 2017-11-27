@@ -3,6 +3,7 @@ package pl.edu.pollub.battleCraft.webLayer.controllers.pageOfEntities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.edu.pollub.battleCraft.serviceLayer.services.pageOfEntities.TournamentsService;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Page.GetPageAndModifyDataDTO;
@@ -25,6 +26,7 @@ public class TournamentsController {
                 getPageObjectsDTO.getSearchCriteria());
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping(value = "/ban/tournaments", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Page banTournaments(@RequestBody GetPageAndModifyDataDTO getPageAndModifyDataDTO) {
         tournamentService.banTournaments(getPageAndModifyDataDTO.getNamesOfObjectsToModify());
@@ -33,6 +35,7 @@ public class TournamentsController {
                 getPageObjectsDTO.getSearchCriteria());
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping(value = "/unlock/tournaments", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Page unlockTournaments(@RequestBody GetPageAndModifyDataDTO getPageAndModifyDataDTO) {
         tournamentService.unlockTournaments(getPageAndModifyDataDTO.getNamesOfObjectsToModify());
@@ -41,6 +44,7 @@ public class TournamentsController {
                 getPageObjectsDTO.getSearchCriteria());
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ORGANIZER')")
     @PostMapping(value = "/delete/tournaments", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Page deleteTournaments(@RequestBody GetPageAndModifyDataDTO getPageAndModifyDataDTO) {
         tournamentService.deleteTournaments(getPageAndModifyDataDTO.getNamesOfObjectsToModify());
@@ -49,6 +53,7 @@ public class TournamentsController {
                 getPageObjectsDTO.getSearchCriteria());
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping(value = "/accept/tournaments", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Page acceptTournaments(@RequestBody GetPageAndModifyDataDTO getPageAndModifyDataDTO) {
         tournamentService.acceptTournaments(getPageAndModifyDataDTO.getNamesOfObjectsToModify());
@@ -57,6 +62,7 @@ public class TournamentsController {
                 getPageObjectsDTO.getSearchCriteria());
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping(value = "/cancel/accept/tournaments", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Page cancelAcceptTournaments(@RequestBody GetPageAndModifyDataDTO getPageAndModifyDataDTO) {
         tournamentService.cancelAcceptTournaments(getPageAndModifyDataDTO.getNamesOfObjectsToModify());

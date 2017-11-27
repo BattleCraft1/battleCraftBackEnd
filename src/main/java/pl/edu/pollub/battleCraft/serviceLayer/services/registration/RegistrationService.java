@@ -9,7 +9,6 @@ import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.PlayerRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.UserAccountRepository;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.mappers.RegistrationDTOToUserAccountMapper;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.Organizer;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.mappers.UserAccountToPlayerMapper;
 import pl.edu.pollub.battleCraft.dataLayer.domain.VerificationToken.VerificationToken;
@@ -18,10 +17,9 @@ import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.Reg
 import pl.edu.pollub.battleCraft.serviceLayer.services.registration.events.OnRegistrationCompleteEvent;
 import pl.edu.pollub.battleCraft.serviceLayer.services.registration.utils.MailUtil;
 import pl.edu.pollub.battleCraft.serviceLayer.services.registration.utils.VerificationTokenUtil;
-import pl.edu.pollub.battleCraft.serviceLayer.services.validators.RegistrationValidator;
+import pl.edu.pollub.battleCraft.serviceLayer.services.validators.UserAccount.RegistrationValidator;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.Registration.RegistrationDTO;
 
-import javax.mail.MessagingException;
 import java.util.Optional;
 
 @Service

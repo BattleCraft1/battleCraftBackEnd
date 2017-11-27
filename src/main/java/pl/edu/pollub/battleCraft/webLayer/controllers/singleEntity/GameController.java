@@ -2,6 +2,7 @@ package pl.edu.pollub.battleCraft.webLayer.controllers.singleEntity;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import pl.edu.pollub.battleCraft.serviceLayer.services.singleEnitity.GameService;
@@ -22,11 +23,13 @@ public class GameController {
         this.gameToResponseDTOMapper = gameToResponseDTOMapper;
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ORGANIZER')")
     @PostMapping(value = "/add/game", consumes = MediaType.APPLICATION_JSON_VALUE)
     public GameResponseDTO addGame(@RequestBody GameRequestDTO gameRequestDTO, BindingResult bindingResult){
         return gameToResponseDTOMapper.map(gameService.addGame(gameRequestDTO, bindingResult));
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ORGANIZER')")
     @PostMapping(value = "/edit/game", consumes = MediaType.APPLICATION_JSON_VALUE)
     public GameResponseDTO editTournament(@RequestBody GameRequestDTO gameRequestDTO, BindingResult bindingResult){
         return gameToResponseDTOMapper.map(gameService.editGame(gameRequestDTO, bindingResult));

@@ -15,17 +15,15 @@ public class UniqueNamesValidator{
                 this.validateUniqueNamesBeforeOperationOnDatabase(validUniqueNames,uniqueNamesToValidate);
 
         if(notValidUniqueNames.size()>0)
-            throw new OperationOnPageFailedException(
-                    new StringBuilder("Elements ").append(String.join(", ", notValidUniqueNames))
-                            .append(" are not deleted because if you want delete element you must ban it firstly").toString());
+            throw new OperationOnPageFailedException(new StringBuilder("Elements: ").append(String.join(", ", notValidUniqueNames))
+                            .append(" are not deleted because you are not owner of this elements").toString());
     }
 
     public void validateUniqueNamesElementsToAccept(List<String> validUniqueNames, String... uniqueNamesToValidate){
         List<String> notValidUniqueNames =
                 this.validateUniqueNamesBeforeOperationOnDatabase(validUniqueNames,uniqueNamesToValidate);
         if(notValidUniqueNames.size()>0)
-            throw new OperationOnPageFailedException(
-                    new StringBuilder("Elements ").append(String.join(", ", notValidUniqueNames))
+            throw new OperationOnPageFailedException(new StringBuilder("Elements: ").append(String.join(", ", notValidUniqueNames))
                             .append(" are not accepted because you can accept only new elements and not banned").toString());
     }
 
@@ -33,8 +31,7 @@ public class UniqueNamesValidator{
         List<String> notValidUniqueNames =
                 this.validateUniqueNamesBeforeOperationOnDatabase(validUniqueNames,uniqueNamesToValidate);
         if(notValidUniqueNames.size()>0)
-            throw new OperationOnPageFailedException(
-                    new StringBuilder("Elements ").append(String.join(", ", notValidUniqueNames))
+            throw new OperationOnPageFailedException(new StringBuilder("Elements: ").append(String.join(", ", notValidUniqueNames))
                             .append(" are not rejected because you can cancel acceptation only for accepted elements").toString());
     }
 
@@ -42,8 +39,7 @@ public class UniqueNamesValidator{
         List<String> notValidUniqueNames =
                 this.validateUniqueNamesBeforeOperationOnDatabase(validUniqueNames,uniqueNamesToValidate);
         if(notValidUniqueNames.size()>0)
-            throw new OperationOnPageFailedException(
-                    new StringBuilder("Users ").append(String.join(", ", notValidUniqueNames))
+            throw new OperationOnPageFailedException(new StringBuilder("Users: ").append(String.join(", ", notValidUniqueNames))
                             .append(" are not advance to Organizer because if you want advance user to Organizer he must by a Accepted").toString());
     }
 
@@ -51,8 +47,7 @@ public class UniqueNamesValidator{
         List<String> notValidUniqueNames =
                 this.validateUniqueNamesBeforeOperationOnDatabase(validUniqueNames,uniqueNamesToValidate);
         if(notValidUniqueNames.size()>0)
-            throw new OperationOnPageFailedException(
-                    new StringBuilder("Users ").append(String.join(", ", notValidUniqueNames))
+            throw new OperationOnPageFailedException(new StringBuilder("Users: ").append(String.join(", ", notValidUniqueNames))
                             .append(" are not degrade to Accepted because if you want degrade user to Accepted he must by a Organizer").toString());
     }
 

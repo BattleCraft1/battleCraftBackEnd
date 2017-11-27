@@ -20,7 +20,7 @@ public interface TournamentRepository extends JpaRepository<Tournament, Long> {
     @Query("DELETE FROM Organization o WHERE (SELECT t.name FROM Tournament t WHERE t.id=o.organizedTournament) IN ?1")
     void deleteOrganizationByTournamentsUniqueNames(String... tournamentsToDeleteUniqueNames);
 
-    @Query("SELECT t.name FROM Tournament t WHERE t.banned = true AND t.name in ?1")
+    @Query("SELECT t.name FROM Tournament t WHERE t.name in ?1")
     List<String> selectTournamentsToDeleteUniqueNames(String... tournamentsToDeleteUniqueNames);
 
     @Modifying

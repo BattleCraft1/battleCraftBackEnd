@@ -1,4 +1,4 @@
-package pl.edu.pollub.battleCraft.serviceLayer.services.validators;
+package pl.edu.pollub.battleCraft.serviceLayer.services.validators.UserAccount;
 
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;

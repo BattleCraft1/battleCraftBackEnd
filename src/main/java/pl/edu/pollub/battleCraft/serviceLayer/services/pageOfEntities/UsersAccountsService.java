@@ -9,8 +9,10 @@ import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.PlayerRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.UserAccountRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.UsersAccountsRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.search.criteria.SearchCriteria;
+import pl.edu.pollub.battleCraft.serviceLayer.services.security.AuthorityRecognizer;
 import pl.edu.pollub.battleCraft.serviceLayer.services.validators.UniqueNamesValidator;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -21,18 +23,20 @@ public class UsersAccountsService {
     private final PlayerRepository playerRepository;
     private final OrganizerRepository organizerRepository;
     private final UniqueNamesValidator uniqueNamesValidator;
+    private final AuthorityRecognizer authorityRecognizer;
 
     @Autowired
-    public UsersAccountsService(UsersAccountsRepository usersAccountsRepository, UserAccountRepository userAccountRepository, PlayerRepository playerRepository, OrganizerRepository organizerRepository, UniqueNamesValidator uniqueNamesValidator) {
+    public UsersAccountsService(UsersAccountsRepository usersAccountsRepository, UserAccountRepository userAccountRepository, PlayerRepository playerRepository, OrganizerRepository organizerRepository, UniqueNamesValidator uniqueNamesValidator, AuthorityRecognizer authorityRecognizer) {
         this.userAccountsRepository = usersAccountsRepository;
         this.userAccountRepository = userAccountRepository;
         this.playerRepository = playerRepository;
         this.organizerRepository = organizerRepository;
         this.uniqueNamesValidator = uniqueNamesValidator;
+        this.authorityRecognizer = authorityRecognizer;
     }
 
-    public Page getPageOfUserAccounts(Pageable requestedPage,
-                                      List<SearchCriteria> searchCriteria) {
+    public Page getPageOfUserAccounts(Pageable requestedPage, List<SearchCriteria> searchCriteria) {
+        authorityRecognizer.modifySearchCriteriaForCurrentUserRole(searchCriteria);
         return userAccountsRepository.getPageOfUserAccounts(searchCriteria, requestedPage);
     }
 

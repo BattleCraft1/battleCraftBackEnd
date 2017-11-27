@@ -1,4 +1,4 @@
-package pl.edu.pollub.battleCraft.serviceLayer.services.validators;
+package pl.edu.pollub.battleCraft.serviceLayer.services.validators.UserAccount;
 
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
@@ -51,6 +51,7 @@ public class UserAccountWithInvitationsValidator implements Validator {
         userAccountValidator.validate(userAccountRequestDTO,errors);
     }
 
+    //TO DO: Eliminate n+1 problem with criteria api
     public UserAccount getValidatedUserAccountToEdit(UserAccountWithInvitationsRequestDTO userAccountRequestDTO, BindingResult bindingResult){
         return Optional.ofNullable(userAccountRepository.findUserAccountByUniqueName(userAccountRequestDTO.getName()))//TO DO: if player is administrator
                 .orElseThrow(() -> new ObjectNotFoundException(UserAccount.class,userAccountRequestDTO.getName()));
@@ -71,6 +72,7 @@ public class UserAccountWithInvitationsValidator implements Validator {
         }
     }
 
+    //TO DO: Eliminate n+1 problem with criteria api
     public List<InvitationDTO> getValidatedPlayersInvitations(UserAccountWithInvitationsRequestDTO userAccountRequestDTO, BindingResult bindingResult){
         List<InvitationRequestPlayerDTO> invitations = userAccountRequestDTO.getParticipatedTournaments();
         if(invitations.size()==0)
@@ -106,6 +108,7 @@ public class UserAccountWithInvitationsValidator implements Validator {
         return output;
     }
 
+    //TO DO: Eliminate n+1 problem with criteria api
     public List<InvitationDTO> getValidatedOrganizersInvitations(List<InvitationRequestDTO> invitations, BindingResult bindingResult){
         if(invitations.size()==0)
             return new ArrayList<>();

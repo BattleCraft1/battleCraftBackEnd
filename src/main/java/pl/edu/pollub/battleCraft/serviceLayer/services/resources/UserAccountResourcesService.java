@@ -5,10 +5,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.UserAccountRepository;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Game.Game;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.File.UserAvatar.InvalidUserAvatarExtension;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.Security.YouAreNotOwnerOfThisObjectException;
 import pl.edu.pollub.battleCraft.serviceLayer.services.file.FileService;
 import pl.edu.pollub.battleCraft.serviceLayer.services.image.ImageService;
+import pl.edu.pollub.battleCraft.serviceLayer.services.security.AuthorityRecognizer;
 
 import javax.imageio.ImageIO;
 import javax.validation.constraints.NotNull;
@@ -36,10 +39,13 @@ public class UserAccountResourcesService {
 
     private final UserAccountRepository userAccountRepository;
 
-    public UserAccountResourcesService(FileService fileService, ImageService imageService, UserAccountRepository userAccountRepository) {
+    private final AuthorityRecognizer authorityRecognizer;
+
+    public UserAccountResourcesService(FileService fileService, ImageService imageService, UserAccountRepository userAccountRepository, AuthorityRecognizer authorityRecognizer) {
         this.fileService = fileService;
         this.imageService = imageService;
         this.userAccountRepository = userAccountRepository;
+        this.authorityRecognizer = authorityRecognizer;
     }
 
     public byte[] getUserAvatar(String name) throws IOException {
@@ -61,10 +67,12 @@ public class UserAccountResourcesService {
     }
 
     public void saveUserAvatar(@NotNull @NotBlank String username,@NotNull @NotBlank MultipartFile file) throws IOException {
-        String name = Optional.ofNullable(userAccountRepository.checkIfUserExist(username))
+        UserAccount user = Optional.ofNullable(userAccountRepository.checkIfUserExist(username))
                 .orElseThrow(() -> new ObjectNotFoundException(UserAccount.class,username));
 
-        fileService.deleteFilesRelatedWithEntities(DEFAULT_USER_AVATARS_DIRECTORY_NAME,name);
+        authorityRecognizer.checkIfCurrentUserIsOwnerOfAvatar(user);
+
+        fileService.deleteFilesRelatedWithEntities(DEFAULT_USER_AVATARS_DIRECTORY_NAME,user.getName());
 
         String extension = file.getOriginalFilename().split("\\.")[1];
 
@@ -80,5 +88,6 @@ public class UserAccountResourcesService {
 
         fileService.store(userAvatarFile,new StringBuilder(DEFAULT_USER_AVATARS_DIRECTORY_NAME).append("/").append(username).toString(),extension);
     }
+
 
 }

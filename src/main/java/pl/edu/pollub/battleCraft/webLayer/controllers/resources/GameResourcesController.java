@@ -5,6 +5,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pl.edu.pollub.battleCraft.serviceLayer.services.resources.GameResourcesService;
@@ -19,6 +20,7 @@ public class GameResourcesController {
         this.gameResourcesService = gameResourcesService;
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ORGANIZER')")
     @PostMapping(value = "/upload/game/rules")
     public void uploadGameRules(@RequestParam("gameRules") MultipartFile file, @RequestParam(value = "gameName") String gameName){
         gameResourcesService.saveGameRules(gameName,file);

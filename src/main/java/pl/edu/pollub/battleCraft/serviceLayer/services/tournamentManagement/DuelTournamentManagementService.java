@@ -3,16 +3,19 @@ package pl.edu.pollub.battleCraft.serviceLayer.services.tournamentManagement;
 import org.assertj.core.util.Preconditions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.OrganizerRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.TournamentRepository;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentStatus;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.subClasses.DuelTournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.mappers.PlayerToOrganizerMapper;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Battle.Battle;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tour.Tour;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentManagement.*;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentManagement.DuplicatedPlayersNamesException;
+import pl.edu.pollub.battleCraft.serviceLayer.services.security.AuthorityRecognizer;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.TournamentProgress.Duel.Battle.DuelBattleRequestDTO;
 
 import java.util.List;
@@ -23,12 +26,14 @@ import static java.lang.Math.floor;
 public class DuelTournamentManagementService extends TournamentManagementService{
 
     @Autowired
-    public DuelTournamentManagementService(TournamentRepository tournamentRepository) {
-        super(tournamentRepository);
+    public DuelTournamentManagementService(TournamentRepository tournamentRepository, PlayerToOrganizerMapper playerToOrganizerMapper,
+                                           OrganizerRepository organizerRepository, AuthorityRecognizer authorityRecognizer) {
+        super(tournamentRepository, authorityRecognizer, playerToOrganizerMapper, organizerRepository);
     }
 
     public DuelTournament startTournament(Tournament tournamentInput) {
         DuelTournament tournament = this.castToDuelTournament(tournamentInput);
+        authorityRecognizer.checkIfUserIsOrganizerOfTournament(tournament);
         this.checkIfTournamentCanStart(tournament);
         this.checkIfTournamentIsNotOutOfDate(tournament);
 
@@ -59,6 +64,7 @@ public class DuelTournamentManagementService extends TournamentManagementService
             throw new DuplicatedPlayersNamesException();
 
         DuelTournament tournament = this.castToDuelTournament(this.findStartedTournamentByName(tournamentName));
+        authorityRecognizer.checkIfUserIsAdminOrOrganizerOfTournament(tournament);
 
         if(battleDTO.getTourNumber()>tournament.getCurrentTourNumber())
             throw new ObjectNotFoundException(Tour.class,new StringBuilder(tournament.getCurrentTourNumber()).toString());
@@ -94,6 +100,7 @@ public class DuelTournamentManagementService extends TournamentManagementService
 
     public DuelTournament nextTour(String name) {
         DuelTournament tournament = this.castToDuelTournament(this.findStartedTournamentByName(name));
+        authorityRecognizer.checkIfUserIsOrganizerOfTournament(tournament);
         tournament.checkIfAllBattlesAreFinished();
         tournament.setCurrentTourNumber(tournament.getCurrentTourNumber()+1);
         if (tournament.getCurrentTourNumber() >= tournament.getTours().size()){
@@ -117,6 +124,7 @@ public class DuelTournamentManagementService extends TournamentManagementService
 
     public DuelTournament finishTournament(String name) {
         DuelTournament tournament = this.castToDuelTournament(this.findStartedTournamentByName(name));
+        authorityRecognizer.checkIfUserIsOrganizerOfTournament(tournament);
         this.checkIfTournamentIsNotOutOfDate(tournament);
         tournament.checkIfAllBattlesAreFinished();
         int indexOfCurrentTour = tournament.getCurrentTourNumber();
@@ -124,7 +132,14 @@ public class DuelTournamentManagementService extends TournamentManagementService
         if (indexOfNextTour != tournament.getTours().size())
             throw new TournamentCannotBeFinished(tournament.getName());
         tournament.setStatus(TournamentStatus.FINISHED);
+        this.advancePlayersToOrganizers(tournament);
         return tournamentRepository.save(tournament);
+    }
+
+    public DuelTournament castToDuelTournament(Tournament tournament){
+        Preconditions.checkArgument(tournament.getPlayersOnTableCount() == 2,
+                "Invalid type of tournament: %s.", tournament.getTournamentType());
+        return (DuelTournament)tournament;
     }
 
     private void setPointsForPlayers(List<Player> playersWithoutBattle, Player firstPlayer, Player secondPlayer,
@@ -165,10 +180,4 @@ public class DuelTournamentManagementService extends TournamentManagementService
         return number/2+1;
     }
 
-
-    private DuelTournament castToDuelTournament(Tournament tournament){
-        Preconditions.checkArgument(tournament.getPlayersOnTableCount() == 2,
-                "Invalid type of tournament: %s.", tournament.getTournamentType());
-        return (DuelTournament)tournament;
-    }
 }
