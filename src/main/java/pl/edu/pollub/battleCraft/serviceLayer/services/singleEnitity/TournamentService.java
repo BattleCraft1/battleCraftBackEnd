@@ -7,23 +7,19 @@ import org.springframework.validation.BindingResult;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Address.Address;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.builder.TournamentCreator;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.builder.TournamentEditor;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentStatus;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Game.Game;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.Organizer;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.*;
-import pl.edu.pollub.battleCraft.dataLayer.domain.Game.enums.GameStatus;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityValidation.EntityValidationException;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.Security.YouAreNotOwnerOfThisObjectException;
 import pl.edu.pollub.battleCraft.serviceLayer.services.security.AuthorityRecognizer;
 import pl.edu.pollub.battleCraft.serviceLayer.services.validators.TournamentValidator;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Tournament.TournamentRequestDTO;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class TournamentService {
@@ -86,7 +82,7 @@ public class TournamentService {
         Tournament tournamentToEdit = Optional.ofNullable(tournamentRepository.findByName(tournamentWebDTO.getName()))
                 .orElseThrow(() -> new ObjectNotFoundException(Tournament.class,tournamentWebDTO.getName()));
 
-        authorityRecognizer.checkIfCurrentUserIsOrganizerOfTournament(tournamentToEdit);
+        authorityRecognizer.checkIfCurrentUserCanEditTournament(tournamentToEdit);
 
         tournamentValidator.checkIfTournamentWithThisNameAlreadyExist(tournamentWebDTO,bindingResult);
         tournamentValidator.validate(tournamentWebDTO,bindingResult);
@@ -121,7 +117,9 @@ public class TournamentService {
     }
 
     public Tournament getTournament(String tournamentUniqueName) {
-        return Optional.ofNullable(tournamentRepository.findTournamentToEditByUniqueName(tournamentUniqueName))
+        Tournament tournament = Optional.ofNullable(tournamentRepository.findTournamentToEditByUniqueName(tournamentUniqueName))
                 .orElseThrow(() -> new ObjectNotFoundException(Tournament.class,tournamentUniqueName));
+        authorityRecognizer.checkIfCurrentUserCanFetchTournament(tournament);
+        return tournament;
     }
 }

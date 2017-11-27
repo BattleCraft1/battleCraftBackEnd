@@ -119,7 +119,7 @@ public class AuthorityRecognizer {
         return gameRepository.getAllGamesNames();
     }
 
-    public void checkIfUserIsOrganizerOfTournament(Tournament tournament){
+    public void checkIfUserCanManageTournament(Tournament tournament){
         String username = this.getCurrentUserNameFromContext();
         tournament.getOrganizations().stream()
                 .map(organization -> organization.getOrganizer().getName())
@@ -127,7 +127,7 @@ public class AuthorityRecognizer {
                 .findFirst().orElseThrow(() -> new YouAreNotOwnerOfThisObjectException(Tournament.class,tournament.getName()));
     }
 
-    public void checkIfUserIsAdminOrOrganizerOfTournament(Tournament tournament){
+    public void checkIfUserIsAdminOrOrganizerAndCanManageTournament(Tournament tournament){
         if(this.getCurrentUserRoleFromContext().equals("ROLE_ADMIN")) return;
         String username = this.getCurrentUserNameFromContext();
         tournament.getOrganizations().stream()
@@ -170,16 +170,6 @@ public class AuthorityRecognizer {
         }
     }
 
-
-    public void checkIfGameWithEditedRulesNeedReAcceptation(Game game){
-        String role = this.getCurrentUserRoleFromContext();
-
-        if(!role.equals("ROLE_ADMIN")){
-            game.setStatus(GameStatus.NEW);
-            this.gameRepository.save(game);
-        }
-    }
-
     public void checkIfCurrentUserIsOwnerOfAvatar(UserAccount user){
         String role = this.getCurrentUserRoleFromContext();
 
@@ -190,7 +180,7 @@ public class AuthorityRecognizer {
 
     }
 
-    public void checkIfCurrentUserIsOrganizerOfTournament(Tournament tournament){
+    public void checkIfCurrentUserCanEditTournament(Tournament tournament){
         String role = this.getCurrentUserRoleFromContext();
 
         if(tournament.getStatus()!= TournamentStatus.ACCEPTED && tournament.getStatus()!=TournamentStatus.NEW)
@@ -227,5 +217,25 @@ public class AuthorityRecognizer {
             if(!user.getName().equals(this.getCurrentUserNameFromContext()))
                 throw new YouAreNotOwnerOfThisObjectException("Account",user.getName());
         }
+    }
+
+    public void checkIfUserCanFetchGame(Game game){
+        if(game.isBanned() && !this.getCurrentUserRoleFromContext().equals("ROLE_ADMIN")){
+            throw new ThisObjectIsBannedException(Game.class,game.getName());
+        }
+    }
+
+    public void checkIfCurrentUserCanFetchTournament(Tournament tournament){
+        if(tournament.isBanned() && !this.getCurrentUserRoleFromContext().equals("ROLE_ADMIN"))
+        this.checkIfUserCanManageTournament(tournament);
+    }
+
+    public void checkIfCurrentUserCanFetchUserAccount(UserAccount userAccount){
+        if(userAccount instanceof Player){
+            Player player = (Player) userAccount;
+            if(player.isBanned() && !this.getCurrentUserRoleFromContext().equals("ROLE_ADMIN"))
+                throw new ThisObjectIsBannedException(Player.class,player.getName());
+        }
+
     }
 }

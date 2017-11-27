@@ -33,7 +33,7 @@ public class DuelTournamentManagementService extends TournamentManagementService
 
     public DuelTournament startTournament(Tournament tournamentInput) {
         DuelTournament tournament = this.castToDuelTournament(tournamentInput);
-        authorityRecognizer.checkIfUserIsOrganizerOfTournament(tournament);
+        authorityRecognizer.checkIfUserCanManageTournament(tournament);
         this.checkIfTournamentCanStart(tournament);
         this.checkIfTournamentIsNotOutOfDate(tournament);
 
@@ -64,7 +64,7 @@ public class DuelTournamentManagementService extends TournamentManagementService
             throw new DuplicatedPlayersNamesException();
 
         DuelTournament tournament = this.castToDuelTournament(this.findStartedTournamentByName(tournamentName));
-        authorityRecognizer.checkIfUserIsAdminOrOrganizerOfTournament(tournament);
+        authorityRecognizer.checkIfUserIsAdminOrOrganizerAndCanManageTournament(tournament);
 
         if(battleDTO.getTourNumber()>tournament.getCurrentTourNumber())
             throw new ObjectNotFoundException(Tour.class,new StringBuilder(tournament.getCurrentTourNumber()).toString());
@@ -100,7 +100,7 @@ public class DuelTournamentManagementService extends TournamentManagementService
 
     public DuelTournament nextTour(String name) {
         DuelTournament tournament = this.castToDuelTournament(this.findStartedTournamentByName(name));
-        authorityRecognizer.checkIfUserIsOrganizerOfTournament(tournament);
+        authorityRecognizer.checkIfUserCanManageTournament(tournament);
         tournament.checkIfAllBattlesAreFinished();
         tournament.setCurrentTourNumber(tournament.getCurrentTourNumber()+1);
         if (tournament.getCurrentTourNumber() >= tournament.getTours().size()){
@@ -124,7 +124,7 @@ public class DuelTournamentManagementService extends TournamentManagementService
 
     public DuelTournament finishTournament(String name) {
         DuelTournament tournament = this.castToDuelTournament(this.findStartedTournamentByName(name));
-        authorityRecognizer.checkIfUserIsOrganizerOfTournament(tournament);
+        authorityRecognizer.checkIfUserCanManageTournament(tournament);
         this.checkIfTournamentIsNotOutOfDate(tournament);
         tournament.checkIfAllBattlesAreFinished();
         int indexOfCurrentTour = tournament.getCurrentTourNumber();

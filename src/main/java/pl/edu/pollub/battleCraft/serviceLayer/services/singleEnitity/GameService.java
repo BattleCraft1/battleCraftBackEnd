@@ -79,7 +79,9 @@ public class GameService {
     }
 
     public Game getGame(String gameUniqueName) {
-        return Optional.ofNullable(gameRepository.findNotBannedGameByUniqueName(gameUniqueName))
+        Game game = Optional.ofNullable(gameRepository.findGameByUniqueName(gameUniqueName))
                 .orElseThrow(() -> new ObjectNotFoundException(Game.class,gameUniqueName));
+        authorityRecognizer.checkIfUserCanFetchGame(game);
+        return game;
     }
 }

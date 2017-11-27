@@ -100,8 +100,9 @@ public class UserAccountService {
     }
 
     public UserAccount getUserAccount(String userUniqueName) {
-
-        return Optional.ofNullable(userAccountRepository.findUserAccountByUniqueName(userUniqueName))
+        UserAccount userAccount = Optional.ofNullable(userAccountRepository.findUserAccountByUniqueName(userUniqueName))
                 .orElseThrow(() -> new ObjectNotFoundException(UserAccount.class,userUniqueName));
+        authorityRecognizer.checkIfCurrentUserCanFetchUserAccount(userAccount);
+        return userAccount;
     }
 }

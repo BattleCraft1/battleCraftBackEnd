@@ -35,7 +35,7 @@ public class GroupTournamentManagementService extends TournamentManagementServic
 
     public GroupTournament startTournament(Tournament tournamentInput) {
         GroupTournament tournament = this.castToGroupTournament(tournamentInput);
-        authorityRecognizer.checkIfUserIsOrganizerOfTournament(tournament);
+        authorityRecognizer.checkIfUserCanManageTournament(tournament);
         this.checkIfTournamentCanStart(tournament);
         this.checkIfTournamentIsNotOutOfDate(tournament);
 
@@ -64,7 +64,7 @@ public class GroupTournamentManagementService extends TournamentManagementServic
             throw new DuplicatedPlayersNamesException();
 
         GroupTournament tournament = this.castToGroupTournament(this.findStartedTournamentByName(tournamentName));
-        authorityRecognizer.checkIfUserIsAdminOrOrganizerOfTournament(tournament);
+        authorityRecognizer.checkIfUserIsAdminOrOrganizerAndCanManageTournament(tournament);
 
         if(battleDTO.getTourNumber()>tournament.getCurrentTourNumber())
             throw new ObjectNotFoundException(Tour.class,String.valueOf(tournament.getCurrentTourNumber()));
@@ -118,7 +118,7 @@ public class GroupTournamentManagementService extends TournamentManagementServic
 
     public GroupTournament nextTour(String name) {
         GroupTournament tournament = this.castToGroupTournament(this.findStartedTournamentByName(name));
-        authorityRecognizer.checkIfUserIsOrganizerOfTournament(tournament);
+        authorityRecognizer.checkIfUserCanManageTournament(tournament);
         tournament.checkIfAllBattlesAreFinished();
         tournament.setCurrentTourNumber(tournament.getCurrentTourNumber()+1);
         if (tournament.getCurrentTourNumber() >= tournament.getTours().size()){
@@ -133,7 +133,7 @@ public class GroupTournamentManagementService extends TournamentManagementServic
 
     public GroupTournament previousTour(String name) {
         GroupTournament tournament = this.castToGroupTournament(this.findStartedTournamentByName(name));
-        authorityRecognizer.checkIfUserIsOrganizerOfTournament(tournament);
+        authorityRecognizer.checkIfUserCanManageTournament(tournament);
         if(tournament.getCurrentTourNumber() <= 0)
             throw new ItIsFirstTourOfTournament(name);
         tournament.getTourByNumber(tournament.getCurrentTourNumber()).getBattles().forEach(Battle::clearPlayers);
@@ -143,7 +143,7 @@ public class GroupTournamentManagementService extends TournamentManagementServic
 
     public GroupTournament finishTournament(String name) {
         GroupTournament tournament = this.castToGroupTournament(this.findStartedTournamentByName(name));
-        authorityRecognizer.checkIfUserIsOrganizerOfTournament(tournament);
+        authorityRecognizer.checkIfUserCanManageTournament(tournament);
         this.checkIfTournamentIsNotOutOfDate(tournament);
         tournament.checkIfAllBattlesAreFinished();
         int indexOfCurrentTour = tournament.getCurrentTourNumber();

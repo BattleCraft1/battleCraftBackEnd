@@ -59,8 +59,6 @@ public class GameResourcesService {
             throw new InvalidGameRulesExtension(extension);
 
         fileService.store(file,new StringBuilder(DEFAULT_GAME_RULES_DIRECTORY_NAME).append("/").append(game.getName()).toString(),extension);
-
-        authorityRecognizer.checkIfGameWithEditedRulesNeedReAcceptation(game);
     }
 
 }
