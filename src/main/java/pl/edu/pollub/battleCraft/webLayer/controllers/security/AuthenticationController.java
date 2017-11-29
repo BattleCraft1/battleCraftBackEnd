@@ -1,6 +1,7 @@
 package pl.edu.pollub.battleCraft.webLayer.controllers.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,16 +11,14 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pl.edu.pollub.battleCraft.serviceLayer.services.security.AuthorityRecognizer;
-import pl.edu.pollub.battleCraft.serviceLayer.services.security.ChangePasswordService;
+import pl.edu.pollub.battleCraft.serviceLayer.services.security.PasswordService;
 import pl.edu.pollub.battleCraft.serviceLayer.services.security.utils.JWTTokenUtils;
 import pl.edu.pollub.battleCraft.serviceLayer.services.security.data.User;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Security.AuthRequestDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Security.ChangePasswordDTO;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.Registration.EmailDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.security.AuthResponseDTO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -36,18 +35,18 @@ public class AuthenticationController {
 
     private final AuthorityRecognizer roleRecognizer;
 
-    private final ChangePasswordService changePasswordService;
+    private final PasswordService passwordService;
 
     @Autowired
-    public AuthenticationController(AuthenticationManager authenticationManager, JWTTokenUtils tokenUtils, UserDetailsService userDetailsService, AuthorityRecognizer roleRecognizer, ChangePasswordService changePasswordService) {
+    public AuthenticationController(AuthenticationManager authenticationManager, JWTTokenUtils tokenUtils, UserDetailsService userDetailsService, AuthorityRecognizer roleRecognizer, PasswordService changePasswordService) {
         this.authenticationManager = authenticationManager;
         this.tokenUtils = tokenUtils;
         this.userDetailsService = userDetailsService;
         this.roleRecognizer = roleRecognizer;
-        this.changePasswordService = changePasswordService;
+        this.passwordService = changePasswordService;
     }
 
-    @RequestMapping(method = RequestMethod.POST)
+    @PostMapping
     public ResponseEntity<?> authenticationRequest(@RequestBody AuthRequestDTO authenticationRequest)
             throws AuthenticationException {
 
@@ -68,7 +67,7 @@ public class AuthenticationController {
         return ResponseEntity.ok(new AuthResponseDTO(token,roleRecognizer.getCurrentUserRoleFromUserDetails(userDetails)));
     }
 
-    @RequestMapping(value = "refresh", method = RequestMethod.GET)
+    @GetMapping(value = "refresh")
     public ResponseEntity<?> authenticationRequest(HttpServletRequest request) {
         String token = request.getHeader("X-Auth-Token");
         String username = this.tokenUtils.getUsernameFromToken(token);
@@ -84,6 +83,12 @@ public class AuthenticationController {
     @PreAuthorize("hasAnyRole('ROLE_ORGANIZER','ROLE_ADMIN','ROLE_ACCEPTED')")
     @RequestMapping(value = "change/password", method = RequestMethod.GET)
     public void changePassword(ChangePasswordDTO changePasswordDTO) {
-        changePasswordService.changePassword(changePasswordDTO);
+        passwordService.changePassword(changePasswordDTO);
+    }
+
+    @PostMapping(value = "reset/password")
+    @ResponseStatus(HttpStatus.OK)
+    public void resetPassword(@RequestBody EmailDTO emailDTO) {
+        passwordService.resetPassword(emailDTO);
     }
 }

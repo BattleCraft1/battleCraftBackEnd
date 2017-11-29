@@ -77,7 +77,7 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
         ErrorResource error = new ErrorResource( entityValidationException.getMessage(),
                 fieldErrors.stream().collect(Collectors.toMap(FieldError::getField,
                         FieldError::getDefaultMessage))
-                );
+        );
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

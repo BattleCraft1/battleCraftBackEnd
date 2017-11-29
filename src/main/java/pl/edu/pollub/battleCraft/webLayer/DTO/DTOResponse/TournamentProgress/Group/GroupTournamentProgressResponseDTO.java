@@ -25,4 +25,5 @@ public class GroupTournamentProgressResponseDTO implements TournamentProgressRes
     private TournamentStatus tournamentStatus;
     private int playersOnTableCount = 4;
     private int playersCount;
+    private boolean canCurrentUserMenageTournament;
 }

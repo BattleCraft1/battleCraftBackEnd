@@ -42,7 +42,7 @@ public class RegistrationValidator implements Validator {
             this.errors.rejectValue("passwordConfirm","","Password confirmation and password are not the same");
         }
         if (password.length() < 8 || password.length() > 32) {
-            errors.rejectValue("password", "", "Password should have more than 8 characters and less than 32.");
+            errors.rejectValue("password", "", "Password should have more than 8 characters and less than 32");
         }
     }
 

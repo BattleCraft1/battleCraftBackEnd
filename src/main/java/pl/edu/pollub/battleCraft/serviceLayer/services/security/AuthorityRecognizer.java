@@ -31,6 +31,7 @@ import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.Sec
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -82,6 +83,26 @@ public class AuthorityRecognizer {
                             Collections.singletonList("banned"),
                             ":",
                             Collections.singletonList(false)
+                    )
+            );
+        }
+    }
+
+    public void modifyUsersSearchCriteriaForCurrentUserRole(List<SearchCriteria> searchCriteria){
+        String role = this.getCurrentUserRoleFromContext();
+        if(!role.equals("ROLE_ADMIN")){
+            searchCriteria.add(
+                    new SearchCriteria(
+                            Collections.singletonList("banned"),
+                            ":",
+                            Collections.singletonList(false)
+                    )
+            );
+            searchCriteria.add(
+                    new SearchCriteria(
+                            Collections.singletonList("status"),
+                            ":",
+                            Arrays.asList("ADMIN","ORGANIZER","ACCEPTED")
                     )
             );
         }

@@ -20,6 +20,7 @@ import pl.edu.pollub.battleCraft.serviceLayer.services.registration.events.OnReg
 import pl.edu.pollub.battleCraft.serviceLayer.services.registration.utils.MailUtil;
 import pl.edu.pollub.battleCraft.serviceLayer.services.registration.utils.VerificationTokenUtil;
 import pl.edu.pollub.battleCraft.serviceLayer.services.validators.UserAccount.RegistrationValidator;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.Registration.EmailDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.Registration.RegistrationDTO;
 
 import java.util.Optional;
@@ -83,11 +84,11 @@ public class RegistrationService {
     }
 
     @Transactional
-    public void resendToken(String username){
-        UserAccount user= Optional.ofNullable(userAccountRepository.findNotAcceptedUserByUniqueName(username))
-                .orElseThrow(() -> new ObjectNotFoundException(UserAccount.class,username));
+    public void resendToken(EmailDTO emailResendDTO){
+        UserAccount user= Optional.ofNullable(userAccountRepository.findNotAcceptedUserByEmail(emailResendDTO.getEmail()))
+                .orElseThrow(() -> new ObjectNotFoundException(new StringBuilder("Acount with email: ").append(emailResendDTO.getEmail()).append(" not found").toString()));
         if(user instanceof Player)
-            throw new ObjectNotFoundException(UserAccount.class,username);
+            throw new ObjectNotFoundException(new StringBuilder("Acount with email: ").append(emailResendDTO.getEmail()).append(" not found").toString());
         VerificationToken newToken=verificationTokenUtil.generateNewVerificationToken(user);
         String recipientAddress = user.getEmail();
 
@@ -99,6 +100,7 @@ public class RegistrationService {
         }
     }
 
+    @Transactional
     public void confirmRegistration(String token){
 
         VerificationToken verificationToken = Optional.ofNullable(verificationTokenUtil.getTokenObject(token))

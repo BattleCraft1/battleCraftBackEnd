@@ -111,7 +111,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
                 .from(testAddress6).build();
         Organizer testUser7 = organizerBuilder
                 .create("Filip", "Begiello", "beg2123", "beg2123@gmail.com")
-                .setPassword("beg2123")
+                .setPassword("beg21232123")
                 .from(testAddress7)
                 .withPhoneNumber("123123123").build();
         Organizer testUser8 = organizerBuilder
@@ -136,19 +136,12 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
                 .from(testAddress21)
                 .withPhoneNumber("123123123").build();
 
-        Administrator testAdmin1 = administratorBuilder
-                .create("Admin", "Admin", "admin", "admin2123@gmail.com")
-                .setPassword("admin")
-                .from(testAddress22)
-                .withPhoneNumber("123123123").build();
-
-
         Game testGame1 = new Game("Warhammer",testUser10);
         testGame1.setStatus(GameStatus.ACCEPTED);
 
         try {
             Tournament testTournament1 = tournamentCreator
-                    .startOrganizeTournament("Tournament1", 2, TournamentType.GROUP,2)
+                    .startOrganizeTournament("Tournament1", 2, TournamentType.GROUP,4)
                     .with(Arrays.asList(testUser8,testUser9))
                     .in(testAddress11)
                     .withGame( testGame1)
@@ -268,7 +261,6 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
             tournamentRepository.save(testTournament10);
 
             userAccountRepository.save(testUser11);
-            userAccountRepository.save(testAdmin1);
         } catch (Exception e) {
             e.printStackTrace();
         }

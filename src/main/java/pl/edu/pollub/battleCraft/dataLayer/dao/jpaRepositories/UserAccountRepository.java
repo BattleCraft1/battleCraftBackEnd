@@ -22,6 +22,12 @@ public interface UserAccountRepository extends JpaRepository<UserAccount, Long> 
     @Query("SELECT u FROM UserAccount u WHERE u.status = 'NEW' AND u.name = ?1")
     UserAccount findNotAcceptedUserByUniqueName(String uniqueName);
 
+    @Query("SELECT u FROM UserAccount u WHERE u.status = 'NEW' AND u.email = ?1")
+    UserAccount findNotAcceptedUserByEmail(String email);
+
+    @Query("SELECT u FROM UserAccount u WHERE u.email = ?1")
+    UserAccount findUserByEmail(String email);
+
     @Query("SELECT u FROM UserAccount u WHERE u.name in ?1")
     List<UserAccount> findAllUsersAccountsByUniqueName(String... usersAccountsToAcceptUniqueNames);
 
@@ -40,6 +46,9 @@ public interface UserAccountRepository extends JpaRepository<UserAccount, Long> 
 
     @Query("SELECT u FROM UserAccount u WHERE u.name = ?1 OR u.email = ?2")
     UserAccount findUserAccountByUniqueNameOrEmail(String userUniqueName, String email);
+
+    @Query("SELECT u FROM UserAccount u WHERE NOT u.name = ?1 AND u.email = ?2")
+    UserAccount findUserAccountByEmailWithOtherUniqueName(String userUniqueName, String email);
 
     @Query("SELECT u FROM UserAccount u WHERE u.name = ?1")
     UserAccount checkIfUserExist(String username);

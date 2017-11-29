@@ -18,7 +18,7 @@ public class ReportController {
         this.reportService = reportService;
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ORGANIZER','ROLE_ADMIN','ROLE_ACCEPTED')")
+    @PreAuthorize("hasAnyRole('ROLE_ORGANIZER','ROLE_ACCEPTED')")
     @PostMapping(value = "/report", consumes = MediaType.APPLICATION_JSON_VALUE)
     public void sendReportToAdmin(ReportDTO reportDTO){
         reportService.sendReportToAdmin(reportDTO);

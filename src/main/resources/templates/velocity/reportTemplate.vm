@@ -74,7 +74,7 @@
                                     <!-- Intro -->
 
                                     <p style="${style.paragraphX}">
-                                        User: $reportUserName ask for ban for $objectType with name $objectName because:
+                                        User: $reportUserName asks for ban $objectType with names $objectNames due to:
                                     </p>
 
                                     <p style="${style.paragraphX}">
@@ -82,7 +82,7 @@
                                     </p>
 
                                     <p style="${style.paragraphX}">
-                                        You should take a look for this element of system.
+                                        You should take a look on this elements of system.
                                     </p>
 
                                     <!-- Salutation -->

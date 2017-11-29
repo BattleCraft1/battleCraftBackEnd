@@ -29,7 +29,7 @@ public class UserAccountValidator implements Validator {
         this.errors = errors;
         UserAccountRequestDTO userAccountRequestDTO = (UserAccountRequestDTO) o;
         this.validateName(userAccountRequestDTO.getName());
-        this.validateName(userAccountRequestDTO.getNameChange());
+        this.validateNameChange(userAccountRequestDTO.getNameChange());
         this.validateEMail(userAccountRequestDTO.getEmail());
         this.validateFirstName(userAccountRequestDTO.getFirstname());
         this.validateLastName(userAccountRequestDTO.getLastname());
@@ -38,8 +38,13 @@ public class UserAccountValidator implements Validator {
     }
 
     private void validateName(String name){
-        if(name==null || !name.matches("^[A-ZĄĆĘŁŃÓŚŹŻa-zzżźćńółęąś1-9]{3,30}$"))
-            errors.rejectValue("nameChange","","Name must start with big letter and have between 3 to 30 chars");
+        if(name==null || !name.matches("^[A-ZĄĆĘŁŃÓŚŹŻa-zzżźćńółęąś0-9]{3,30}$"))
+            errors.rejectValue("name","","Name must have between 3 to 30 chars");
+    }
+
+    private void validateNameChange(String name){
+        if(name==null || !name.matches("^[A-ZĄĆĘŁŃÓŚŹŻa-zzżźćńółęąś0-9]{3,30}$"))
+            errors.rejectValue("nameChange","","Name must have between 3 to 30 chars");
     }
 
     private void validateFirstName(String firstname){

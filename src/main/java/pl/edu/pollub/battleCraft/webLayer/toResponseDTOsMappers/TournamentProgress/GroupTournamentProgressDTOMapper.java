@@ -1,10 +1,12 @@
 package pl.edu.pollub.battleCraft.webLayer.toResponseDTOsMappers.TournamentProgress;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.subClasses.GroupTournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Play;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.emuns.ColorOfSideInBattle;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tour.Tour;
+import pl.edu.pollub.battleCraft.serviceLayer.services.security.AuthorityRecognizer;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.TournamentProgress.PlayersGroupDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.TournamentProgress.Group.Battle.GroupBattleResponseDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.TournamentProgress.Group.GroupTournamentProgressResponseDTO;
@@ -15,6 +17,14 @@ import java.util.stream.Collectors;
 
 @Component
 public class GroupTournamentProgressDTOMapper {
+
+    private final AuthorityRecognizer authorityRecognizer;
+
+    @Autowired
+    public GroupTournamentProgressDTOMapper(AuthorityRecognizer authorityRecognizer) {
+        this.authorityRecognizer = authorityRecognizer;
+    }
+
     public GroupTournamentProgressResponseDTO map(GroupTournament tournament) {
         GroupTournamentProgressResponseDTO groupTournamentProgressResponseDTO = new GroupTournamentProgressResponseDTO();
 
@@ -77,6 +87,10 @@ public class GroupTournamentProgressDTOMapper {
         groupTournamentProgressResponseDTO.setCurrentTourNumber(tournament.getCurrentTourNumber());
         groupTournamentProgressResponseDTO.setTournamentStatus(tournament.getStatus());
         groupTournamentProgressResponseDTO.setPlayersCount(tournament.getParticipation().size()/2);
+
+        List<String> organizersNames = tournament.getOrganizations().stream().map(organization -> organization.getOrganizer().getName()).collect(Collectors.toList());
+        groupTournamentProgressResponseDTO.setCanCurrentUserMenageTournament(organizersNames.contains(authorityRecognizer.getCurrentUserNameFromContext()));
+
         return groupTournamentProgressResponseDTO;
     }
 }

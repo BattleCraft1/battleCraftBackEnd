@@ -1,7 +1,6 @@
 package pl.edu.pollub.battleCraft.serviceLayer.services.registration.utils;
 
 import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.tools.generic.DateTool;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -42,13 +41,21 @@ public class MailUtil {
         Map<String,Object> model = new HashMap();
         model.put("confirmationUrl","http:/localhost:8080/registration/confirm?token="+token);
         model.put("date", Calendar.getInstance().get(Calendar.YEAR));
-        this.sendVelocityMail(recipientAddress, model, "verificationMailTemplate.vm");
+        this.sendVelocityMail(recipientAddress,"Confirm registration", model, "verificationMailTemplate.vm");
+    }
+
+    public void sendResetPasswordEmail(String recipientAddress, String password, String username) throws MessagingException {
+        Map<String,Object> model = new HashMap();
+        model.put("temporaryPassword",password);
+        model.put("username",username);
+        model.put("date", Calendar.getInstance().get(Calendar.YEAR));
+        this.sendVelocityMail(recipientAddress,"Reset password", model, "resetPasswordTemplate.vm");
     }
 
     public void sendRegistrationCompleteMail(String recipientAddress) throws MessagingException {
         Map<String,Object> model = new HashMap();
         model.put("date", Calendar.getInstance().get(Calendar.YEAR));
-       this.sendVelocityMail(recipientAddress, model, "registrationCompletedTemplate.vm");
+       this.sendVelocityMail(recipientAddress,"Registration Completed", model, "registrationCompletedTemplate.vm");
     }
 
     public void sendReportToAdmin(String userWhoReportName, ReportDTO reportDTO, String adminEmail){
@@ -56,13 +63,13 @@ public class MailUtil {
         model.put("date", Calendar.getInstance().get(Calendar.YEAR));
         model.put("reportUserName", userWhoReportName);
         model.put("objectType", reportDTO.getObjectType());
-        model.put("objectName", reportDTO.getObjectName());
+        model.put("objectNames", String.join(", ", reportDTO.getObjectNames()));
         model.put("reportMessage", reportDTO.getReportMessage());
-        this.sendVelocityMail(adminEmail, model, "reportTemplate.vm");
+        this.sendVelocityMail(adminEmail,"Report", model, "reportTemplate.vm");
     }
 
     @Async
-    void sendVelocityMail(String recipientAddress, Map<String, Object> model, String templateName){
+    void sendVelocityMail(String recipientAddress, String subject, Map<String, Object> model, String templateName){
         MimeMessagePreparator preparator = (MimeMessage mimeMessage)  -> {
             MimeMessageHelper message = new MimeMessageHelper(mimeMessage);
             message.setTo(recipientAddress);

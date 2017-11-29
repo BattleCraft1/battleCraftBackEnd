@@ -82,13 +82,12 @@ public class UserAccountService {
 
         if(userAccountToEdit instanceof Player){
             Player player = (Player) userAccountToEdit;
-            List<InvitationDTO> participatedTournaments = userAccountValidator.getValidatedPlayersInvitations(userAccountRequestDTO, bindingResult);
+            List<InvitationDTO> participatedTournaments = userAccountValidator.getValidatedPlayersInvitations(player.getName(),userAccountRequestDTO, bindingResult);
             invitationToParticipationService.sendInvitations(player, participatedTournaments);
         }
         if(userAccountToEdit instanceof Organizer){
             Organizer organizer = (Organizer) userAccountToEdit;
-            List<InvitationDTO> organizedTournaments = userAccountValidator.getValidatedOrganizersInvitations(
-                            userAccountRequestDTO.getOrganizedTournaments(), bindingResult);
+            List<InvitationDTO> organizedTournaments = userAccountValidator.getValidatedOrganizersInvitations(userAccountRequestDTO.getOrganizedTournaments(), bindingResult);
             invitationToOrganizationService.sendInvitations(organizer, organizedTournaments);
         }
 

@@ -34,6 +34,10 @@ public class Player extends UserAccount {
         this.banned = false;
     }
 
+    public void setBanned(boolean banned){
+        this.banned = banned;
+    }
+
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true,  mappedBy = "player")
     protected List<Participation> participation = new ArrayList<>();
@@ -41,8 +45,6 @@ public class Player extends UserAccount {
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "player")
     protected List<Play> battles = new ArrayList<>();
-
-    protected boolean banned;
 
     public void addParticipationByOneSide(Participation participation) {
         this.deleteParticipationWithTheSameTournamentName(participation.getParticipatedTournament().getName());

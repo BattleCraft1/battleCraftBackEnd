@@ -6,14 +6,9 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.WebRequest;
 import pl.edu.pollub.battleCraft.serviceLayer.services.registration.RegistrationService;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.Registration.EmailDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.Registration.RegistrationDTO;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Calendar;
 
 @RestController
 public class RegistrationController {
@@ -38,10 +33,10 @@ public class RegistrationController {
         registrationService.createAdminAccount(registrationDTO,bindingResult);
     }
 
-    @GetMapping(value = "/registration/resendToken")
+    @PostMapping(value = "/registration/resendToken")
     @ResponseStatus(HttpStatus.OK)
-    public void resendToken(@RequestParam(value = "name") String username){
-        registrationService.resendToken(username);
+    public void resendToken(@RequestBody EmailDTO emailResendDTO){
+        registrationService.resendToken(emailResendDTO);
     }
 
     @GetMapping(value = "/registration/confirm")

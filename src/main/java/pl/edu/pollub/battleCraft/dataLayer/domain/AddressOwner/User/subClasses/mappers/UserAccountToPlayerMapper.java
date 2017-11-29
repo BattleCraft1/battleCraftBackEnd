@@ -18,6 +18,7 @@ public class UserAccountToPlayerMapper {
             player.setPassword(userAccount.getPassword());
             player.setPhoneNumber(userAccount.getPhoneNumber());
             player.initAddress(userAccount.getAddress().copy());
+            player.setDateOfResetPassword(userAccount.getDateOfResetPassword());
 
             return player;
         }

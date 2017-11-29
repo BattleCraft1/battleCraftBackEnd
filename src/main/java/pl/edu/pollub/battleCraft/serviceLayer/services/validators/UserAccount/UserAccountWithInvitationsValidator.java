@@ -56,20 +56,20 @@ public class UserAccountWithInvitationsValidator implements Validator {
     public void checkIfUserWithThisNameOrEmailAlreadyExist(UserAccountWithInvitationsRequestDTO userAccountRequestDTO, BindingResult bindingResult){
         if(!userAccountRequestDTO.getName().equals(userAccountRequestDTO.getNameChange())) {
             UserAccount userExist = userAccountRepository.findUserAccountByUniqueNameOrEmail(userAccountRequestDTO.getNameChange(),userAccountRequestDTO.getEmail());
-            if (userExist.getName().equals(userAccountRequestDTO.getName()))
+            if (userExist.getName().equals(userAccountRequestDTO.getNameChange()))
                 bindingResult.rejectValue("nameChange", "", "User with this name already exist.");
-            if (userExist.getEmail().equals(userAccountRequestDTO.getEmail()))
+            if (!userExist.getName().equals(userAccountRequestDTO.getName()) && userExist.getEmail().equals(userAccountRequestDTO.getEmail()))
                 bindingResult.rejectValue("email", "", "User with this email already exist.");
         }
         else{
-            UserAccount userExist = userAccountRepository.findUserAccountByUniqueNameOrEmail(userAccountRequestDTO.getNameChange(),userAccountRequestDTO.getEmail());
-            if (userExist.getEmail().equals(userAccountRequestDTO.getEmail()))
+            UserAccount userExist = userAccountRepository.findUserAccountByEmailWithOtherUniqueName(userAccountRequestDTO.getNameChange(),userAccountRequestDTO.getEmail());
+            if (userExist!=null)
                 bindingResult.rejectValue("email", "", "User with this email already exist.");
         }
     }
 
     //TO DO: Eliminate n+1 problem with criteria api
-    public List<InvitationDTO> getValidatedPlayersInvitations(UserAccountWithInvitationsRequestDTO userAccountRequestDTO, BindingResult bindingResult){
+    public List<InvitationDTO> getValidatedPlayersInvitations(String username, UserAccountWithInvitationsRequestDTO userAccountRequestDTO, BindingResult bindingResult){
         List<InvitationRequestPlayerDTO> invitations = userAccountRequestDTO.getParticipatedTournaments();
         if(invitations.size()==0)
             return new ArrayList<>();
@@ -85,16 +85,16 @@ public class UserAccountWithInvitationsValidator implements Validator {
             if(tournament.getTournamentType()== TournamentType.GROUP){
                 InvitationRequestPlayerDTO invitation = this.getInvitationByTournamentName(invitations,tournament.getName());
                 Player player;
-                if(invitation.getSecondPlayerName().equals(userAccountRequestDTO.getName()))
+                if(invitation.getSecondPlayerName().equals(username))
                     player = null;
                 else
                     player = playerRepository.findNotBannedPlayerByUniqueName(invitation.getSecondPlayerName());
-                this.checkIfPlayerAlreadyHaveParticipation(tournament,player,userAccountRequestDTO.getName(),bindingResult);
-                this.checkIfPlayersCountIsGreaterThanLimit(tournamentsNamesWithTooManyPlayers,tournament,userAccountRequestDTO.getName(),2);
+                this.checkIfPlayerAlreadyHaveParticipation(tournament,player,username,bindingResult);
+                this.checkIfPlayersCountIsGreaterThanLimit(tournamentsNamesWithTooManyPlayers,tournament,username,2);
                 return new GroupTournamentInvitationDTO(tournament, invitation.isAccepted(),player);
             }
             else{
-                this.checkIfPlayersCountIsGreaterThanLimit(tournamentsNamesWithTooManyPlayers,tournament,userAccountRequestDTO.getName(),1);
+                this.checkIfPlayersCountIsGreaterThanLimit(tournamentsNamesWithTooManyPlayers,tournament,username,1);
                 InvitationRequestPlayerDTO invitation = this.getInvitationByTournamentName(invitations,tournament.getName());
                 return new DuelTournamentInvitationDTO(tournament,invitation.isAccepted());
             }
@@ -167,7 +167,7 @@ public class UserAccountWithInvitationsValidator implements Validator {
                     .filter(participation -> participation.getPlayer().getName().equals(userName)).findFirst().orElse(null);
             if(participationOfEditedPlayer==null ||  !participationOfEditedPlayer.getGroupNumber().equals(participationOfSecondPlayer.getGroupNumber())){
                 bindingResult.rejectValue("participatedTournaments","",
-                        new StringBuilder("Player: ").append(secondPlayer.getName()).append(" already participed in in tournament: ")
+                        new StringBuilder("Player: ").append(secondPlayer.getName()).append(" already participated in tournament: ")
                                 .append(tournament.getName()).toString());
             }
         }

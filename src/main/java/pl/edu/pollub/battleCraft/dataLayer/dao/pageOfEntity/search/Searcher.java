@@ -77,7 +77,8 @@ public class Searcher{
         joins.forEach(join -> criteria.createAlias(getFieldFullName(join.getName()),join.getValue()));
         searchCriteria.forEach((condition) -> {
             String fieldName = condition.getName();
-            List<Object> fieldValue = condition.getValue(root);
+            List<Object> fieldValue;
+            fieldValue = condition.getValue(root);
             String operationOnField = condition.getOperation();
             if(fieldValue.get(0) instanceof String && operationOnField.equalsIgnoreCase(":"))
                 whereConditions.add(Restrictions.like(fieldName, fieldValue.get(0)));

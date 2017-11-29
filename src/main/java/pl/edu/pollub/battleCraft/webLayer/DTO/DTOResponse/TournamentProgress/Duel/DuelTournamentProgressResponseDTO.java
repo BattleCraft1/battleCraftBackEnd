@@ -24,4 +24,5 @@ public class DuelTournamentProgressResponseDTO implements TournamentProgressResp
     private TournamentStatus tournamentStatus;
     private int playersOnTableCount = 2;
     private int playersCount;
+    private boolean canCurrentUserMenageTournament;
 }

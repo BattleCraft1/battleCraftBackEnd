@@ -1,5 +1,6 @@
 package pl.edu.pollub.battleCraft.webLayer.toResponseDTOsMappers.TournamentProgress;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.subClasses.DuelTournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
@@ -8,6 +9,7 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.P
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Play;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.emuns.ColorOfSideInBattle;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tour.Tour;
+import pl.edu.pollub.battleCraft.serviceLayer.services.security.AuthorityRecognizer;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.TournamentProgress.PlayerDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.TournamentProgress.Duel.Battle.DuelBattleResponseDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.TournamentProgress.Duel.DuelTournamentProgressResponseDTO;
@@ -18,6 +20,14 @@ import java.util.stream.Collectors;
 
 @Component
 public class DuelTournamentProgressDTOMapper {
+
+    private final AuthorityRecognizer authorityRecognizer;
+
+    @Autowired
+    public DuelTournamentProgressDTOMapper(AuthorityRecognizer authorityRecognizer) {
+        this.authorityRecognizer = authorityRecognizer;
+    }
+
     public DuelTournamentProgressResponseDTO map(DuelTournament tournament){
         DuelTournamentProgressResponseDTO duelTournamentProgressDTO = new DuelTournamentProgressResponseDTO();
         List<List<DuelBattleResponseDTO>> toursOfDTO = new ArrayList<>();
@@ -60,6 +70,10 @@ public class DuelTournamentProgressDTOMapper {
         duelTournamentProgressDTO.setCurrentTourNumber(tournament.getCurrentTourNumber());
         duelTournamentProgressDTO.setTournamentStatus(tournament.getStatus());
         duelTournamentProgressDTO.setPlayersCount(tournament.getParticipation().size());
+
+        List<String> organizersNames = tournament.getOrganizations().stream().map(organization -> organization.getOrganizer().getName()).collect(Collectors.toList());
+        duelTournamentProgressDTO.setCanCurrentUserMenageTournament(organizersNames.contains(authorityRecognizer.getCurrentUserNameFromContext()));
+
         return duelTournamentProgressDTO;
     }
 }

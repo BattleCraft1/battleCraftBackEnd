@@ -43,7 +43,7 @@ public class UsersAccountsService {
     }
 
     public Page getPageOfUserAccounts(Pageable requestedPage, List<SearchCriteria> searchCriteria) {
-        authorityRecognizer.modifySearchCriteriaForCurrentUserRole(searchCriteria);
+        authorityRecognizer.modifyUsersSearchCriteriaForCurrentUserRole(searchCriteria);
         return userAccountsRepository.getPageOfUserAccounts(searchCriteria, requestedPage);
     }
 

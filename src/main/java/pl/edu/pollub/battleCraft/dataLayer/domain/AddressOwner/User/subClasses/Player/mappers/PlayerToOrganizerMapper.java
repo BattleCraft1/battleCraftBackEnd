@@ -23,8 +23,8 @@ public class PlayerToOrganizerMapper {
             organizer.setEmail(player.getEmail());
             organizer.setPassword(player.getPassword());
             organizer.setPhoneNumber(player.getPhoneNumber());
-            organizer.setParticipation(
-                    player.getParticipation().stream().map(Participation::copy).collect(Collectors.toList()));
+            organizer.setParticipation(player.getParticipation().stream().map(Participation::copy).collect(Collectors.toList()));
+            organizer.setDateOfResetPassword(player.getDateOfResetPassword());
 
             organizer.initAddress(player.getAddress().copy());
 
