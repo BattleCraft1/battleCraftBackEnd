@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
+import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.UserAccountRepository;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Game.Game;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.Organizer;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.GameRepository;
@@ -26,17 +28,17 @@ public class GameService {
 
     private final GameValidator gameValidator;
 
-    private final OrganizerRepository organizerRepository;
+    private final UserAccountRepository userAccountRepository;
 
     private final GameResourcesService gameResourcesService;
 
     private final AuthorityRecognizer authorityRecognizer;
 
     @Autowired
-    public GameService(GameRepository gameRepository, GameValidator gameValidator, OrganizerRepository organizerRepository, GameResourcesService gameResourcesService, AuthorityRecognizer authorityRecognizer) {
+    public GameService(GameRepository gameRepository, GameValidator gameValidator, UserAccountRepository userAccountRepository, GameResourcesService gameResourcesService, AuthorityRecognizer authorityRecognizer) {
         this.gameRepository = gameRepository;
         this.gameValidator = gameValidator;
-        this.organizerRepository = organizerRepository;
+        this.userAccountRepository = userAccountRepository;
         this.gameResourcesService = gameResourcesService;
         this.authorityRecognizer = authorityRecognizer;
     }
@@ -44,7 +46,7 @@ public class GameService {
     @Transactional(rollbackFor = {EntityValidationException.class,ObjectNotFoundException.class})
     public Game addGame(GameRequestDTO gameRequestDTO, BindingResult bindingResult) {
         String organizerName = authorityRecognizer.getCurrentUserNameFromContext();
-        Organizer organizer = Optional.ofNullable(organizerRepository.findByName(organizerName))
+        UserAccount creator = Optional.ofNullable(userAccountRepository.findByName(organizerName))
                 .orElseThrow(() -> new ObjectNotFoundException(Organizer.class,organizerName));
 
         gameValidator.checkIfGameExist(gameRequestDTO,bindingResult);
@@ -52,7 +54,7 @@ public class GameService {
 
         gameValidator.finishValidation(bindingResult);
 
-        Game createdGame = new Game(gameRequestDTO.getName(),organizer);
+        Game createdGame = new Game(gameRequestDTO.getName(),creator);
 
         return this.gameRepository.save(createdGame);
     }

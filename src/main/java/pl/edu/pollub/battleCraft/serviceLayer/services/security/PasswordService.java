@@ -56,7 +56,6 @@ public class PasswordService {
         }
 
         userAccount.setPassword(newPasswordHash);
-        userAccount.setDateOfResetPassword(new Date());
         userAccountRepository.save(userAccount);
     }
 

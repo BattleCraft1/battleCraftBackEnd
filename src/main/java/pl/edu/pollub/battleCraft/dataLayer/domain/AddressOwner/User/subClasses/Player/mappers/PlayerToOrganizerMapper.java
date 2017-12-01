@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 public class PlayerToOrganizerMapper {
 
     public Organizer map(Player player){
-        if(!(player instanceof Organizer)) {
             Organizer organizer = new Organizer();
             organizer.setFirstname(player.getFirstname());
             organizer.setLastname(player.getLastname());
@@ -23,17 +22,14 @@ public class PlayerToOrganizerMapper {
             organizer.setEmail(player.getEmail());
             organizer.setPassword(player.getPassword());
             organizer.setPhoneNumber(player.getPhoneNumber());
-            organizer.setParticipation(player.getParticipation().stream().map(Participation::copy).collect(Collectors.toList()));
-            organizer.setDateOfResetPassword(player.getDateOfResetPassword());
+            organizer.setParticipation(player.getParticipation().stream().map(participation -> {
+                    participation.setPlayer(organizer);
+                    return participation.copy();
+            }).collect(Collectors.toList()));
 
             organizer.initAddress(player.getAddress().copy());
 
             return organizer;
-        }
-        else{
-            player.setStatus(UserType.ORGANIZER);
-            return (Organizer) player;
-        }
     }
 
 }

@@ -17,12 +17,9 @@ public class UsersController {
 
     private final UsersAccountsService userAccountService;
 
-    private final UserAccountResourcesService userAccountResourcesService;
-
     @Autowired
     public UsersController(UsersAccountsService userAccountService, UserAccountResourcesService userAccountResourcesService) {
         this.userAccountService = userAccountService;
-        this.userAccountResourcesService = userAccountResourcesService;
     }
 
     @PostMapping(value = "/page/users", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -55,7 +52,6 @@ public class UsersController {
     @PostMapping(value = "/delete/users", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Page deleteUsersAccounts(@RequestBody GetPageAndModifyDataDTO getPageAndModifyDataDTO) throws IOException {
         userAccountService.deleteUsersAccounts(getPageAndModifyDataDTO.getNamesOfObjectsToModify());
-        userAccountResourcesService.deleteUsersAccountsAvatars(getPageAndModifyDataDTO.getNamesOfObjectsToModify());
         GetPageObjectsDTO getPageObjectsDTO = getPageAndModifyDataDTO.getGetPageObjectsDTO();
         return userAccountService.getPageOfUserAccounts(getPageObjectsDTO.unwrapPageRequest(),
                 getPageObjectsDTO.getSearchCriteria());

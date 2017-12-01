@@ -15,12 +15,9 @@ public class GamesController {
 
     private final GamesService gameService;
 
-    private final GameResourcesService gameResourcesService;
-
     @Autowired
-    public GamesController(GamesService gameService, GameResourcesService gameResourcesService) {
+    public GamesController(GamesService gameService) {
         this.gameService = gameService;
-        this.gameResourcesService = gameResourcesService;
     }
 
     @PostMapping(value = "/page/games", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -53,7 +50,6 @@ public class GamesController {
     @PostMapping(value = "/delete/games", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Page deleteTournaments(@RequestBody GetPageAndModifyDataDTO getPageAndModifyDataDTO) {
         gameService.deleteGames(getPageAndModifyDataDTO.getNamesOfObjectsToModify());
-        gameResourcesService.deleteGamesRules(getPageAndModifyDataDTO.getNamesOfObjectsToModify());
         GetPageObjectsDTO getPageObjectsDTO = getPageAndModifyDataDTO.getGetPageObjectsDTO();
         return gameService.getPageOfGames(getPageObjectsDTO.unwrapPageRequest(),
                 getPageObjectsDTO.getSearchCriteria());

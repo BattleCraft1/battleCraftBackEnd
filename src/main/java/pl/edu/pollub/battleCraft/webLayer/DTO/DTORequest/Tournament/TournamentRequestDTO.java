@@ -24,7 +24,7 @@ public class TournamentRequestDTO extends AddressOwnerRequestDTO{
     private Date dateOfStart;
     private Date dateOfEnd;
     private List<List<String>> participants = new ArrayList<>();
-    private String[] organizers;
+    private List<String> organizers;
 
     public TournamentType getTournamentType(){
         if(playersOnTableCount==2){

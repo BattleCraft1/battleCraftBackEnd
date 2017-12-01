@@ -1,11 +1,13 @@
 package pl.edu.pollub.battleCraft.webLayer.toResponseDTOsMappers;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentType;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.Organizer;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation;
+import pl.edu.pollub.battleCraft.serviceLayer.services.security.AuthorityRecognizer;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Tournament.TournamentResponseDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Invitation.InvitationResponseDTO;
 
@@ -16,6 +18,14 @@ import java.util.stream.Collectors;
 
 @Component
 public class TournamentToResponseDTOMapper {
+
+    private final AuthorityRecognizer authorityRecognizer;
+
+    @Autowired
+    public TournamentToResponseDTOMapper(AuthorityRecognizer authorityRecognizer) {
+        this.authorityRecognizer = authorityRecognizer;
+    }
+
     public TournamentResponseDTO map(Tournament tournament){
         TournamentResponseDTO tournamentResponseDTO = new TournamentResponseDTO();
         tournamentResponseDTO.setOrganizers(tournament.getOrganizations().stream()
@@ -45,10 +55,18 @@ public class TournamentToResponseDTOMapper {
         tournamentResponseDTO.setStreet(tournament.getAddress().getStreet());
         tournamentResponseDTO.setZipCode(tournament.getAddress().getZipCode());
         tournamentResponseDTO.setDescription(tournament.getAddress().getDescription());
-        if(tournament.isBanned())
+        if(tournament.isBanned()) {
             tournamentResponseDTO.setStatus("BANNED");
-        else
+            tournamentResponseDTO.setCanCurrentUserEdit(authorityRecognizer.getCurrentUserRoleFromContext().equals("ROLE_ADMIN"));
+        }
+        else {
             tournamentResponseDTO.setStatus(tournament.getStatus().name());
+            boolean currentUserCanEdit = tournament.getOrganizations().stream()
+                    .map(organization -> organization.getOrganizer().getName())
+                    .collect(Collectors.toList()).contains(authorityRecognizer.getCurrentUserNameFromContext())
+                    || authorityRecognizer.getCurrentUserRoleFromContext().equals("ROLE_ADMIN");
+            tournamentResponseDTO.setCanCurrentUserEdit(currentUserCanEdit);
+        }
         return tournamentResponseDTO;
     }
 

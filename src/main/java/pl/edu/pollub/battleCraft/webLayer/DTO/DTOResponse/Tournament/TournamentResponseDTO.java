@@ -29,4 +29,5 @@ public class TournamentResponseDTO {
     private String status;
     private List<InvitationResponseDTO> organizers = new ArrayList<>();
     private List<List<InvitationResponseDTO>> participants = new ArrayList<>();
+    private boolean canCurrentUserEdit;
 }

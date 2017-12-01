@@ -18,4 +18,5 @@ public class GameResponseDTO {
     private String status;
     private Date dateOfCreation;
     private int tournamentsNumber;
+    private boolean canCurrentUserEdit;
 }

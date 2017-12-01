@@ -40,17 +40,13 @@ public class GamesRepository {
                 .select(
                         new Field("name", "name"),
                         new Field("tournamentsNumber", "tournamentsNumber"),
-                        new Field("creator.name", "creatorName"),
                         new Field("status", "status"),
                         new Field("banned", "banned"),
                         new Field("dateOfCreation", "dateOfCreation")
                 )
-                .join(
-                        new Join("creator", "creator")
-                )
+                .join()
                 .from(Game.class)
                 .where(searchCriteria)
-                .groupBy("creator.name","id")
                 .execute("id",requestedPage);
     }
 

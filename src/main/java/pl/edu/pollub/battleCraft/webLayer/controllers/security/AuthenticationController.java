@@ -72,7 +72,7 @@ public class AuthenticationController {
         String token = request.getHeader("X-Auth-Token");
         String username = this.tokenUtils.getUsernameFromToken(token);
         User user = (User) this.userDetailsService.loadUserByUsername(username);
-        if (this.tokenUtils.canTokenBeRefreshed(token, user.getLastPasswordReset())) {
+        if (this.tokenUtils.canTokenBeRefreshed(token)) {
             String refreshedToken = this.tokenUtils.refreshToken(token);
             return ResponseEntity.ok(new AuthResponseDTO(refreshedToken,roleRecognizer.getCurrentUserRoleFromUserDetails(user)));
         } else {

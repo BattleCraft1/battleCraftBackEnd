@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import org.hibernate.annotations.Formula;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Game.enums.GameStatus;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.Organizer;
@@ -19,7 +20,7 @@ import java.util.*;
 @EqualsAndHashCode
 @ToString
 public class Game{
-    public Game(String name, Organizer creator){
+    public Game(String name, UserAccount creator){
         this.name = name;
         this.creator = creator;
         this.status = GameStatus.NEW;
@@ -42,7 +43,7 @@ public class Game{
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
-    private Organizer creator;
+    private UserAccount creator;
 
     @Enumerated(EnumType.STRING)
     private GameStatus status;

@@ -52,4 +52,6 @@ public interface UserAccountRepository extends JpaRepository<UserAccount, Long> 
 
     @Query("SELECT u FROM UserAccount u WHERE u.name = ?1")
     UserAccount checkIfUserExist(String username);
+
+    UserAccount findByName(String name);
 }

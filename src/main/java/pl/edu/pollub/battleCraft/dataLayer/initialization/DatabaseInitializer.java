@@ -103,7 +103,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
                 .withPhoneNumber("123123123").build();
         Player testUser5 = playerBuilder
                 .create("Anna", "Bielec", "biel2123", "biel2123@gmail.com")
-                .setPassword("biel2123")
+                .setPassword("biel21232123")
                 .from(testAddress5).build();
         Player testUser6 = playerBuilder
                 .create("Tomasz", "Blawucki", "blaw2123", "blawl2123@gmail.com")
@@ -116,7 +116,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
                 .withPhoneNumber("123123123").build();
         Organizer testUser8 = organizerBuilder
                 .create("Lukasz", "Depta", "dept2123", "dept2123@gmail.com")
-                .setPassword("dept2123")
+                .setPassword("dept21232123")
                 .from(testAddress8)
                 .withPhoneNumber("123123123").build();
         Organizer testUser9 = organizerBuilder
@@ -134,6 +134,12 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
                 .create("Pawel", "Maziarczuk", "mazi2123", "mazi2123@gmail.com")
                 .setPassword("mazi2123")
                 .from(testAddress21)
+                .withPhoneNumber("123123123").build();
+
+        Administrator testAdmin1 = administratorBuilder
+                .create("Admin", "Admin", "admin", "6darksavant9@gmail.com")
+                .setPassword("admin2123")
+                .from(testAddress22)
                 .withPhoneNumber("123123123").build();
 
         Game testGame1 = new Game("Warhammer",testUser10);
@@ -261,6 +267,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
             tournamentRepository.save(testTournament10);
 
             userAccountRepository.save(testUser11);
+            userAccountRepository.save(testAdmin1);
         } catch (Exception e) {
             e.printStackTrace();
         }

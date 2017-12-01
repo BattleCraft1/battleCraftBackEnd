@@ -21,19 +21,17 @@ public class User implements UserDetails {
     private String username;
     private String password;
     private String email;
-    private Date lastPasswordReset;
     private Collection<? extends GrantedAuthority> authorities;
     private Boolean accountNonExpired = true;
     private Boolean accountNonLocked = true;
     private Boolean enabled = true;
 
-    public User(String username, String password, String email, boolean enabled, boolean accountNonLocked, Date lastPasswordReset, UserType role) {
+    public User(String username, String password, String email, boolean enabled, boolean accountNonLocked, UserType role) {
         this.setUsername(username);
         this.setPassword(password);
         this.setEmail(email);
         this.setEnabled(enabled);
         this.setAccountNonLocked(accountNonLocked);
-        this.setLastPasswordReset(lastPasswordReset);
         this.setAuthorities(Collections.singleton(new SimpleGrantedAuthority("ROLE_"+role.name())));
     }
 

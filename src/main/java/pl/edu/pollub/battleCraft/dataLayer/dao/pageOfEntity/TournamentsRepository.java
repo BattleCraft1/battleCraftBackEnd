@@ -66,7 +66,7 @@ public class TournamentsRepository{
         this.tournamentRepository.deleteTournamentsByUniqueNames(tournamentsToDeleteUniqueNames);
     }
 
-    public void deleteTournamentInProgressionRelations(List<Long> idsOfToursToDelete){
+    void deleteTournamentInProgressionRelations(List<Long> idsOfToursToDelete){
         List<Long> idsOfBattlesToDelete = this.tournamentRepository.selectIdsOfBattlesToDeleteByToursIds(idsOfToursToDelete);
         this.tournamentRepository.deletePlaysByBattlesIds(idsOfBattlesToDelete);
         this.tournamentRepository.deleteBattlesByIds(idsOfBattlesToDelete);

@@ -8,11 +8,10 @@ import org.hibernate.criterion.Order;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.PageOfEntities.AnyEntityNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.PageOfEntities.AnyObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.PageOfEntities.PageNotFoundException;
 
 import java.util.List;
-import java.util.Map;
 
 @Getter
 @Setter
@@ -25,7 +24,7 @@ public class Pager<V>{
     public Page createPage(Long countOfSuitableEntities, Criteria criteria, Pageable requestedPage) {
         if (countOfSuitableEntities == 0) {
             if (criteria.list().size() > 0)
-                throw new AnyEntityNotFoundException();
+                throw new AnyObjectNotFoundException();
             else
                 throw new PageNotFoundException(requestedPage.getPageNumber() + 1);
         }

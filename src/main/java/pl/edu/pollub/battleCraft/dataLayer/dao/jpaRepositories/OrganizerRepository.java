@@ -34,5 +34,5 @@ public interface OrganizerRepository extends JpaRepository<Organizer, Long> {
     Organizer findByName(String name);
 
     @Query("SELECT o FROM Organizer o WHERE o.name in ?1 and o.status = 'ORGANIZER' and o.banned = false")
-    List<Organizer> findOrganizersByUniqueNames(String... organizersUsersNames);
+    List<Organizer> findOrganizersByUniqueNames(List<String> organizersUsersNames);
 }

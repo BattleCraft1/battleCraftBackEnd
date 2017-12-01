@@ -14,6 +14,8 @@ import pl.edu.pollub.battleCraft.serviceLayer.services.file.FileService;
 import pl.edu.pollub.battleCraft.serviceLayer.services.security.AuthorityRecognizer;
 
 import javax.validation.constraints.NotNull;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 
 @Service
@@ -38,7 +40,7 @@ public class GameResourcesService {
     }
 
     public void deleteGamesRules(String... gamesToDeleteUniqueNames) {
-        fileService.deleteFilesRelatedWithEntities(DEFAULT_GAME_RULES_DIRECTORY_NAME,gamesToDeleteUniqueNames);
+        fileService.deleteFilesRelatedWithEntities(DEFAULT_GAME_RULES_DIRECTORY_NAME, Arrays.asList(gamesToDeleteUniqueNames));
     }
 
     public void renameGamesRules(String previousName,String newName) {
@@ -51,7 +53,7 @@ public class GameResourcesService {
 
         authorityRecognizer.checkIfCurrentUserIsCreatorOfGame(game);
 
-        fileService.deleteFilesRelatedWithEntities(DEFAULT_GAME_RULES_DIRECTORY_NAME,game.getName());
+        fileService.deleteFilesRelatedWithEntities(DEFAULT_GAME_RULES_DIRECTORY_NAME, Collections.singletonList(game.getName()));
 
         String extension = file.getOriginalFilename().split("\\.")[1];
 

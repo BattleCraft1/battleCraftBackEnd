@@ -6,11 +6,9 @@ import org.springframework.web.multipart.MultipartFile;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.UserAccountRepository;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
-import pl.edu.pollub.battleCraft.dataLayer.domain.Game.Game;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.File.UserAvatar.InvalidUserAvatarExtension;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ThisObjectIsBannedException;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.Security.YouAreNotOwnerOfThisObjectException;
 import pl.edu.pollub.battleCraft.serviceLayer.services.file.FileService;
 import pl.edu.pollub.battleCraft.serviceLayer.services.image.ImageService;
 import pl.edu.pollub.battleCraft.serviceLayer.services.security.AuthorityRecognizer;
@@ -21,6 +19,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -60,7 +60,7 @@ public class UserAccountResourcesService {
         }
     }
 
-    public void deleteUsersAccountsAvatars(String... usersToDeleteUniqueNames) throws IOException{
+    public void deleteUsersAccountsAvatars(List<String> usersToDeleteUniqueNames) throws IOException{
         fileService.deleteFilesRelatedWithEntities(DEFAULT_USER_AVATARS_DIRECTORY_NAME,usersToDeleteUniqueNames);
     }
 
@@ -79,7 +79,7 @@ public class UserAccountResourcesService {
 
         authorityRecognizer.checkIfCurrentUserIsOwnerOfAvatar(user);
 
-        fileService.deleteFilesRelatedWithEntities(DEFAULT_USER_AVATARS_DIRECTORY_NAME,user.getName());
+        fileService.deleteFilesRelatedWithEntities(DEFAULT_USER_AVATARS_DIRECTORY_NAME, Collections.singletonList(user.getName()));
 
         String extension = file.getOriginalFilename().split("\\.")[1];
 

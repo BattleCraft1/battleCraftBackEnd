@@ -58,8 +58,7 @@ public class TournamentValidator implements Validator {
         this.validateTournamentName(tournamentWebDTO.getNameChange());
         this.validatePlayersOnTableCount(tournamentWebDTO.getPlayersOnTableCount());
         this.validateTablesCount(tournamentWebDTO.getPlayersOnTableCount(),tournamentWebDTO.getTablesCount());
-        this.validateToursCount(tournamentWebDTO.getToursCount(),
-                tournamentWebDTO.getTablesCount());
+        this.validateToursCount(tournamentWebDTO.getToursCount(), tournamentWebDTO.getTablesCount());
         this.validateStartDate(tournamentWebDTO.getDateOfStart());
         this.validateEndDate(tournamentWebDTO.getDateOfStart(),tournamentWebDTO.getDateOfEnd());
         addressValidator.validate(tournamentWebDTO,errors);
@@ -88,8 +87,7 @@ public class TournamentValidator implements Validator {
     }
 
     private void validateToursCount(int toursCount, int tablesCount){
-        int maxPlayers = (2 * tablesCount);
-        int maxToursNumber = maxPlayers - 1;
+        int maxToursNumber = 2 * tablesCount;
         if(toursCount>maxToursNumber)
             errors.rejectValue("toursCount","", new StringBuilder("Max tours number in this tournament is: ").append(maxToursNumber).toString());
     }
@@ -157,13 +155,17 @@ public class TournamentValidator implements Validator {
     }
 
     public List<Organizer> getValidatedOrganizers(TournamentRequestDTO tournamentWebDTO,BindingResult bindingResult){
-        if(tournamentWebDTO.getOrganizers().length==0)
+        if(tournamentWebDTO.getOrganizers().size()==0) {
+            bindingResult.rejectValue("organizers","","Count of Organizer must be greater than 0");
             return new ArrayList<>();
+        }
         if(containsDuplicates(tournamentWebDTO.getOrganizers()))
-            bindingResult.rejectValue("Organizer","","You can invite organizer only once");
+            bindingResult.rejectValue("organizers","","You can invite organizer only once");
         List<Organizer> organizersList = organizerRepository.findOrganizersByUniqueNames(tournamentWebDTO.getOrganizers());
+        if(organizersList.size()==0)
+            bindingResult.rejectValue("organizers","","Count of Organizer must be greater than 0");
         if(organizersList.size()>10)
-            bindingResult.rejectValue("Organizer","","Count of Organizer must be less than 10");
+            bindingResult.rejectValue("organizers","","Count of Organizer must be less than 10");
         return organizersList;
     }
 

@@ -49,6 +49,8 @@ public class TournamentService {
         tournamentValidator.checkIfTournamentExist(tournamentWebDTO,bindingResult);
         tournamentValidator.validate(tournamentWebDTO,bindingResult);
         Game tournamentGame = tournamentValidator.getValidatedGame(tournamentWebDTO,bindingResult);
+        String currentUserName = authorityRecognizer.getCurrentUserNameFromContext();
+        tournamentWebDTO.getOrganizers().add(currentUserName);
         List<Organizer> organizers = tournamentValidator.getValidatedOrganizers(tournamentWebDTO,bindingResult);
         List<List<Player>> participants = tournamentValidator.getValidatedParticipants(tournamentWebDTO,bindingResult);
 

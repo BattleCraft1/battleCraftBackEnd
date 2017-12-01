@@ -2,6 +2,7 @@ package pl.edu.pollub.battleCraft.webLayer.toResponseDTOsMappers.TournamentProgr
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentStatus;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.subClasses.DuelTournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
@@ -72,7 +73,11 @@ public class DuelTournamentProgressDTOMapper {
         duelTournamentProgressDTO.setPlayersCount(tournament.getParticipation().size());
 
         List<String> organizersNames = tournament.getOrganizations().stream().map(organization -> organization.getOrganizer().getName()).collect(Collectors.toList());
-        duelTournamentProgressDTO.setCanCurrentUserMenageTournament(organizersNames.contains(authorityRecognizer.getCurrentUserNameFromContext()));
+        duelTournamentProgressDTO.setCanCurrentUserMenageTournament(
+                (organizersNames.contains(authorityRecognizer.getCurrentUserNameFromContext())
+                        && tournament.getStatus()!= TournamentStatus.FINISHED)
+                || authorityRecognizer.getCurrentUserRoleFromContext().equals("ROLE_ADMIN")
+        );
 
         return duelTournamentProgressDTO;
     }

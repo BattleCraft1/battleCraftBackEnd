@@ -45,6 +45,9 @@ public class GroupTournamentManagementService extends TournamentManagementServic
             throw new TooFewPlayersToStartTournament(tournament.getName());
         }
         tournament.filterNoAcceptedOrganizations();
+        if(tournament.getOrganizations().size()<1){
+            throw new TooFewOrganizersToStartTournament(tournament.getName());
+        }
 
         int maxToursCount = this.calculateToursNumber(tournament);
         int battlesCount = this.calculateNumberOfBattles(tournament.getParticipation().size());

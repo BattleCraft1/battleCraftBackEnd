@@ -8,6 +8,7 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.enums.UserTy
 import pl.edu.pollub.battleCraft.dataLayer.domain.VerificationToken.VerificationToken;
 
 import javax.persistence.*;
+import java.util.Calendar;
 import java.util.Date;
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -22,13 +23,11 @@ public class UserAccount extends AddressOwner{
     public UserAccount(){
         super();
         this.status = UserType.NEW;
-        this.dateOfResetPassword = new Date();
     }
 
     protected UserAccount(UserType userType){
         super();
         this.status = userType;
-        this.dateOfResetPassword = new Date();
     }
 
     @Enumerated(EnumType.STRING)
@@ -54,9 +53,6 @@ public class UserAccount extends AddressOwner{
 
     @OneToOne(mappedBy = "user")
     private VerificationToken token;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date dateOfResetPassword;
 
     protected boolean banned = false;
 

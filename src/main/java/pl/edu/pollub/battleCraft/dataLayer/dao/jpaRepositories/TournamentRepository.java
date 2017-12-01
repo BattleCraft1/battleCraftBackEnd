@@ -67,7 +67,7 @@ public interface TournamentRepository extends JpaRepository<Tournament, Long> {
     @Query("DELETE FROM Tour t WHERE t.id in ?1")
     void deleteToursByIds(List<Long> idsOfToursToDelete);
 
-    @Query("SELECT t.id FROM Tournament t WHERE t.game = (SELECT g.id FROM Game g WHERE g.banned = true AND g.name in ?1)")
+    @Query("SELECT t.id FROM Tournament t WHERE t.game = (SELECT g.id FROM Game g WHERE g.name in ?1)")
     List<Long> selectTournamentsIdsByGameUniqueNames(String... gamesToDeleteUniqueNames);
 
     @Modifying
@@ -103,7 +103,7 @@ public interface TournamentRepository extends JpaRepository<Tournament, Long> {
     @Query("SELECT t FROM Tournament t Where t.status='IN_PROGRESS' and t.banned = false")
     List<Tournament> findAllStartedTournament();
 
-    @Query("SELECT t FROM Tournament t Where t.banned = true ")
+    @Query("SELECT t FROM Tournament t Where t.name in ?1 and t.banned = true ")
     List<Tournament> findBannedTournamentsByUniqueNames(String... uniqueNames);
 
     @Query("SELECT t FROM Tournament t Where t.name = ?1 and (t.status='IN_PROGRESS' or t.status='FINISHED') and t.banned = false")

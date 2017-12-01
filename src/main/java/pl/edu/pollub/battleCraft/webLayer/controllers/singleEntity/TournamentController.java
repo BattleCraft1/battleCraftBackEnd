@@ -23,7 +23,7 @@ public class TournamentController {
         this.tournamentToResponseDTOMapper = tournamentToResponseDTOMapper;
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ORGANIZER')")
+    @PreAuthorize("hasAnyRole('ROLE_ORGANIZER')")
     @PostMapping(value = "/add/tournament", consumes = MediaType.APPLICATION_JSON_VALUE)
     public TournamentResponseDTO addTournament(@RequestBody TournamentRequestDTO tournamentRequestDTO, BindingResult bindingResult){
         return tournamentToResponseDTOMapper.map(tournamentService.organizeTournament(tournamentRequestDTO, bindingResult));

@@ -90,8 +90,20 @@ public class UsersAccountsRepository{
     }
 
     public void acceptUsersAccounts(List<UserAccount> userAccountsToAccept) {
-        userAccountRepository.delete(userAccountsToAccept);
-        List<Player> acceptedUserAccounts = this.advanceUsersToPlayers(userAccountsToAccept);
+        List<UserAccount> userAccountsToDelete = new ArrayList<>();
+        List<Player> acceptedUserAccounts = userAccountsToAccept.stream().map(
+                userAccount -> {
+                    if(userAccount instanceof Player) {
+                        userAccount.setStatus(UserType.ACCEPTED);
+                        return (Player)userAccount;
+                    }
+                    else{
+                        userAccountsToDelete.add(userAccount);
+                        return this.advanceUserToPlayer(userAccount);
+                    }
+                }
+        ).collect(Collectors.toList());
+        userAccountRepository.delete(userAccountsToDelete);
         playerRepository.save(acceptedUserAccounts);
     }
 
@@ -119,9 +131,21 @@ public class UsersAccountsRepository{
     }
 
     public void advancePlayersToOrganizer(List<Player> playersToAdvance) {
-        playerRepository.delete(playersToAdvance);
-        List<Organizer> organizers = this.advancePlayersToOrganizers(playersToAdvance);
-        organiserRepository.save(organizers);
+        List<Player> playersToDelete = new ArrayList<>();
+        List<Organizer> advancedPlayersToOrganizers = playersToAdvance.stream().map(
+                player -> {
+                    if(player instanceof Organizer) {
+                        player.setStatus(UserType.ORGANIZER);
+                        return (Organizer)player;
+                    }
+                    else{
+                        playersToDelete.add(player);
+                        return this.advancePlayerToOrganizer(player);
+                    }
+                }
+        ).collect(Collectors.toList());
+        playerRepository.delete(playersToDelete);
+        organiserRepository.save(advancedPlayersToOrganizers);
     }
 
     public void degradeOrganizerToPlayers(List<Organizer> organizers) {
@@ -133,26 +157,12 @@ public class UsersAccountsRepository{
         organiserRepository.save(organizers);
     }
 
-    private List<Player> advanceUsersToPlayers(List<UserAccount> userAccounts){
-        List<Player> players = new ArrayList<>();
-        userAccounts.forEach(
-                userAccount -> {
-                    if(userAccount.getStatus()==UserType.NEW)
-                        players.add(userAccountToPlayerMapper.map(userAccount));
-                }
-        );
-        return players;
+    private Player advanceUserToPlayer(UserAccount userAccount){
+        return userAccountToPlayerMapper.map(userAccount);
     }
 
-    private List<Organizer> advancePlayersToOrganizers(List<Player> players){
-        List<Organizer> organizers = new ArrayList<>();
-        players.forEach(
-                player -> {
-                    if(player.getStatus()==UserType.ACCEPTED)
-                        organizers.add(playerToOrganizerMapper.map(player));
-                }
-        );
-        return organizers;
+    private Organizer advancePlayerToOrganizer(Player player){
+        return playerToOrganizerMapper.map(player);
     }
 
     private Join[] generateJoins(List<SearchCriteria> searchCriteria){

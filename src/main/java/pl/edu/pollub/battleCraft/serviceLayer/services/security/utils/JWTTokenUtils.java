@@ -23,11 +23,8 @@ public class JWTTokenUtils {
 
     private Long expiration = 604800L;
 
-
-    public Boolean canTokenBeRefreshed(String token, Date lastPasswordReset) {
-        final Date created = this.getCreatedDateFromToken(token);
-        return (!(this.isCreatedBeforeLastPasswordReset(created, lastPasswordReset))
-                && (!(this.isTokenExpired(token)) || this.ignoreTokenExpiration(token)));
+    public Boolean canTokenBeRefreshed(String token) {
+        return (!(this.isTokenExpired(token)) || this.ignoreTokenExpiration(token));
     }
 
     public String refreshToken(String token) {
@@ -45,10 +42,8 @@ public class JWTTokenUtils {
     public Boolean validateToken(String token, UserDetails userDetails) {
         User user = (User) userDetails;
         final String username = this.getUsernameFromToken(token);
-        final Date created = this.getCreatedDateFromToken(token);
         return (username.equals(user.getUsername())
-                && !(this.isTokenExpired(token))
-                && !(this.isCreatedBeforeLastPasswordReset(created, user.getLastPasswordReset())));
+                && !(this.isTokenExpired(token)));
     }
 
     public String getUsernameFromToken(String token) {
@@ -119,10 +114,6 @@ public class JWTTokenUtils {
     private Boolean isTokenExpired(String token) {
         final Date expiration = this.getExpirationDateFromToken(token);
         return expiration.before(this.generateCurrentDate());
-    }
-
-    private Boolean isCreatedBeforeLastPasswordReset(Date created, Date lastPasswordReset) {
-        return (lastPasswordReset != null && created.before(lastPasswordReset));
     }
 
     private Boolean ignoreTokenExpiration(String token) {

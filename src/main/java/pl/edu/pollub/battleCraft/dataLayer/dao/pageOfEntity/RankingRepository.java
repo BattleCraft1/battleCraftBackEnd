@@ -11,11 +11,9 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.Battle.Battle;
 import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.search.field.Join;
 import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.search.field.Field;
 import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.search.criteria.SearchCriteria;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.PageOfEntities.AnyEntityNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.PageOfEntities.AnyObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.PageOfEntities.PageNotFoundException;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -28,7 +26,7 @@ public class RankingRepository{
         this.searcher = searcher;
     }
 
-    @Transactional(rollbackFor = {AnyEntityNotFoundException.class,PageNotFoundException.class})
+    @Transactional(rollbackFor = {AnyObjectNotFoundException.class,PageNotFoundException.class})
     public Page getPageOfRanking(List<SearchCriteria> searchCriteria, Pageable requestedPage) {
         return searcher
                 .select(

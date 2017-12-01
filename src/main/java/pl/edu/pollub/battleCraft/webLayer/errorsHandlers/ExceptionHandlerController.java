@@ -15,15 +15,17 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import pl.edu.pollub.battleCraft.serviceLayer.errors.ErrorResource;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityValidation.EntityValidationException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ThisObjectIsBannedException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ThisObjectIsNotAcceptedException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ThisTournamentIsAlreadyStarted;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.PageOfEntities.AnyEntityNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.PageOfEntities.AnyObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.PageOfEntities.OperationOnPageFailedException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.PageOfEntities.PageNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.File.StorageException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.File.StorageFileNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.File.UserAvatar.InvalidUserAvatarExtension;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.Registration.VerificationException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.Security.YouAreNotOwnerOfThisObjectException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentManagement.TournamentManagementException;
 
 import java.util.List;
@@ -41,7 +43,7 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>("There are unrecognized problems on the server side. Please contact with administrator.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(value = {PageNotFoundException.class, ObjectNotFoundException.class, StorageFileNotFoundException.class, AnyEntityNotFoundException.class})
+    @ExceptionHandler(value = {PageNotFoundException.class, ObjectNotFoundException.class, StorageFileNotFoundException.class, AnyObjectNotFoundException.class})
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     protected ResponseEntity<String> handleNotFoundException(Exception ex, WebRequest req) {
         System.out.println("exception: "+ex.getClass().getSimpleName()+" message: " + ex.getMessage());
@@ -49,9 +51,10 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(value = {OperationOnPageFailedException.class, InvalidUserAvatarExtension.class, IllegalArgumentException.class,
-            TournamentManagementException.class, ThisObjectIsNotAcceptedException.class, ThisObjectIsNotAcceptedException.class,
-            AuthenticationException.class, VerificationException.class, ThisTournamentIsAlreadyStarted.class})
+    @ExceptionHandler(value = {OperationOnPageFailedException.class, InvalidUserAvatarExtension.class, TournamentManagementException.class,
+            ThisObjectIsNotAcceptedException.class, ThisObjectIsNotAcceptedException.class,
+            AuthenticationException.class, VerificationException.class, ThisTournamentIsAlreadyStarted.class,
+            YouAreNotOwnerOfThisObjectException.class, ThisObjectIsBannedException.class})
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     protected ResponseEntity<String> handleBadRequest(Exception ex, WebRequest req) {
         System.out.println("exception: "+ex.getClass().getSimpleName()+" message: " + ex.getMessage());

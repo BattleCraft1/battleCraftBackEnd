@@ -26,9 +26,8 @@ public class ReportService {
 
     public void sendReportToAdmin(ReportDTO reportDTO){
         List<Administrator> administratorList = adminRepository.findAll();
-        String userWhoReportName = authorityRecognizer.getCurrentUserRoleFromContext();
-        administratorList.forEach(
-                administrator -> mailUtil.sendReportToAdmin(userWhoReportName,reportDTO,administrator.getName())
-        );
+        String userWhoReportName = authorityRecognizer.getCurrentUserNameFromContext();
+        mailUtil.sendReportToAdmin(userWhoReportName,reportDTO,administratorList.get(0).getEmail());
+
     }
 }

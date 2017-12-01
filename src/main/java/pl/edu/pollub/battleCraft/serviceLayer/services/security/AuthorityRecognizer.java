@@ -43,8 +43,6 @@ public class AuthorityRecognizer {
     @PersistenceContext
     private EntityManager entityManager;
 
-    private Authentication currentAuthentication;
-
     private final TournamentRepository tournamentRepository;
 
     private final GameRepository gameRepository;
@@ -53,16 +51,16 @@ public class AuthorityRecognizer {
     public AuthorityRecognizer(TournamentRepository tournamentRepository, GameRepository gameRepository){
         this.tournamentRepository = tournamentRepository;
         this.gameRepository = gameRepository;
-        currentAuthentication = SecurityContextHolder.getContext().getAuthentication();
     }
 
     public String getCurrentUserRoleFromContext(){
-        return currentAuthentication.getAuthorities().stream()
+        return SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority).findFirst().orElse("GUEST");
     }
 
     public String getCurrentUserNameFromContext(){
-        return currentAuthentication.getName();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getName();
     }
 
     public String getCurrentUserRoleFromUserDetails(UserDetails userDetails){
@@ -88,8 +86,15 @@ public class AuthorityRecognizer {
         }
     }
 
-    public void modifyUsersSearchCriteriaForCurrentUserRole(List<SearchCriteria> searchCriteria){
+    public void modifyUsersSearchCriteriaForCurrentUser(List<SearchCriteria> searchCriteria){
         String role = this.getCurrentUserRoleFromContext();
+        String name = this.getCurrentUserNameFromContext();
+        searchCriteria.add(new SearchCriteria(
+                Collections.singletonList("name"),
+                "!",
+                Collections.singletonList(name)
+        ));
+
         if(!role.equals("ROLE_ADMIN")){
             searchCriteria.add(
                     new SearchCriteria(
@@ -154,7 +159,7 @@ public class AuthorityRecognizer {
         tournament.getOrganizations().stream()
                 .map(organization -> organization.getOrganizer().getName())
                 .filter(organizerName -> organizerName.equals(username))
-                .findFirst().orElseThrow(() -> new YouAreNotOwnerOfThisObjectException(Tournament.class,tournament.getName()));
+                .findAny().orElseThrow(() -> new YouAreNotOwnerOfThisObjectException(Tournament.class,tournament.getName()));
     }
 
     public List<String> checkIfCurrentUserCanDeleteTournaments(String... tournamentsToDeleteUniqueNames){
@@ -231,7 +236,7 @@ public class AuthorityRecognizer {
 
         if(!role.equals("ROLE_ADMIN")){
             if(user instanceof Player){
-                if(((Player)user).isBanned())
+                if((user).isBanned())
                     throw new ThisObjectIsBannedException(Player.class,user.getName());
             }
 

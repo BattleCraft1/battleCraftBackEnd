@@ -35,4 +35,5 @@ public class UserAccountResponseDTO {
     private List<String> finishedOrganizedTournaments = new ArrayList<>();
     private List<String> createdGames = new ArrayList<>();
     private boolean banned;
+    private boolean canCurrentUserEdit;
 }

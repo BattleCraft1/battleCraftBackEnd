@@ -20,7 +20,7 @@ public class Participation{
     public Participation(Player player, Tournament participatedTournament, Long groupNumber) {
         this.player = player;
         this.participatedTournament = participatedTournament;
-        this.accepted = true;
+        this.accepted = true;//true only for test
         this.groupNumber = groupNumber;
     }
 

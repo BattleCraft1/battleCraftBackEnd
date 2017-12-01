@@ -2,6 +2,7 @@ package pl.edu.pollub.battleCraft.webLayer.toResponseDTOsMappers.TournamentProgr
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentStatus;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.subClasses.GroupTournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Play;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.emuns.ColorOfSideInBattle;
@@ -89,7 +90,11 @@ public class GroupTournamentProgressDTOMapper {
         groupTournamentProgressResponseDTO.setPlayersCount(tournament.getParticipation().size()/2);
 
         List<String> organizersNames = tournament.getOrganizations().stream().map(organization -> organization.getOrganizer().getName()).collect(Collectors.toList());
-        groupTournamentProgressResponseDTO.setCanCurrentUserMenageTournament(organizersNames.contains(authorityRecognizer.getCurrentUserNameFromContext()));
+        groupTournamentProgressResponseDTO.setCanCurrentUserMenageTournament(
+                (organizersNames.contains(authorityRecognizer.getCurrentUserNameFromContext())
+                        && tournament.getStatus()!= TournamentStatus.FINISHED)
+                || authorityRecognizer.getCurrentUserRoleFromContext().equals("ROLE_ADMIN")
+        );
 
         return groupTournamentProgressResponseDTO;
     }

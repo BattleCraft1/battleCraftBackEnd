@@ -11,13 +11,16 @@ import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.UsersAccountsReposit
 import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.search.criteria.SearchCriteria;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentStatus;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
+import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Admin.Administrator;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.Organizer;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.relationships.Organization;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation;
+import pl.edu.pollub.battleCraft.serviceLayer.services.resources.UserAccountResourcesService;
 import pl.edu.pollub.battleCraft.serviceLayer.services.security.AuthorityRecognizer;
 import pl.edu.pollub.battleCraft.serviceLayer.services.validators.UniqueNamesValidator;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,15 +30,17 @@ public class UsersAccountsService {
 
     private final UsersAccountsRepository userAccountsRepository;
     private final UserAccountRepository userAccountRepository;
+    private final UserAccountResourcesService userAccountResourcesService;
     private final PlayerRepository playerRepository;
     private final OrganizerRepository organizerRepository;
     private final UniqueNamesValidator uniqueNamesValidator;
     private final AuthorityRecognizer authorityRecognizer;
 
     @Autowired
-    public UsersAccountsService(UsersAccountsRepository usersAccountsRepository, UserAccountRepository userAccountRepository, PlayerRepository playerRepository, OrganizerRepository organizerRepository, UniqueNamesValidator uniqueNamesValidator, AuthorityRecognizer authorityRecognizer) {
+    public UsersAccountsService(UsersAccountsRepository usersAccountsRepository, UserAccountRepository userAccountRepository, UserAccountResourcesService userAccountResourcesService, PlayerRepository playerRepository, OrganizerRepository organizerRepository, UniqueNamesValidator uniqueNamesValidator, AuthorityRecognizer authorityRecognizer) {
         this.userAccountsRepository = usersAccountsRepository;
         this.userAccountRepository = userAccountRepository;
+        this.userAccountResourcesService = userAccountResourcesService;
         this.playerRepository = playerRepository;
         this.organizerRepository = organizerRepository;
         this.uniqueNamesValidator = uniqueNamesValidator;
@@ -43,7 +48,7 @@ public class UsersAccountsService {
     }
 
     public Page getPageOfUserAccounts(Pageable requestedPage, List<SearchCriteria> searchCriteria) {
-        authorityRecognizer.modifyUsersSearchCriteriaForCurrentUserRole(searchCriteria);
+        authorityRecognizer.modifyUsersSearchCriteriaForCurrentUser(searchCriteria);
         return userAccountsRepository.getPageOfUserAccounts(searchCriteria, requestedPage);
     }
 
@@ -76,6 +81,11 @@ public class UsersAccountsService {
                                 .filter(tournament -> tournament.getStatus() == TournamentStatus.IN_PROGRESS)
                                 .findAny().ifPresent(tournament -> uniqueNamesOfUsersWhoHaveTournamentsInProgress.add(organizer.getName()));
                     }
+
+                    if(userAccount instanceof Administrator){
+                        uniqueNamesOfUsersWhoHaveTournamentsInProgress.add(userAccount.getName());
+                    }
+
                 }
         );
 
@@ -83,6 +93,11 @@ public class UsersAccountsService {
         validUniqueNames.removeAll(uniqueNamesOfUsersWhoHaveTournamentsInProgress);
         uniqueNamesValidator.validateUniqueNamesOfUsersToDelete(validUniqueNames,usersToDeleteUniqueNames);
 
+        try {
+            userAccountResourcesService.deleteUsersAccountsAvatars(validUniqueNames);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         userAccountsRepository.deleteUsersAccounts(usersToDeleteUniqueNames);
     }
 

@@ -1,5 +1,6 @@
 package pl.edu.pollub.battleCraft.webLayer.toResponseDTOsMappers;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentStatus;
@@ -11,6 +12,7 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.P
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Play;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.nullObjectPattern.NullParticipation;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Game.Game;
+import pl.edu.pollub.battleCraft.serviceLayer.services.security.AuthorityRecognizer;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Invitation.PlayerFinishedInvitationResponse;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Invitation.PlayerGroupFinishedInvitationResponseDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Invitation.InvitationResponseDTO;
@@ -22,9 +24,20 @@ import java.util.stream.Collectors;
 
 @Component
 public class UserAccountToResponseDTOMapper {
+
+    private final AuthorityRecognizer authorityRecognizer;
+
+    @Autowired
+    public UserAccountToResponseDTOMapper(AuthorityRecognizer authorityRecognizer) {
+        this.authorityRecognizer = authorityRecognizer;
+    }
+
     public UserAccountResponseDTO map(UserAccount userAccount){
         UserAccountResponseDTO userAccountResponseDTO = new UserAccountResponseDTO();
         userAccountResponseDTO.setName(userAccount.getName());
+        userAccountResponseDTO.setCanCurrentUserEdit(
+                authorityRecognizer.getCurrentUserNameFromContext().equals(userAccount.getName())
+                        || authorityRecognizer.getCurrentUserRoleFromContext().equals("ROLE_ADMIN"));
         userAccountResponseDTO.setNameChange(userAccount.getName());
         userAccountResponseDTO.setEmail(userAccount.getEmail());
         userAccountResponseDTO.setFirstname(userAccount.getFirstname());

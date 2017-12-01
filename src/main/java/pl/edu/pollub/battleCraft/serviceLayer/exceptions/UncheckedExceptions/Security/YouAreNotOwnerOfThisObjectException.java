@@ -2,10 +2,10 @@ package pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.Se
 
 public class YouAreNotOwnerOfThisObjectException extends RuntimeException{
     public YouAreNotOwnerOfThisObjectException(Class objectClass,String objectName){
-        super(new StringBuilder("You are one owner of: ").append(objectClass).append(" with name: ").append(objectName).toString());
+        super(new StringBuilder("You are not owner of: ").append(objectClass.getSimpleName()).append(" with name: ").append(objectName).toString());
     }
 
     public YouAreNotOwnerOfThisObjectException(String objectType,String objectName){
-        super(new StringBuilder("You are one owner of: ").append(objectType).append(" with name: ").append(objectName).toString());
+        super(new StringBuilder("You are not owner of: ").append(objectType).append(" with name: ").append(objectName).toString());
     }
 }

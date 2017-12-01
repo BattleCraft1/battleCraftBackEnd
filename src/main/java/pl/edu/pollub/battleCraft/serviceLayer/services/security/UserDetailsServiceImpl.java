@@ -75,7 +75,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                     userAccount.getEmail(),
                     enabled,
                     accountNonLocked,
-                    userAccount.getDateOfResetPassword(),
                     userAccount.getStatus());
         }
     }

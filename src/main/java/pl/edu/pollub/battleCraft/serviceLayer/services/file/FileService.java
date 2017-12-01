@@ -19,6 +19,7 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -108,7 +109,7 @@ public class FileService {
             throw new StorageFileNotFoundException(new StringBuilder("file of path: ").append(path.getFileName()).append(" not exist").toString());
     }
 
-    public void deleteFilesRelatedWithEntities(String directoryName, String... entitiesUniqueNames){
+    public void deleteFilesRelatedWithEntities(String directoryName, List<String> entitiesUniqueNames){
         for(String entitiesUniqueName:entitiesUniqueNames){
             try {
                 Path relatedFile = this.findFileByRelatedEntityName(entitiesUniqueName,directoryName);

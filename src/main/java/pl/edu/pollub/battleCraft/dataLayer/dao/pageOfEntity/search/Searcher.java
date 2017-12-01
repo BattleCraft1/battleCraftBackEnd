@@ -17,7 +17,7 @@ import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.search.criteria.Sear
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.Organizer;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.PageOfEntities.AnyEntityNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.PageOfEntities.AnyObjectNotFoundException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -82,6 +82,8 @@ public class Searcher{
             String operationOnField = condition.getOperation();
             if(fieldValue.get(0) instanceof String && operationOnField.equalsIgnoreCase(":"))
                 whereConditions.add(Restrictions.like(fieldName, fieldValue.get(0)));
+            else if(fieldValue.get(0) instanceof String && operationOnField.equalsIgnoreCase("!"))
+                whereConditions.add(Restrictions.not(Restrictions.like(fieldName, fieldValue.get(0))));
             else if(fieldValue.get(0) instanceof Enum){
                 SimpleExpression[] orCriteries = fieldValue.stream().map(value -> Restrictions.eq(fieldName, value))
                         .toArray(SimpleExpression[]::new);
@@ -133,7 +135,7 @@ public class Searcher{
         );
         Long count = (Long) criteriaCount.uniqueResult();
         if(count==0)
-            throw new AnyEntityNotFoundException();
+            throw new AnyObjectNotFoundException();
         return count;
     }
 

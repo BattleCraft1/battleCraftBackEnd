@@ -20,7 +20,7 @@ public class Organization{
     public Organization(Organizer organizer, Tournament organizedTournament) {
         this.organizer = organizer;
         this.organizedTournament = organizedTournament;
-        this.accepted = false;
+        this.accepted = true;//true only for test
     }
 
     public Organization(Organizer organizer, Tournament organizedTournament, boolean accepted) {
