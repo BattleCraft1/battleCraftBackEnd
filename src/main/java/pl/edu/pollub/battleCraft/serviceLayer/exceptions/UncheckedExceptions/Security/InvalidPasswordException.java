@@ -1,7 +1,9 @@
 package pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.Security;
 
-public class InvalidPasswordException extends RuntimeException{
-    public InvalidPasswordException(){
-        super("Password incorrect");
+import org.springframework.security.core.AuthenticationException;
+
+public class InvalidPasswordException extends AuthenticationException {
+    public InvalidPasswordException(String msg){
+        super(msg);
     }
 }

@@ -25,6 +25,8 @@ import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.Fil
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.File.StorageFileNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.File.UserAvatar.InvalidUserAvatarExtension;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.Registration.VerificationException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.Security.InvalidPasswordException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.Security.MyAccessDeniedException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.Security.YouAreNotOwnerOfThisObjectException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentManagement.TournamentManagementException;
 
@@ -34,14 +36,6 @@ import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
-
-    @ExceptionHandler(value = {RuntimeException.class, Exception.class, StorageException.class})
-    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
-    protected ResponseEntity<String> handleInternalException(Exception ex, WebRequest req) {
-        System.out.println("exception: "+ex.getClass().getSimpleName()+" message: " + ex.getMessage());
-        ex.printStackTrace();
-        return new ResponseEntity<>("There are unrecognized problems on the server side. Please contact with administrator.", HttpStatus.INTERNAL_SERVER_ERROR);
-    }
 
     @ExceptionHandler(value = {PageNotFoundException.class, ObjectNotFoundException.class, StorageFileNotFoundException.class, AnyObjectNotFoundException.class})
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
@@ -54,7 +48,8 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = {OperationOnPageFailedException.class, InvalidUserAvatarExtension.class, TournamentManagementException.class,
             ThisObjectIsNotAcceptedException.class, ThisObjectIsNotAcceptedException.class,
             AuthenticationException.class, VerificationException.class, ThisTournamentIsAlreadyStarted.class,
-            YouAreNotOwnerOfThisObjectException.class, ThisObjectIsBannedException.class})
+            YouAreNotOwnerOfThisObjectException.class, ThisObjectIsBannedException.class, InvalidPasswordException.class})
+
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     protected ResponseEntity<String> handleBadRequest(Exception ex, WebRequest req) {
         System.out.println("exception: "+ex.getClass().getSimpleName()+" message: " + ex.getMessage());
@@ -62,7 +57,7 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(value = {AccessDeniedException.class})
+    @ExceptionHandler(value = {AccessDeniedException.class, MyAccessDeniedException.class})
     @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
     protected ResponseEntity<String> handleUnauthorizedRequest(Exception ex, WebRequest req) {
         System.out.println("exception: "+ex.getClass().getSimpleName()+" message: " + ex.getMessage());
@@ -86,5 +81,14 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         return handleExceptionInternal(ex, error, headers, HttpStatus.UNPROCESSABLE_ENTITY, request);
+    }
+
+
+    @ExceptionHandler(value = {RuntimeException.class, Exception.class, StorageException.class})
+    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+    protected ResponseEntity<String> handleInternalException(Exception ex, WebRequest req) {
+        System.out.println("exception: "+ex.getClass().getSimpleName()+" message: " + ex.getMessage());
+        ex.printStackTrace();
+        return new ResponseEntity<>("There are unrecognized problems on the server side. Please contact with administrator.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

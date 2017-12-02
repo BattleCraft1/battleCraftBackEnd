@@ -26,11 +26,11 @@ public class UserAccountController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ORGANIZER','ROLE_ACCEPTED')")
     @PostMapping(value = "/edit/user", consumes = MediaType.APPLICATION_JSON_VALUE)
     public UserAccountResponseDTO editUserAccount(@RequestBody UserAccountWithInvitationsRequestDTO userAccountRequestDTO, BindingResult bindingResult){
-        return userAccountToResponseDTOMapper.map(userAccountService.editUserAccount(userAccountRequestDTO, bindingResult));
+        return userAccountToResponseDTOMapper.map(userAccountRequestDTO.getName(),userAccountService.editUserAccount(userAccountRequestDTO, bindingResult));
     }
 
     @GetMapping(value = "/get/user")
     public UserAccountResponseDTO getUserAccount(@RequestParam(value = "name") String name){
-        return userAccountToResponseDTOMapper.map(userAccountService.getUserAccount(name));
+        return userAccountToResponseDTOMapper.map(name,userAccountService.getUserAccount(name));
     }
 }

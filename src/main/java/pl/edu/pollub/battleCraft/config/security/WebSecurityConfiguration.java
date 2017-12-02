@@ -28,11 +28,11 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
 
-    private final AuthenticationEntryPoint authenticationEntryPoint;
+    private final EntryPointUnauthorizedHandler authenticationEntryPoint;
 
 
     @Autowired
-    public WebSecurityConfiguration(UserDetailsService userDetailsService, AuthenticationEntryPoint authenticationEntryPoint) {
+    public WebSecurityConfiguration(UserDetailsService userDetailsService, EntryPointUnauthorizedHandler authenticationEntryPoint) {
         this.userDetailsService = userDetailsService;
         this.authenticationEntryPoint = authenticationEntryPoint;
     }

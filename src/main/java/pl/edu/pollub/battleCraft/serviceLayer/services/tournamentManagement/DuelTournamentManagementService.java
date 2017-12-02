@@ -115,6 +115,7 @@ public class DuelTournamentManagementService extends TournamentManagementService
 
     public DuelTournament previousTour(String name) {
         DuelTournament tournament = this.castToDuelTournament(this.findStartedTournamentByName(name));
+        authorityRecognizer.checkIfUserCanManageTournament(tournament);
         if(tournament.getCurrentTourNumber() <= 0)
             throw new ItIsFirstTourOfTournament(name);
         tournament.getTourByNumber(tournament.getCurrentTourNumber()).getBattles().forEach(Battle::clearPlayers);

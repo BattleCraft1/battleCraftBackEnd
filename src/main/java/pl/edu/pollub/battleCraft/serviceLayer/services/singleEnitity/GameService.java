@@ -43,7 +43,7 @@ public class GameService {
         this.authorityRecognizer = authorityRecognizer;
     }
 
-    @Transactional(rollbackFor = {EntityValidationException.class,ObjectNotFoundException.class})
+    @Transactional
     public Game addGame(GameRequestDTO gameRequestDTO, BindingResult bindingResult) {
         String organizerName = authorityRecognizer.getCurrentUserNameFromContext();
         UserAccount creator = Optional.ofNullable(userAccountRepository.findByName(organizerName))

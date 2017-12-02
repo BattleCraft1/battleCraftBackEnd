@@ -19,6 +19,7 @@ import pl.edu.pollub.battleCraft.serviceLayer.services.security.data.User;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Security.AuthRequestDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Security.ChangePasswordDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.Registration.EmailDTO;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.security.AccountResponseDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.security.AuthResponseDTO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -81,9 +82,17 @@ public class AuthenticationController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ORGANIZER','ROLE_ADMIN','ROLE_ACCEPTED')")
-    @RequestMapping(value = "change/password", method = RequestMethod.GET)
-    public void changePassword(ChangePasswordDTO changePasswordDTO) {
+    @PostMapping(value = "change/password")
+    public void changePassword(@RequestBody ChangePasswordDTO changePasswordDTO) {
         passwordService.changePassword(changePasswordDTO);
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ORGANIZER','ROLE_ADMIN','ROLE_ACCEPTED')")
+    @GetMapping(value = "account")
+    public AccountResponseDTO getAccountDetails() {
+        return new AccountResponseDTO(
+                roleRecognizer.getCurrentUserNameFromContext(),
+                roleRecognizer.getCurrentUserRoleFromContext());
     }
 
     @PostMapping(value = "reset/password")

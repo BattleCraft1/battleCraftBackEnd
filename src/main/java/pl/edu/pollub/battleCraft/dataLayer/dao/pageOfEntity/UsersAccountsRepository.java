@@ -3,6 +3,8 @@ package pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.session.SessionInformation;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.search.Searcher;

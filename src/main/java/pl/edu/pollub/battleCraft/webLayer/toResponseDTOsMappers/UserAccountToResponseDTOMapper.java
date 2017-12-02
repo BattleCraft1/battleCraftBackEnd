@@ -32,12 +32,16 @@ public class UserAccountToResponseDTOMapper {
         this.authorityRecognizer = authorityRecognizer;
     }
 
-    public UserAccountResponseDTO map(UserAccount userAccount){
+    public UserAccountResponseDTO map(String oldUserName,UserAccount userAccount){
         UserAccountResponseDTO userAccountResponseDTO = new UserAccountResponseDTO();
         userAccountResponseDTO.setName(userAccount.getName());
+
+        userAccountResponseDTO.setNewToken(authorityRecognizer.createNewTokenIfUserChangeUsername(oldUserName,userAccount));
+
         userAccountResponseDTO.setCanCurrentUserEdit(
-                authorityRecognizer.getCurrentUserNameFromContext().equals(userAccount.getName())
-                        || authorityRecognizer.getCurrentUserRoleFromContext().equals("ROLE_ADMIN"));
+                        authorityRecognizer.getCurrentUserNameFromContext().equals(oldUserName)
+                        || authorityRecognizer.getCurrentUserRoleFromContext().equals("ROLE_ADMIN")
+        );
         userAccountResponseDTO.setNameChange(userAccount.getName());
         userAccountResponseDTO.setEmail(userAccount.getEmail());
         userAccountResponseDTO.setFirstname(userAccount.getFirstname());
@@ -63,6 +67,7 @@ public class UserAccountToResponseDTOMapper {
             userAccountResponseDTO.setCreatedGames(organizer.getCreatedGames().stream().map(Game::getName).collect(Collectors.toList()));
             this.createOrganizations(userAccountResponseDTO,organizer);
         }
+
         return userAccountResponseDTO;
     }
 

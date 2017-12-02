@@ -11,10 +11,10 @@ import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.*;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityValidation.EntityValidationException;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationDTO.DuelTournamentInvitationDTO;
 import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationDTO.GroupTournamentInvitationDTO;
 import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationDTO.InvitationDTO;
+import pl.edu.pollub.battleCraft.serviceLayer.services.security.AuthorityRecognizer;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.Invitation.InvitationRequestDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.Invitation.InvitationRequestPlayerDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.Invitation.UserAccountWithInvitationsRequestDTO;
@@ -33,11 +33,14 @@ public class UserAccountWithInvitationsValidator implements Validator {
 
     private final UserAccountValidator userAccountValidator;
 
-    public UserAccountWithInvitationsValidator(TournamentRepository tournamentRepository, PlayerRepository playerRepository, UserAccountRepository userAccountRepository, UserAccountValidator userAccountValidator) {
+    private final AuthorityRecognizer authorityRecognizer;
+
+    public UserAccountWithInvitationsValidator(TournamentRepository tournamentRepository, PlayerRepository playerRepository, UserAccountRepository userAccountRepository, UserAccountValidator userAccountValidator, AuthorityRecognizer authorityRecognizer) {
         this.tournamentRepository = tournamentRepository;
         this.playerRepository = playerRepository;
         this.userAccountRepository = userAccountRepository;
         this.userAccountValidator = userAccountValidator;
+        this.authorityRecognizer = authorityRecognizer;
     }
 
     @Override
@@ -55,6 +58,7 @@ public class UserAccountWithInvitationsValidator implements Validator {
 
     public void checkIfUserWithThisNameOrEmailAlreadyExist(UserAccountWithInvitationsRequestDTO userAccountRequestDTO, BindingResult bindingResult){
         if(!userAccountRequestDTO.getName().equals(userAccountRequestDTO.getNameChange())) {
+            authorityRecognizer.checkIfCurrentUserCanModifyUsername(userAccountRequestDTO.getName());
             UserAccount userExist = userAccountRepository.findUserAccountByUniqueNameOrEmail(userAccountRequestDTO.getNameChange(),userAccountRequestDTO.getEmail());
             if (userExist.getName().equals(userAccountRequestDTO.getNameChange()))
                 bindingResult.rejectValue("nameChange", "", "User with this name already exist.");

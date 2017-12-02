@@ -96,11 +96,11 @@ public class Searcher{
             else if (operationOnField.equalsIgnoreCase("not in"))
                 whereConditions.add(Restrictions.not(Restrictions.in(fieldName, fieldValue)));
             else if (operationOnField.equalsIgnoreCase("participated by"))
-                whereConditions.add(Subqueries.in("name", this.tournamentsNamesParticipatedByUser(fieldValue.get(0))));
+                whereConditions.add(Subqueries.propertyIn("name", this.tournamentsNamesParticipatedByUser(fieldValue.get(0))));
             else if (operationOnField.equalsIgnoreCase("organized by"))
-                whereConditions.add(Subqueries.in("name", this.tournamentsNamesOrganizedByUser(fieldValue.get(0))));
+                whereConditions.add(Subqueries.propertyIn("name", this.tournamentsNamesOrganizedByUser(fieldValue.get(0))));
             else if (operationOnField.equalsIgnoreCase("not participate"))
-                whereConditions.add(Subqueries.propertyNotIn("name", this.userNamesWhoNotParticipateToThisTournamentSubQuery(fieldValue.get(0))));
+                whereConditions.add(Subqueries.propertyNotIn("name", this.userNamesParticipateInThisTournamentSubQuery(fieldValue.get(0))));
             else
                 whereConditions.add(Restrictions.eq(fieldName, fieldValue.get(0)));
         });
@@ -164,7 +164,7 @@ public class Searcher{
                 .setProjection(Projections.groupProperty("participatedTournament.name"));
     }
 
-    private DetachedCriteria userNamesWhoNotParticipateToThisTournamentSubQuery(Object fieldValue){
+    private DetachedCriteria userNamesParticipateInThisTournamentSubQuery(Object fieldValue){
         return DetachedCriteria.forClass(Tournament.class)
                 .createAlias("participation","participation")
                 .createAlias("participation.player","player")

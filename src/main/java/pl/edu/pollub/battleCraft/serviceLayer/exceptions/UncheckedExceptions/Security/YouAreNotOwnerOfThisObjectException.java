@@ -8,4 +8,8 @@ public class YouAreNotOwnerOfThisObjectException extends RuntimeException{
     public YouAreNotOwnerOfThisObjectException(String objectType,String objectName){
         super(new StringBuilder("You are not owner of: ").append(objectType).append(" with name: ").append(objectName).toString());
     }
+
+    public YouAreNotOwnerOfThisObjectException(String msg){
+        super(msg);
+    }
 }

@@ -74,7 +74,7 @@ public class MailUtil {
             MimeMessageHelper message = new MimeMessageHelper(mimeMessage);
             message.setTo(recipientAddress);
             message.setFrom("from@no-spam.com");
-            message.setSubject("BattleCraft Registration");
+            message.setSubject(subject);
             message.setSentDate(new Date());
             String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine,
                     "./src/main/resources/templates/velocity/"+templateName,

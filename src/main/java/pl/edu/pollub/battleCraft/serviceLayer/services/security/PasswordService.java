@@ -10,13 +10,11 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.P
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ThisObjectIsBannedException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.Registration.VerificationException;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.Security.InvalidPasswordConfirmationException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.Security.InvalidPasswordException;
 import pl.edu.pollub.battleCraft.serviceLayer.services.registration.utils.MailUtil;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Security.ChangePasswordDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.Registration.EmailDTO;
 
-import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -33,29 +31,33 @@ public class PasswordService {
         this.mailUtil = mailUtil;
     }
 
-    @Transactional
+    @Transactional(rollbackFor = {InvalidPasswordException.class,ThisObjectIsBannedException.class})
     public void changePassword(ChangePasswordDTO changePasswordDTO){
-        if(!changePasswordDTO.getPassword().equals(changePasswordDTO.getPasswordConfirm())){
-            throw new InvalidPasswordConfirmationException();
+        if(changePasswordDTO.getPassword().length()<8 || changePasswordDTO.getPassword().length() > 32){
+            throw new InvalidPasswordException("Password should have more than 8 characters and less than 32");
         }
+
+        if(!changePasswordDTO.getPassword().equals(changePasswordDTO.getPasswordConfirm())){
+            throw new InvalidPasswordException("Password confirmation and password are not the same");
+        }
+
 
         String username = authorityRecognizer.getCurrentUserNameFromContext();
         UserAccount userAccount = Optional.ofNullable(userAccountRepository.findUserAccountByUniqueName(username))
                 .orElseThrow(()-> new ObjectNotFoundException(UserAccount.class,username));
 
         if(userAccount instanceof Player){
-            if(((Player) userAccount).isBanned())
-                throw new ThisObjectIsBannedException(UserAccount.class,username);
+            if((userAccount).isBanned())
+                throw new ThisObjectIsBannedException("Account",username);
         }
 
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
-        String newPasswordHash = bCryptPasswordEncoder.encode(changePasswordDTO.getPassword());
-        if(!userAccount.getPassword().equals(newPasswordHash)){
-            throw new InvalidPasswordException();
+        if(!bCryptPasswordEncoder.matches(changePasswordDTO.getOldPassword(),userAccount.getPassword())){
+            throw new InvalidPasswordException("Password incorrect");
         }
 
-        userAccount.setPassword(newPasswordHash);
+        userAccount.setPassword(bCryptPasswordEncoder.encode(changePasswordDTO.getPassword()));
         userAccountRepository.save(userAccount);
     }
 
