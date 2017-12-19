@@ -2,6 +2,6 @@ package pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.To
 
 public class ItIsFirstTourOfTournament extends TournamentManagementException{
     public ItIsFirstTourOfTournament(String tournamentName){
-        super(new StringBuilder("It is first tour of tournament: ").append(tournamentName).toString());
+        super(new StringBuilder("It is first turn of tournament: ").append(tournamentName).toString());
     }
 }

@@ -1,10 +1,10 @@
 package pl.edu.pollub.battleCraft.serviceLayer.services.invitation;
 
 import org.springframework.stereotype.Service;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.Tournament;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentStatus;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.Organizer;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.relationships.Organization;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.Tournament;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.enums.TournamentStatus;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Organizer.Organizer;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Organizer.relationships.Organization;
 import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationDTO.InvitationDTO;
 
 import java.util.List;

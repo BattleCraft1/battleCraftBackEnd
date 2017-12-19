@@ -22,14 +22,14 @@ public class RankingService {
     public Page getPageOfRanking(Pageable pageable, List<SearchCriteria> searchCriteria) {
         searchCriteria.add(
                 new SearchCriteria(
-                        Arrays.asList("tour", "tournament", "banned"),
+                        Arrays.asList("turn", "tournament", "banned"),
                         ":",
                         Collections.singletonList(false)
                 )
         );
         searchCriteria.add(
                 new SearchCriteria(
-                        Arrays.asList("tour", "tournament", "status"),
+                        Arrays.asList("turn", "tournament", "status"),
                         ":",
                         Collections.singletonList("FINISHED")
                 )

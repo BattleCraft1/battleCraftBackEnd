@@ -4,12 +4,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Validator;
 import org.springframework.validation.Errors;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentType;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.enums.TournamentType;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Game.Game;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.Tournament;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.Organizer;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.Tournament;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Organizer.Organizer;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.Player;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.GameRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.OrganizerRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.PlayerRepository;
@@ -89,7 +89,7 @@ public class TournamentValidator implements Validator {
     private void validateToursCount(int toursCount, int tablesCount){
         int maxToursNumber = 2 * tablesCount;
         if(toursCount>maxToursNumber)
-            errors.rejectValue("toursCount","", new StringBuilder("Max tours number in this tournament is: ").append(maxToursNumber).toString());
+            errors.rejectValue("turnsCount","", new StringBuilder("Max turns number in this tournament is: ").append(maxToursNumber).toString());
     }
 
     private void validateStartDate(Date startDate){

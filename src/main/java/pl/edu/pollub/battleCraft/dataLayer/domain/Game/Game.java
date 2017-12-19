@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import org.hibernate.annotations.Formula;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Game.enums.GameStatus;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.Tournament;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.Organizer;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.Tournament;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Organizer.Organizer;
 
 import javax.persistence.*;
 import java.util.*;

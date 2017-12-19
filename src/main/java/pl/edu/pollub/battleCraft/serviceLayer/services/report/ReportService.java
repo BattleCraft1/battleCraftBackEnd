@@ -2,7 +2,7 @@ package pl.edu.pollub.battleCraft.serviceLayer.services.report;
 
 import org.springframework.stereotype.Service;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.AdminRepository;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Admin.Administrator;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Admin.Administrator;
 import pl.edu.pollub.battleCraft.serviceLayer.services.registration.utils.MailUtil;
 import pl.edu.pollub.battleCraft.serviceLayer.services.security.AuthorityRecognizer;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Report.ReportDTO;

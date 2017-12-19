@@ -40,10 +40,10 @@ public class RankingRepository{
                 .join(
                         new Join( "players", "players"),
                         new Join( "players.player", "player"),
-                        new Join("player.address", "playerAddress"),
-                        new Join( "tour", "tour"),
-                        new Join( "tour.tournament", "tournament"),
-                        new Join( "tournament.address", "address"),
+                        new Join("player.addressOwnership.address", "playerAddress"),
+                        new Join( "turn", "turn"),
+                        new Join( "turn.tournament", "tournament"),
+                        new Join( "tournament.addressOwnership.address", "address"),
                         new Join( "tournament.game", "game")
                 )
                 .from(Battle.class)

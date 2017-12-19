@@ -14,9 +14,9 @@ import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.page.Pager;
 import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.search.field.Join;
 import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.search.field.Field;
 import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.search.criteria.SearchCriteria;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.Tournament;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.Organizer;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.Tournament;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Organizer.Organizer;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.Player;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.PageOfEntities.AnyObjectNotFoundException;
 
 import javax.persistence.EntityManager;

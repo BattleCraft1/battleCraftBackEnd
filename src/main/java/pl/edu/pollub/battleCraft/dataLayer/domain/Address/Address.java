@@ -3,7 +3,6 @@ package pl.edu.pollub.battleCraft.dataLayer.domain.Address;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.AddressOwner;
 
 import javax.persistence.*;
 
@@ -14,7 +13,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @NoArgsConstructor
-@EqualsAndHashCode(exclude = "addressOwner")
+@EqualsAndHashCode
 @ToString
 public class Address{
 
@@ -35,10 +34,6 @@ public class Address{
     @Column(length = 6)
     private String zipCode;
 
-    @JsonIgnore
-    @OneToOne(mappedBy = "address", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
-    private AddressOwner addressOwner;
-
     @Column(length = 100)
     private String description;
 
@@ -58,16 +53,8 @@ public class Address{
         this.description = description;
     }
 
-    public void setAddressOwnerByOneSide(AddressOwner addressOwner){
-        this.addressOwner = addressOwner;
-    }
-
     public Address copy(){
         return new Address(this.province,this.city,this.street,this.zipCode,this.description);
-    }
-
-    private void setAddressOwner(AddressOwner addressOwner){
-        this.addressOwner = addressOwner;
     }
 
 }

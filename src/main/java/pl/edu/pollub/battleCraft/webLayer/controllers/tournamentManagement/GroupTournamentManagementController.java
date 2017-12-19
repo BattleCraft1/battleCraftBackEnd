@@ -3,7 +3,6 @@ package pl.edu.pollub.battleCraft.webLayer.controllers.tournamentManagement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.subClasses.GroupTournament;
 import pl.edu.pollub.battleCraft.serviceLayer.services.tournamentManagement.GroupTournamentManagementService;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.TournamentProgress.Group.Battle.GroupBattleRequestDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.TournamentProgress.Group.GroupTournamentProgressResponseDTO;
@@ -23,15 +22,15 @@ public class GroupTournamentManagementController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ORGANIZER')")
-    @GetMapping(value ="/next/tour/group/tournament")
+    @GetMapping(value ="/next/turn/group/tournament")
     public GroupTournamentProgressResponseDTO nextTour(@RequestParam(value = "name") String name){
-        return groupTournamentProgressDTOMapper.map(groupTournamentManagementService.nextTour(name));
+        return groupTournamentProgressDTOMapper.map(groupTournamentManagementService.nextTurn(name));
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ORGANIZER')")
-    @GetMapping(value ="/previous/tour/group/tournament")
+    @GetMapping(value ="/previous/turn/group/tournament")
     public GroupTournamentProgressResponseDTO previousTour(@RequestParam(value = "name") String name){
-        return groupTournamentProgressDTOMapper.map(groupTournamentManagementService.previousTour(name));
+        return groupTournamentProgressDTOMapper.map(groupTournamentManagementService.previousTurn(name));
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ORGANIZER','ROLE_ADMIN')")

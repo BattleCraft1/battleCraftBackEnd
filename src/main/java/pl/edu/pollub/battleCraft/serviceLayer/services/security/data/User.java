@@ -4,7 +4,7 @@ import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.enums.UserType;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.enums.UserType;
 
 import java.util.Collection;
 import java.util.Collections;

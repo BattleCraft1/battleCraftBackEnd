@@ -6,13 +6,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.AdminRepository;
-import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.PlayerRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.UserAccountRepository;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.mappers.RegistrationDTOToUserAccountMapper;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Admin.Administrator;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.mappers.UserAccountToPlayerMapper;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.UserAccount;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.mappers.RegistrationDTOToUserAccountMapper;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Admin.Administrator;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.Player;
 import pl.edu.pollub.battleCraft.dataLayer.domain.VerificationToken.VerificationToken;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.Registration.VerificationException;
@@ -23,18 +21,22 @@ import pl.edu.pollub.battleCraft.serviceLayer.services.validators.UserAccount.Re
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.Registration.EmailDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.Registration.RegistrationDTO;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class RegistrationService {
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     private final RegistrationValidator registrationValidator;
 
     private final UserAccountRepository userAccountRepository;
 
     private final AdminRepository adminRepository;
-
-    private final PlayerRepository playerRepository;
 
     private final ApplicationEventPublisher eventPublisher;
 
@@ -44,22 +46,17 @@ public class RegistrationService {
 
     private final MailUtil mailUtil;
 
-    private final UserAccountToPlayerMapper userAccountToPlayerMapper;
-
     @Autowired
-    public RegistrationService(RegistrationValidator registrationValidator, UserAccountRepository userAccountRepository, AdminRepository adminRepository, PlayerRepository playerRepository, ApplicationEventPublisher eventPublisher, RegistrationDTOToUserAccountMapper registrationDTOToUserAccountMapper, VerificationTokenUtil verificationTokenUtil, MailUtil mailUtil, UserAccountToPlayerMapper userAccountToPlayerMapper) {
+    public RegistrationService(RegistrationValidator registrationValidator, UserAccountRepository userAccountRepository, AdminRepository adminRepository, ApplicationEventPublisher eventPublisher, RegistrationDTOToUserAccountMapper registrationDTOToUserAccountMapper, VerificationTokenUtil verificationTokenUtil, MailUtil mailUtil) {
         this.registrationValidator = registrationValidator;
         this.userAccountRepository = userAccountRepository;
         this.adminRepository = adminRepository;
-        this.playerRepository = playerRepository;
         this.eventPublisher = eventPublisher;
         this.registrationDTOToUserAccountMapper = registrationDTOToUserAccountMapper;
         this.verificationTokenUtil = verificationTokenUtil;
         this.mailUtil = mailUtil;
-        this.userAccountToPlayerMapper = userAccountToPlayerMapper;
     }
 
-    @Transactional
     public void register(RegistrationDTO registrationDTO, BindingResult bindingResult){
         registrationValidator.validate(registrationDTO, bindingResult);
         registrationValidator.checkIfUserWithThisNameAlreadyExist(registrationDTO,bindingResult);
@@ -67,7 +64,6 @@ public class RegistrationService {
         this.saveNewUserAccount(registrationDTO);
     }
 
-    @Transactional
     public void createAdminAccount(RegistrationDTO registrationDTO, BindingResult bindingResult){
         registrationValidator.validate(registrationDTO, bindingResult);
         registrationValidator.checkIfUserWithThisNameAlreadyExist(registrationDTO,bindingResult);
@@ -76,19 +72,20 @@ public class RegistrationService {
         adminRepository.save(admin);
     }
 
-    @Transactional
-    void saveNewUserAccount(RegistrationDTO registrationDTO){
+    private void saveNewUserAccount(RegistrationDTO registrationDTO){
         UserAccount userAccount = registrationDTOToUserAccountMapper.mapToUser(registrationDTO);
         userAccountRepository.save(userAccount);
         eventPublisher.publishEvent(new OnRegistrationCompleteEvent(userAccount));
     }
 
-    @Transactional
     public void resendToken(EmailDTO emailResendDTO){
+
         UserAccount user= Optional.ofNullable(userAccountRepository.findNotAcceptedUserByEmail(emailResendDTO.getEmail()))
                 .orElseThrow(() -> new ObjectNotFoundException(new StringBuilder("Acount with email: ").append(emailResendDTO.getEmail()).append(" not found").toString()));
+
         if(user instanceof Player)
             throw new ObjectNotFoundException(new StringBuilder("Acount with email: ").append(emailResendDTO.getEmail()).append(" not found").toString());
+
         VerificationToken newToken=verificationTokenUtil.generateNewVerificationToken(user);
         String recipientAddress = user.getEmail();
 
@@ -100,7 +97,6 @@ public class RegistrationService {
         }
     }
 
-    @Transactional
     public void confirmRegistration(String token){
 
         VerificationToken verificationToken = Optional.ofNullable(verificationTokenUtil.getTokenObject(token))
@@ -111,12 +107,12 @@ public class RegistrationService {
         UserAccount user = verificationToken.getUser();
 
         verificationTokenUtil.removeToken(verificationToken);
-        userAccountRepository.delete(user);
-        Player player = userAccountToPlayerMapper.map(user);
-        playerRepository.save(player);
+
+        entityManager.createNativeQuery("UPDATE user_account SET status = 'ACCEPTED', role = 'Player' WHERE name = (:uniqueName)")
+                .setParameter("uniqueName",user.getName()).executeUpdate();
 
         try {
-            mailUtil.sendRegistrationCompleteMail(player.getEmail());
+            mailUtil.sendRegistrationCompleteMail(user.getEmail());
         } catch (Exception e) {
             e.printStackTrace();
             throw new VerificationException("There are unrecognized problems with sending verification e-mail. Please try to execute verification process again.");

@@ -2,14 +2,14 @@ package pl.edu.pollub.battleCraft.webLayer.toResponseDTOsMappers.TournamentProgr
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentStatus;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.subClasses.DuelTournament;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Play;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.emuns.ColorOfSideInBattle;
-import pl.edu.pollub.battleCraft.dataLayer.domain.Tour.Tour;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.enums.TournamentStatus;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.subClasses.DuelTournament;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.UserAccount;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.Player;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships.Participation;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships.Play;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships.emuns.ColorOfSideInBattle;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Turn.Turn;
 import pl.edu.pollub.battleCraft.serviceLayer.services.security.AuthorityRecognizer;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.TournamentProgress.PlayerDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.TournamentProgress.Duel.Battle.DuelBattleResponseDTO;
@@ -32,7 +32,7 @@ public class DuelTournamentProgressDTOMapper {
     public DuelTournamentProgressResponseDTO map(DuelTournament tournament){
         DuelTournamentProgressResponseDTO duelTournamentProgressDTO = new DuelTournamentProgressResponseDTO();
         List<List<DuelBattleResponseDTO>> toursOfDTO = new ArrayList<>();
-        tournament.getTours().forEach(
+        tournament.getTurns().forEach(
                 tour -> {
                     List<DuelBattleResponseDTO> battlesOfDTO = new ArrayList<>();
                     tour.getBattles().forEach(battle -> {
@@ -61,14 +61,14 @@ public class DuelTournamentProgressDTOMapper {
                     toursOfDTO.add(battlesOfDTO);
                 }
         );
-        duelTournamentProgressDTO.setTours(toursOfDTO);
+        duelTournamentProgressDTO.setTurns(toursOfDTO);
         duelTournamentProgressDTO.setPlayersNamesWithPoints(tournament.getParticipation().stream()
                 .map(Participation::getPlayer).collect(Collectors.toMap(Player::getName,tournament::getPointsForPlayer)));
-        duelTournamentProgressDTO.setPlayersWithoutBattles(tournament.getActivatedTours().stream()
-                .collect(Collectors.toMap(Tour::getNumber,
+        duelTournamentProgressDTO.setPlayersWithoutBattles(tournament.getActivatedTurns().stream()
+                .collect(Collectors.toMap(Turn::getNumber,
                         tour->tournament.getPlayersWithoutBattleInTour(tour.getNumber()).stream()
                                 .map(UserAccount::getName).collect(Collectors.toList()))));
-        duelTournamentProgressDTO.setCurrentTourNumber(tournament.getCurrentTourNumber());
+        duelTournamentProgressDTO.setCurrentTurnNumber(tournament.getCurrentTurnNumber());
         duelTournamentProgressDTO.setTournamentStatus(tournament.getStatus());
         duelTournamentProgressDTO.setPlayersCount(tournament.getParticipation().size());
 

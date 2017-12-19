@@ -1,7 +1,7 @@
 package pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationDTO;
 
 import lombok.*;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.Tournament;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.Tournament;
 
 @Getter
 @Setter

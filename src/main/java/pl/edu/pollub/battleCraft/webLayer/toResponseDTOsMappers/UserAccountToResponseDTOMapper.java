@@ -2,15 +2,15 @@ package pl.edu.pollub.battleCraft.webLayer.toResponseDTOsMappers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.Tournament;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentStatus;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentType;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.Organizer;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Play;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.nullObjectPattern.NullParticipation;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.Tournament;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.enums.TournamentStatus;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.enums.TournamentType;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.UserAccount;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Organizer.Organizer;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.Player;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships.Participation;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships.Play;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships.nullObjectPattern.NullParticipation;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Game.Game;
 import pl.edu.pollub.battleCraft.serviceLayer.services.security.AuthorityRecognizer;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Invitation.PlayerFinishedInvitationResponse;
@@ -47,11 +47,11 @@ public class UserAccountToResponseDTOMapper {
         userAccountResponseDTO.setFirstname(userAccount.getFirstname());
         userAccountResponseDTO.setLastname(userAccount.getLastname());
         userAccountResponseDTO.setPhoneNumber(Optional.ofNullable(userAccount.getPhoneNumber()).orElse(""));
-        userAccountResponseDTO.setProvince(userAccount.getAddress().getProvince().name());
-        userAccountResponseDTO.setCity(userAccount.getAddress().getCity());
-        userAccountResponseDTO.setStreet(userAccount.getAddress().getStreet());
-        userAccountResponseDTO.setZipCode(userAccount.getAddress().getZipCode());
-        userAccountResponseDTO.setDescription(Optional.ofNullable(userAccount.getAddress().getDescription()).orElse(""));
+        userAccountResponseDTO.setProvince(userAccount.getAddressOwnership().getAddress().getProvince().name());
+        userAccountResponseDTO.setCity(userAccount.getAddressOwnership().getAddress().getCity());
+        userAccountResponseDTO.setStreet(userAccount.getAddressOwnership().getAddress().getStreet());
+        userAccountResponseDTO.setZipCode(userAccount.getAddressOwnership().getAddress().getZipCode());
+        userAccountResponseDTO.setDescription(Optional.ofNullable(userAccount.getAddressOwnership().getAddress().getDescription()).orElse(""));
         userAccountResponseDTO.setStatus(userAccount.getStatus().name());
 
         if(userAccount instanceof Player){

@@ -18,7 +18,7 @@ public class GroupBattleRequestDTO {
     private int tableNumber;
     private PlayersGroupDTO firstPlayersGroup;
     private PlayersGroupDTO secondPlayersGroup;
-    private int tourNumber;
+    private int turnNumber;
 
     public boolean containsDuplicatedNames(){
         List<String> names = new ArrayList<>();

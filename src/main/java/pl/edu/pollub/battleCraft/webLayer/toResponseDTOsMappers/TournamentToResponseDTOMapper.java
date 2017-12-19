@@ -2,11 +2,11 @@ package pl.edu.pollub.battleCraft.webLayer.toResponseDTOsMappers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.Tournament;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentType;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.Organizer;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.Tournament;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.enums.TournamentType;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Organizer.Organizer;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.Player;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships.Participation;
 import pl.edu.pollub.battleCraft.serviceLayer.services.security.AuthorityRecognizer;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Tournament.TournamentResponseDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.Invitation.InvitationResponseDTO;
@@ -44,17 +44,17 @@ public class TournamentToResponseDTOMapper {
 
         tournamentResponseDTO.setName(tournament.getName());
         tournamentResponseDTO.setNameChange(tournament.getName());
-        tournamentResponseDTO.setToursCount(tournament.getToursCount());
+        tournamentResponseDTO.setToursCount(tournament.getTurnsCount());
         tournamentResponseDTO.setTablesCount(tournament.getTablesCount());
         tournamentResponseDTO.setPlayersOnTableCount(tournament.getPlayersOnTableCount());
         tournamentResponseDTO.setGame(tournament.getGame().getName());
         tournamentResponseDTO.setDateOfStart(tournament.getDateOfStart());
         tournamentResponseDTO.setDateOfEnd(tournament.getDateOfEnd());
-        tournamentResponseDTO.setProvince(tournament.getAddress().getProvince().name());
-        tournamentResponseDTO.setCity(tournament.getAddress().getCity());
-        tournamentResponseDTO.setStreet(tournament.getAddress().getStreet());
-        tournamentResponseDTO.setZipCode(tournament.getAddress().getZipCode());
-        tournamentResponseDTO.setDescription(tournament.getAddress().getDescription());
+        tournamentResponseDTO.setProvince(tournament.getAddressOwnership().getAddress().getProvince().name());
+        tournamentResponseDTO.setCity(tournament.getAddressOwnership().getAddress().getCity());
+        tournamentResponseDTO.setStreet(tournament.getAddressOwnership().getAddress().getStreet());
+        tournamentResponseDTO.setZipCode(tournament.getAddressOwnership().getAddress().getZipCode());
+        tournamentResponseDTO.setDescription(tournament.getAddressOwnership().getAddress().getDescription());
         if(tournament.isBanned()) {
             tournamentResponseDTO.setStatus("BANNED");
             tournamentResponseDTO.setCanCurrentUserEdit(authorityRecognizer.getCurrentUserRoleFromContext().equals("ROLE_ADMIN"));

@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.Player;
 
 import java.util.List;
 
@@ -16,23 +16,11 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
     @Query("UPDATE Player p SET p.banned = false WHERE p.name in ?1")
     void unlockUserAccountsByUniqueNames(String... usersToBanUniqueNames);
 
-    @Modifying
-    @Query("UPDATE Player p SET p.banned = true WHERE p.name in ?1")
-    void banUserAccountsByUniqueNames(String... usersToBanUniqueNames);
-
     @Query("SELECT p FROM Player p WHERE  p.status = 'ACCEPTED' and p.name in ?1")
     List<Player> selectUsersAccountsToRejectByUniqueNames(String... usersToCancelAcceptUniqueNames);
 
-    @Modifying
-    @Query("UPDATE Player p SET p.status = 'NEW' WHERE p.name in ?1")
-    void cancelAcceptationOfUsersAccountsByUniqueNames(String... usersToCancelAcceptUniqueNames);
-
     @Query("SELECT p FROM Player p WHERE p.status = 'ACCEPTED' AND p.name in ?1 and p.banned = false")
     List<Player> selectUsersAccountsToAdvanceByUniqueNames(String... playersNames);
-
-    @Query("SELECT p FROM Player p WHERE p.name in ?1")
-    List<Player> findPlayersByUniqueName(String... playersNames);
-
 
     @Query("SELECT p FROM Player p WHERE p.banned = false AND p.name in ?1")
     List<Player> findNotBannedPlayersByUniqueName(String... playersNames);
@@ -50,5 +38,4 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
 
     @Query("SELECT p FROM Player p WHERE p.name = ?1 and p.banned = false")
     Player findNotBannedPlayerByUniqueName(String name);
-
 }

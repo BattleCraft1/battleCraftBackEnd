@@ -3,55 +3,54 @@ package pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.session.SessionInformation;
-import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.search.Searcher;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.Tournament;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentStatus;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.enums.UserType;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.Organizer;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.relationships.Organization;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.Tournament;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.enums.TournamentStatus;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.UserAccount;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.enums.UserType;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Organizer.Organizer;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Organizer.relationships.Organization;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.Player;
 import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.search.field.Join;
 import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.search.field.Field;
 import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.search.criteria.SearchCriteria;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.OrganizerRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.PlayerRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.UserAccountRepository;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.mappers.PlayerToOrganizerMapper;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.mappers.UserAccountToPlayerMapper;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships.Participation;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.PageOfEntities.AnyObjectNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.PageOfEntities.PageNotFoundException;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
 public class UsersAccountsRepository{
+
+    @PersistenceContext
+    private EntityManager entityManager;
     private final Searcher searcher;
     private final UserAccountRepository userAccountRepository;
     private final PlayerRepository playerRepository;
     private final OrganizerRepository organiserRepository;
-    private final PlayerToOrganizerMapper playerToOrganizerMapper;
-    private final UserAccountToPlayerMapper userAccountToPlayerMapper;
 
     @Autowired
     public UsersAccountsRepository(Searcher searcher,
                                    UserAccountRepository userAccountRepository,
                                    PlayerRepository playerRepository,
-                                   OrganizerRepository organiserRepository, PlayerToOrganizerMapper playerToOrganizerMapper, UserAccountToPlayerMapper userAccountToPlayerMapper) {
+                                   OrganizerRepository organiserRepository) {
         this.searcher = searcher;
         this.playerRepository = playerRepository;
         this.organiserRepository = organiserRepository;
         this.userAccountRepository = userAccountRepository;
-        this.playerToOrganizerMapper = playerToOrganizerMapper;
-        this.userAccountToPlayerMapper = userAccountToPlayerMapper;
     }
 
-    @Transactional
+    @Transactional(rollbackFor = {AnyObjectNotFoundException.class,PageNotFoundException.class})
     public Page getPageOfUserAccounts(List<SearchCriteria> searchCriteria, Pageable requestedPage) {
         return searcher
                 .select(
@@ -74,6 +73,7 @@ public class UsersAccountsRepository{
                 .execute("id",requestedPage);
     }
 
+    @Transactional
     public void banUsersAccounts(List<Player> players) {
 
         this.removeParticipationOfPlayers(players);
@@ -87,28 +87,32 @@ public class UsersAccountsRepository{
         playerRepository.save(players);
     }
 
+    @Transactional
     public void unlockUsersAccounts(String... usersAccountsToUnlockUniqueNames) {
         playerRepository.unlockUserAccountsByUniqueNames(usersAccountsToUnlockUniqueNames);
     }
 
+    @Transactional
     public void acceptUsersAccounts(List<UserAccount> userAccountsToAccept) {
-        List<UserAccount> userAccountsToDelete = new ArrayList<>();
-        List<Player> acceptedUserAccounts = userAccountsToAccept.stream().map(
+        List<String> namesOfUserAccountsToAdvanceFirstTime = new ArrayList<>();
+        List<Player> userAccountsToAdvanceNextTime = new ArrayList<>();
+        userAccountsToAccept.forEach(
                 userAccount -> {
                     if(userAccount instanceof Player) {
-                        userAccount.setStatus(UserType.ACCEPTED);
-                        return (Player)userAccount;
+                        userAccountsToAdvanceNextTime.add((Player)userAccount);
+
                     }
                     else{
-                        userAccountsToDelete.add(userAccount);
-                        return this.advanceUserToPlayer(userAccount);
+                        userAccount.setStatus(UserType.ACCEPTED);
+                        namesOfUserAccountsToAdvanceFirstTime.add(userAccount.getName());
                     }
-                }
-        ).collect(Collectors.toList());
-        userAccountRepository.delete(userAccountsToDelete);
-        playerRepository.save(acceptedUserAccounts);
+                });
+        entityManager.createNativeQuery("UPDATE user_account SET status = 'ACCEPTED', role = 'Player' WHERE name in (:uniqueNames)")
+                .setParameter("uniqueNames",namesOfUserAccountsToAdvanceFirstTime).executeUpdate();
+        playerRepository.save(userAccountsToAdvanceNextTime);
     }
 
+    @Transactional
     public void deleteUsersAccounts(String... usersAccountsToDeleteUniqueNames) {
         List<Long> idsUsersToDelete = userAccountRepository.selectIdsOfUsersToDelete(usersAccountsToDeleteUniqueNames);
         playerRepository.deleteParticipationByPlayersIds(idsUsersToDelete);
@@ -116,9 +120,10 @@ public class UsersAccountsRepository{
         organiserRepository.deleteOrganizationByIds(idsUsersToDelete);
         organiserRepository.deleteCreationOfGamesByOrganizersIds(idsUsersToDelete);
         userAccountRepository.deleteUsersAccountsByIds(idsUsersToDelete);
-        userAccountRepository.deleteRelatedAddress(idsUsersToDelete);
+        userAccountRepository.deleteRelatedAddresses(idsUsersToDelete);
     }
 
+    @Transactional
     public void cancelAcceptUsersAccounts(List<Player> players) {
 
         this.removeParticipationOfPlayers(players);
@@ -132,24 +137,27 @@ public class UsersAccountsRepository{
         playerRepository.save(players);
     }
 
+    @Transactional
     public void advancePlayersToOrganizer(List<Player> playersToAdvance) {
-        List<Player> playersToDelete = new ArrayList<>();
-        List<Organizer> advancedPlayersToOrganizers = playersToAdvance.stream().map(
+        List<String> namesOfUserAccountsToAdvanceFirstTime = new ArrayList<>();
+        List<Organizer> userAccountsToAdvanceNextTime = new ArrayList<>();
+        playersToAdvance.forEach(
                 player -> {
                     if(player instanceof Organizer) {
-                        player.setStatus(UserType.ORGANIZER);
-                        return (Organizer)player;
+                        userAccountsToAdvanceNextTime.add((Organizer)player);
                     }
                     else{
-                        playersToDelete.add(player);
-                        return this.advancePlayerToOrganizer(player);
+                        player.setStatus(UserType.ORGANIZER);
+                        namesOfUserAccountsToAdvanceFirstTime.add(player.getName());
                     }
                 }
-        ).collect(Collectors.toList());
-        playerRepository.delete(playersToDelete);
-        organiserRepository.save(advancedPlayersToOrganizers);
+        );
+        entityManager.createNativeQuery("UPDATE user_account SET status = 'ORGANIZER', role = 'Organizer' WHERE name in (:uniqueNames)")
+                .setParameter("uniqueNames",namesOfUserAccountsToAdvanceFirstTime).executeUpdate();
+        organiserRepository.save(userAccountsToAdvanceNextTime);
     }
 
+    @Transactional
     public void degradeOrganizerToPlayers(List<Organizer> organizers) {
 
         this.removeOrganizationsOfOrganizers(organizers);
@@ -159,25 +167,19 @@ public class UsersAccountsRepository{
         organiserRepository.save(organizers);
     }
 
-    private Player advanceUserToPlayer(UserAccount userAccount){
-        return userAccountToPlayerMapper.map(userAccount);
-    }
-
-    private Organizer advancePlayerToOrganizer(Player player){
-        return playerToOrganizerMapper.map(player);
-    }
-
     private Join[] generateJoins(List<SearchCriteria> searchCriteria){
         SearchCriteria ifParticipateSearchCriteria = searchCriteria.stream()
                 .filter(searchCriteria1 -> searchCriteria1.getOperation().equalsIgnoreCase("not participate"))
                 .findFirst().orElse(null);
 
         if(ifParticipateSearchCriteria!=null){
-            return  new Join[]{new Join("address", "address"),
+            return  new Join[]{
+                    new Join("addressOwnership.address", "address"),
                     new Join("participation", "participation")};
         }
         else{
-            return new Join[]{new Join("address", "address")};
+            return new Join[]{
+                    new Join("addressOwnership.address", "address")};
         }
     }
 

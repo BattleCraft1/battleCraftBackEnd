@@ -65,7 +65,11 @@ public class AuthenticationController {
         String token = this.tokenUtils.generateToken(userDetails);
 
         // Return the token
-        return ResponseEntity.ok(new AuthResponseDTO(token,roleRecognizer.getCurrentUserRoleFromUserDetails(userDetails)));
+        return ResponseEntity.ok(
+                new AuthResponseDTO(
+                        token,
+                        roleRecognizer.getCurrentUserRoleFromUserDetails(userDetails),
+                        roleRecognizer.getCurrentUserNameFromContext()));
     }
 
     @GetMapping(value = "refresh")
@@ -75,7 +79,11 @@ public class AuthenticationController {
         User user = (User) this.userDetailsService.loadUserByUsername(username);
         if (this.tokenUtils.canTokenBeRefreshed(token)) {
             String refreshedToken = this.tokenUtils.refreshToken(token);
-            return ResponseEntity.ok(new AuthResponseDTO(refreshedToken,roleRecognizer.getCurrentUserRoleFromUserDetails(user)));
+            return ResponseEntity.ok(
+                    new AuthResponseDTO(
+                            refreshedToken,
+                            roleRecognizer.getCurrentUserRoleFromContext(),
+                            roleRecognizer.getCurrentUserNameFromContext()));
         } else {
             return ResponseEntity.badRequest().body(null);
         }

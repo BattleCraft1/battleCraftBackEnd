@@ -3,12 +3,14 @@ package pl.edu.pollub.battleCraft.webLayer.controllers.registration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import pl.edu.pollub.battleCraft.serviceLayer.services.registration.RegistrationService;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.Registration.EmailDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.Registration.RegistrationDTO;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.security.AuthResponseDTO;
 
 @RestController
 public class RegistrationController {
@@ -41,7 +43,8 @@ public class RegistrationController {
 
     @GetMapping(value = "/registration/confirm")
     @ResponseStatus(HttpStatus.OK)
-    public void confirmRegistration(@RequestParam("token") String token){
+    public ResponseEntity confirmRegistration(@RequestParam("token") String token){
         registrationService.confirmRegistration(token);
+        return ResponseEntity.ok("Registration completed. Please wait for a second e-mail");
     }
 }

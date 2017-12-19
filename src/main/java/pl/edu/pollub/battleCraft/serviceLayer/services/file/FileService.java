@@ -60,24 +60,6 @@ public class FileService {
         }
     }
 
-    public void store(File file, String name, String fileType) {
-        try {
-            if (file.length() == 0) {
-                throw new StorageException(new StringBuilder("Failed to store empty file ").append(file.getName()).toString());
-            }
-            if (file.length() / 1048576 > 6) {//6MB
-                throw new StorageException(new StringBuilder("Failed to store file ").append(file.getName()).append(". File have size larger than 6MB ").toString());
-            }
-            Path filePath = this.rootLocation.resolve(new StringBuilder(name).append(".").append(fileType).toString());
-
-            Files.copy(new FileInputStream(file),filePath);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new StorageException(new StringBuilder("Failed to store file ").append(file.getName()).toString(), e);
-        }
-    }
-
     public Resource loadAsResource(String filename) {
         try {
             Path file = load(filename);
@@ -176,8 +158,8 @@ public class FileService {
         else return "";
     }
 
-    public File convertMultipartFileToFile(MultipartFile file) throws IOException {
-        File convFile = new File(file.getOriginalFilename());
+    public File convertMultipartFileToFile(MultipartFile file, String filename) throws IOException {
+        File convFile = new File(filename);
         FileOutputStream fos = new FileOutputStream(convFile);
         fos.write(file.getBytes());
         fos.close();

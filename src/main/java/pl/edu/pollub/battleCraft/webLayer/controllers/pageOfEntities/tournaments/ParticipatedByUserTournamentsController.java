@@ -21,7 +21,7 @@ public class ParticipatedByUserTournamentsController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ACCEPTED','ROLE_ORGANIZER')")
-    @PostMapping(value = "/page/participated/tournaments", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/page/participated", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Page getPageOfTournamentsParticipatedByUser(@RequestBody GetPageObjectsDTO getPageObjectsDTO) {
         return tournamentService.getPageOfTournamentsParticipatedByUser(getPageObjectsDTO.unwrapPageRequest(), getPageObjectsDTO.getSearchCriteria());
     }

@@ -1,21 +1,20 @@
 package pl.edu.pollub.battleCraft.serviceLayer.services.tournamentManagement;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.OrganizerRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.TournamentRepository;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.Tournament;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentStatus;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.enums.UserType;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Organizer.Organizer;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.mappers.PlayerToOrganizerMapper;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Participation;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.Tournament;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.enums.TournamentStatus;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.UserAccount;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.enums.UserType;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Organizer.Organizer;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships.Participation;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentManagement.TournamentCannotStartYet;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentManagement.TournamentIsOutOfDate;
 import pl.edu.pollub.battleCraft.serviceLayer.services.security.AuthorityRecognizer;
 
-import java.util.ArrayList;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -23,22 +22,20 @@ import java.util.stream.Collectors;
 
 public abstract class TournamentManagementService {
 
+    @PersistenceContext
+    private EntityManager entityManager;
     protected final TournamentRepository tournamentRepository;
     protected final AuthorityRecognizer authorityRecognizer;
-    private final PlayerToOrganizerMapper playerToOrganizerMapper;
-    private final OrganizerRepository organizerRepository;
 
     @Autowired
-    protected TournamentManagementService(TournamentRepository tournamentRepository, AuthorityRecognizer authorityRecognizer, PlayerToOrganizerMapper playerToOrganizerMapper, OrganizerRepository organizerRepository) {
+    protected TournamentManagementService(TournamentRepository tournamentRepository, AuthorityRecognizer authorityRecognizer) {
         this.tournamentRepository = tournamentRepository;
         this.authorityRecognizer = authorityRecognizer;
-        this.playerToOrganizerMapper = playerToOrganizerMapper;
-        this.organizerRepository = organizerRepository;
     }
 
     public abstract Tournament startTournament(Tournament tournamentInput);
-    public abstract Tournament nextTour(String name);
-    public abstract Tournament previousTour(String name);
+    public abstract Tournament nextTurn(String name);
+    public abstract Tournament previousTurn(String name);
 
     Tournament findStartedTournamentByName(String tournamentName){
         return Optional.ofNullable(tournamentRepository.findStartedTournamentByUniqueName(tournamentName))
@@ -60,7 +57,8 @@ public abstract class TournamentManagementService {
     }
 
     void advancePlayersToOrganizers(Tournament tournament){
-        List<Player> playersToAdvance = tournament.getParticipation().stream()
+
+        List<String> playersToAdvanceNames = tournament.getParticipation().stream()
                 .map(Participation::getPlayer)
                 .filter(player -> player.getStatus() == UserType.ACCEPTED && !(player instanceof Organizer))
                 .filter(
@@ -71,18 +69,11 @@ public abstract class TournamentManagementService {
                                     .collect(Collectors.toList());
                             return finishedTournaments.size() == 15;
                         }
-                ).collect(Collectors.toList());
-        List<Organizer> organizers = this.advancePlayersToOrganizers(playersToAdvance);
-        organizerRepository.save(organizers);
-    }
+                )
+                .map(UserAccount::getName)
+                .collect(Collectors.toList());
 
-    private List<Organizer> advancePlayersToOrganizers(List<Player> players){
-        List<Organizer> organizers = new ArrayList<>();
-        players.forEach(
-                player -> {
-                    organizers.add(playerToOrganizerMapper.map(player));
-                }
-        );
-        return organizers;
+        entityManager.createNativeQuery("UPDATE user_account SET status = 'ORGANIZER', role = 'Organizer' WHERE name in (:uniqueNames)")
+                .setParameter("uniqueNames",playersToAdvanceNames).executeUpdate();
     }
 }

@@ -2,11 +2,11 @@ package pl.edu.pollub.battleCraft.webLayer.toResponseDTOsMappers.TournamentProgr
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentStatus;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.subClasses.GroupTournament;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Play;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.emuns.ColorOfSideInBattle;
-import pl.edu.pollub.battleCraft.dataLayer.domain.Tour.Tour;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.enums.TournamentStatus;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.subClasses.GroupTournament;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships.Play;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships.emuns.ColorOfSideInBattle;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Turn.Turn;
 import pl.edu.pollub.battleCraft.serviceLayer.services.security.AuthorityRecognizer;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.TournamentProgress.PlayersGroupDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTOResponse.TournamentProgress.Group.Battle.GroupBattleResponseDTO;
@@ -30,7 +30,7 @@ public class GroupTournamentProgressDTOMapper {
         GroupTournamentProgressResponseDTO groupTournamentProgressResponseDTO = new GroupTournamentProgressResponseDTO();
 
         List<List<GroupBattleResponseDTO>> toursOfDTO = new ArrayList<>();
-        tournament.getTours().forEach(
+        tournament.getTurns().forEach(
                 tour -> {
                     List<GroupBattleResponseDTO> battlesOfDTO = new ArrayList<>();
                     tour.getBattles().forEach(battle -> {
@@ -69,7 +69,7 @@ public class GroupTournamentProgressDTOMapper {
                     toursOfDTO.add(battlesOfDTO);
                 }
         );
-        groupTournamentProgressResponseDTO.setTours(toursOfDTO);
+        groupTournamentProgressResponseDTO.setTurns(toursOfDTO);
 
         groupTournamentProgressResponseDTO.setPlayersNamesWithPoints(tournament.getGroupedPlayers().stream()
                 .map(playersGroup -> new PlayersGroupWithPointsDTO(
@@ -78,14 +78,14 @@ public class GroupTournamentProgressDTOMapper {
                 .collect(Collectors.toList()));
 
         groupTournamentProgressResponseDTO.setPlayersWithoutBattles(
-                tournament.getActivatedTours().stream()
+                tournament.getActivatedTurns().stream()
                 .collect(Collectors.toMap(
-                        Tour::getNumber,
+                        Turn::getNumber,
                         tour->tournament.getPlayersWithoutBattleInTour(tour.getNumber()).stream()
                                 .map(users -> Arrays.asList(users.get(0).getName(),users.get(1).getName()))
                                 .collect(Collectors.toList()))));
 
-        groupTournamentProgressResponseDTO.setCurrentTourNumber(tournament.getCurrentTourNumber());
+        groupTournamentProgressResponseDTO.setCurrentTurnNumber(tournament.getCurrentTurnNumber());
         groupTournamentProgressResponseDTO.setTournamentStatus(tournament.getStatus());
         groupTournamentProgressResponseDTO.setPlayersCount(tournament.getParticipation().size()/2);
 

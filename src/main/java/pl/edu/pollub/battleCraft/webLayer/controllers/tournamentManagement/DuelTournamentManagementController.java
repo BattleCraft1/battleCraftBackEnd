@@ -22,15 +22,15 @@ public class DuelTournamentManagementController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ORGANIZER')")
-    @GetMapping(value ="/next/tour/duel/tournament")
-    public DuelTournamentProgressResponseDTO nextTour(@RequestParam(value = "name") String name){
-        return duelTournamentProgressDTOMapper.map(duelTournamentManagementService.nextTour(name));
+    @GetMapping(value ="/next/turn/duel/tournament")
+    public DuelTournamentProgressResponseDTO nextTurn(@RequestParam(value = "name") String name){
+        return duelTournamentProgressDTOMapper.map(duelTournamentManagementService.nextTurn(name));
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ORGANIZER')")
-    @GetMapping(value ="/previous/tour/duel/tournament")
-    public DuelTournamentProgressResponseDTO previousTour(@RequestParam(value = "name") String name){
-        return duelTournamentProgressDTOMapper.map(duelTournamentManagementService.previousTour(name));
+    @GetMapping(value ="/previous/turn/duel/tournament")
+    public DuelTournamentProgressResponseDTO previousTurn(@RequestParam(value = "name") String name){
+        return duelTournamentProgressDTOMapper.map(duelTournamentManagementService.previousTurn(name));
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ORGANIZER','ROLE_ADMIN')")

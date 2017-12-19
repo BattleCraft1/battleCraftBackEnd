@@ -3,15 +3,14 @@ package pl.edu.pollub.battleCraft.serviceLayer.services.tournamentManagement;
 import org.assertj.core.util.Preconditions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.OrganizerRepository;
+import org.springframework.transaction.annotation.Transactional;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.TournamentRepository;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.Tournament;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.enums.TournamentStatus;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.Tournament.subClasses.DuelTournament;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.mappers.PlayerToOrganizerMapper;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.Tournament;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.enums.TournamentStatus;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.subClasses.DuelTournament;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.Player;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Battle.Battle;
-import pl.edu.pollub.battleCraft.dataLayer.domain.Tour.Tour;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Turn.Turn;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentManagement.*;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentManagement.DuplicatedPlayersNamesException;
@@ -23,12 +22,12 @@ import java.util.List;
 import static java.lang.Math.floor;
 
 @Service
+@Transactional
 public class DuelTournamentManagementService extends TournamentManagementService{
 
     @Autowired
-    public DuelTournamentManagementService(TournamentRepository tournamentRepository, PlayerToOrganizerMapper playerToOrganizerMapper,
-                                           OrganizerRepository organizerRepository, AuthorityRecognizer authorityRecognizer) {
-        super(tournamentRepository, authorityRecognizer, playerToOrganizerMapper, organizerRepository);
+    public DuelTournamentManagementService(TournamentRepository tournamentRepository, AuthorityRecognizer authorityRecognizer) {
+        super(tournamentRepository, authorityRecognizer);
     }
 
     public DuelTournament startTournament(Tournament tournamentInput) {
@@ -48,11 +47,11 @@ public class DuelTournamentManagementService extends TournamentManagementService
         int battlesCount = this.calculateNumberOfBattles(tournament.getParticipation().size());
 
         for(int toursNumber=0;toursNumber<maxToursCount;toursNumber++){
-            tournament.getTours().add(new Tour(toursNumber,battlesCount,tournament));
+            tournament.getTurns().add(new Turn(toursNumber,battlesCount,tournament));
         }
 
-        tournament.setToursCount(maxToursCount);
-        tournament.setCurrentTourNumber(0);
+        tournament.setTurnsCount(maxToursCount);
+        tournament.setCurrentTurnNumber(0);
 
         return tournamentRepository.save(tournament);
     }
@@ -66,11 +65,11 @@ public class DuelTournamentManagementService extends TournamentManagementService
         DuelTournament tournament = this.castToDuelTournament(this.findStartedTournamentByName(tournamentName));
         authorityRecognizer.checkIfUserIsAdminOrOrganizerAndCanManageTournament(tournament);
 
-        if(battleDTO.getTourNumber()>tournament.getCurrentTourNumber())
-            throw new ObjectNotFoundException(Tour.class,new StringBuilder(tournament.getCurrentTourNumber()).toString());
+        if(battleDTO.getTourNumber()>tournament.getCurrentTurnNumber())
+            throw new ObjectNotFoundException(Turn.class,new StringBuilder(tournament.getCurrentTurnNumber()).toString());
 
         if(containsEmptyNames){
-            tournament.getTourByNumber(battleDTO.getTourNumber()).findBattleByTableNumber(battleDTO.getTableNumber()).clearPlayers();
+            tournament.getTurnByNumber(battleDTO.getTourNumber()).findBattleByTableNumber(battleDTO.getTableNumber()).clearPlayers();
             return tournamentRepository.save(tournament);
         }
 
@@ -91,19 +90,19 @@ public class DuelTournamentManagementService extends TournamentManagementService
                 this.setPointsForPlayers(playersWithoutBattle,firstPlayer,secondPlayer,tournament,battleDTO);
             }
             else{
-                throw new ThisPlayerHasBattleInThisTour(firstPlayer.getName(),tournament.getCurrentTourNumber());
+                throw new ThisPlayerHasBattleInThisTurn(firstPlayer.getName(),tournament.getCurrentTurnNumber());
             }
         }
 
         return tournamentRepository.save(tournament);
     }
 
-    public DuelTournament nextTour(String name) {
+    public DuelTournament nextTurn(String name) {
         DuelTournament tournament = this.castToDuelTournament(this.findStartedTournamentByName(name));
         authorityRecognizer.checkIfUserCanManageTournament(tournament);
         tournament.checkIfAllBattlesAreFinished();
-        tournament.setCurrentTourNumber(tournament.getCurrentTourNumber()+1);
-        if (tournament.getCurrentTourNumber() >= tournament.getTours().size()){
+        tournament.setCurrentTurnNumber(tournament.getCurrentTurnNumber()+1);
+        if (tournament.getCurrentTurnNumber() >= tournament.getTurns().size()){
             throw new TournamentIsFinished(tournament.getName());
         }
         else{
@@ -113,13 +112,13 @@ public class DuelTournamentManagementService extends TournamentManagementService
         return tournamentRepository.save(tournament);
     }
 
-    public DuelTournament previousTour(String name) {
+    public DuelTournament previousTurn(String name) {
         DuelTournament tournament = this.castToDuelTournament(this.findStartedTournamentByName(name));
         authorityRecognizer.checkIfUserCanManageTournament(tournament);
-        if(tournament.getCurrentTourNumber() <= 0)
+        if(tournament.getCurrentTurnNumber() <= 0)
             throw new ItIsFirstTourOfTournament(name);
-        tournament.getTourByNumber(tournament.getCurrentTourNumber()).getBattles().forEach(Battle::clearPlayers);
-        tournament.setCurrentTourNumber(tournament.getCurrentTourNumber()-1);
+        tournament.getTurnByNumber(tournament.getCurrentTurnNumber()).getBattles().forEach(Battle::clearPlayers);
+        tournament.setCurrentTurnNumber(tournament.getCurrentTurnNumber()-1);
         return tournamentRepository.save(tournament);
     }
 
@@ -128,9 +127,9 @@ public class DuelTournamentManagementService extends TournamentManagementService
         authorityRecognizer.checkIfUserCanManageTournament(tournament);
         this.checkIfTournamentIsNotOutOfDate(tournament);
         tournament.checkIfAllBattlesAreFinished();
-        int indexOfCurrentTour = tournament.getCurrentTourNumber();
+        int indexOfCurrentTour = tournament.getCurrentTurnNumber();
         int indexOfNextTour = indexOfCurrentTour + 1;
-        if (indexOfNextTour != tournament.getTours().size())
+        if (indexOfNextTour != tournament.getTurns().size())
             throw new TournamentCannotBeFinished(tournament.getName());
         tournament.setStatus(TournamentStatus.FINISHED);
         this.advancePlayersToOrganizers(tournament);
@@ -146,26 +145,26 @@ public class DuelTournamentManagementService extends TournamentManagementService
     private void setPointsForPlayers(List<Player> playersWithoutBattle, Player firstPlayer, Player secondPlayer,
                                     Tournament tournament, DuelBattleRequestDTO battleDTO){
         if(playersWithoutBattle.contains(secondPlayer)){
-            tournament.getTourByNumber(battleDTO.getTourNumber()).setPoints(battleDTO,firstPlayer,secondPlayer);
+            tournament.getTurnByNumber(battleDTO.getTourNumber()).setPoints(battleDTO,firstPlayer,secondPlayer);
         }
         else{
             int secondPlayerTableNumber = tournament.getTableNumberForPlayer(secondPlayer,battleDTO.getTourNumber());
             if(secondPlayerTableNumber == battleDTO.getTableNumber()){
-                tournament.getTourByNumber(battleDTO.getTourNumber()).setPoints(battleDTO,firstPlayer,secondPlayer);
+                tournament.getTurnByNumber(battleDTO.getTourNumber()).setPoints(battleDTO,firstPlayer,secondPlayer);
             }
             else{
 
-                throw new ThisPlayerHasBattleInThisTour(secondPlayer.getName(),tournament.getCurrentTourNumber());
+                throw new ThisPlayerHasBattleInThisTurn(secondPlayer.getName(),tournament.getCurrentTurnNumber());
             }
         }
     }
 
     private int calculateToursNumber(DuelTournament tournament){
         int maxToursNumber = tournament.getParticipation().size()*2;
-        if(maxToursNumber<tournament.getToursCount())
+        if(maxToursNumber<tournament.getTurnsCount())
             return (int) (long) maxToursNumber;
         else
-            return tournament.getToursCount();
+            return tournament.getTurnsCount();
     }
 
     private int calculateNumberOfBattles(int number){

@@ -3,9 +3,9 @@ package pl.edu.pollub.battleCraft.serviceLayer.services.resources;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.UserAccountRepository;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.Player;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.File.UserAvatar.InvalidUserAvatarExtension;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ThisObjectIsBannedException;
@@ -27,6 +27,8 @@ import java.util.Optional;
 public class UserAccountResourcesService {
 
     private final String DEFAULT_USER_AVATARS_DIRECTORY_NAME = "usersAvatars";
+
+    private final String DEFAULT_USER_AVATARS_DIRECTORY_NAME_FOR_BUFFERED_IMAGE = "src/main/resources/static/usersAvatars";
 
     private final int DEFAULT_USER_AVATAR_SIZE = 170;
 
@@ -73,7 +75,7 @@ public class UserAccountResourcesService {
                 .orElseThrow(() -> new ObjectNotFoundException(UserAccount.class,username));
 
         if(user instanceof Player){
-            if(((Player) user).isBanned())
+            if(user.isBanned())
                 throw new ThisObjectIsBannedException(Player.class,user.getName());
         }
 
@@ -86,14 +88,15 @@ public class UserAccountResourcesService {
         if(!extension.equals("bmp") && !extension.equals("gif") && !extension.equals("jpg") && !extension.equals("jpeg") && !extension.equals("png"))
             throw new InvalidUserAvatarExtension(extension);
 
+        File userAvatarFile = fileService.convertMultipartFileToFile(
+                file,
+                new StringBuilder(DEFAULT_USER_AVATARS_DIRECTORY_NAME_FOR_BUFFERED_IMAGE).append("/").append(username).append(".").append(extension).toString());
+
         BufferedImage userAvatar =imageService.resizeImageFromFile(
-                fileService.convertMultipartFileToFile(file),
+                userAvatarFile,
                 DEFAULT_USER_AVATAR_DIMENSION);
 
-        File userAvatarFile = new File(username);
         ImageIO.write(userAvatar, extension, userAvatarFile);
-
-        fileService.store(userAvatarFile,new StringBuilder(DEFAULT_USER_AVATARS_DIRECTORY_NAME).append("/").append(username).toString(),extension);
     }
 
 

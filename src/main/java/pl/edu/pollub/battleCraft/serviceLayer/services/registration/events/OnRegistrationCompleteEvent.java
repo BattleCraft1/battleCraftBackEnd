@@ -1,7 +1,7 @@
 package pl.edu.pollub.battleCraft.serviceLayer.services.registration.events;
 
 import org.springframework.context.ApplicationEvent;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.UserAccount;
 
 import java.util.Locale;
 

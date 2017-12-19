@@ -3,15 +3,14 @@ package pl.edu.pollub.battleCraft.dataLayer.domain.Battle;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.emuns.ColorOfSideInBattle;
-import pl.edu.pollub.battleCraft.dataLayer.domain.Tour.Tour;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.Player;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.subClasses.Player.relationships.Play;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships.emuns.ColorOfSideInBattle;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Turn.Turn;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.Player;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships.Play;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
@@ -26,9 +25,9 @@ public class Battle {
     @Transient
     private final int NUMBER_OF_POINTS_FOR_ALONE_PLAYER = 17;
 
-    public Battle(Tour tour, int tableNumber){
+    public Battle(Turn tour, int tableNumber){
         this.tableNumber = tableNumber;
-        this.setTour(tour);
+        this.setTurn(tour);
         this.finished = false;
     }
 
@@ -40,8 +39,8 @@ public class Battle {
     private int tableNumber;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
-    @JoinColumn(name = "tour_id")
-    private Tour tour;
+    @JoinColumn(name = "turn_id")
+    private Turn turn;
 
     @JsonIgnore
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = "battle")

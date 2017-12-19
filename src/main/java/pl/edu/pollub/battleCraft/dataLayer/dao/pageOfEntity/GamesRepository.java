@@ -7,12 +7,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.search.Searcher;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Game.Game;
-import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.search.field.Join;
 import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.search.field.Field;
 import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.search.criteria.SearchCriteria;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.GameRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.OrganizerRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.TournamentRepository;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.PageOfEntities.AnyObjectNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.PageOfEntities.PageNotFoundException;
 
 import java.util.List;
 
@@ -34,7 +35,7 @@ public class GamesRepository {
         this.tournamentsRepository = tournamentsRepository;
     }
 
-    @Transactional
+    @Transactional(rollbackFor = {AnyObjectNotFoundException.class,PageNotFoundException.class})
     public Page getPageOfGames(List<SearchCriteria> searchCriteria, Pageable requestedPage) {
         return searcher
                 .select(
@@ -50,11 +51,13 @@ public class GamesRepository {
                 .execute("id",requestedPage);
     }
 
+    @Transactional
     public void banGames(String... gamesToBanUniqueNames) {
         gameRepository.banGamesByUniqueNames(gamesToBanUniqueNames);
         tournamentRepository.banTournamentsRelatedWithGame(gamesToBanUniqueNames);
     }
 
+    @Transactional
     public void deleteGames(String... gamesToDeleteUniqueNames) {
         List<Long> tournamentsToDeleteIds =
                 tournamentRepository.selectTournamentsIdsByGameUniqueNames(gamesToDeleteUniqueNames);
@@ -62,7 +65,7 @@ public class GamesRepository {
         this.organizerRepository.deleteCreationOfGamesByOrganizersIds(idsOfOrganizers);
         this.tournamentRepository.deleteParticipationByTournamentsIds(tournamentsToDeleteIds);
         this.tournamentRepository.deleteOrganizationByTournamentsIds(tournamentsToDeleteIds);
-        List<Long> idsOfToursToDelete = this.tournamentRepository.selectIdsOfToursToDeleteByTournamentsIds(tournamentsToDeleteIds);
+        List<Long> idsOfToursToDelete = this.tournamentRepository.selectIdsOfTurnsToDeleteByTournamentsIds(tournamentsToDeleteIds);
         if(idsOfToursToDelete.size()>0) {
             tournamentsRepository.deleteTournamentInProgressionRelations(idsOfToursToDelete);
         }
@@ -70,14 +73,17 @@ public class GamesRepository {
         gameRepository.deleteGamesByUniqueNames(gamesToDeleteUniqueNames);
     }
 
+    @Transactional
     public void unlockGames(String... gamesToUnlockUniqueNames) {
         gameRepository.unlockGamesByUniqueNames(gamesToUnlockUniqueNames);
     }
 
+    @Transactional
     public void acceptGames(String... gamesToAcceptUniqueNames) {
         gameRepository.acceptGamesByUniqueNames(gamesToAcceptUniqueNames);
     }
 
+    @Transactional
     public void cancelAcceptGames(String... gamesToCancelAcceptUniqueNames) {
         gameRepository.cancelAcceptGamesUniqueNames(gamesToCancelAcceptUniqueNames);
         tournamentRepository.banTournamentsRelatedWithGame(gamesToCancelAcceptUniqueNames);

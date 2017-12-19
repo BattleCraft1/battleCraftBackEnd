@@ -2,7 +2,7 @@ package pl.edu.pollub.battleCraft.dataLayer.domain.VerificationToken;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
-import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwner.User.UserAccount;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.UserAccount;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;

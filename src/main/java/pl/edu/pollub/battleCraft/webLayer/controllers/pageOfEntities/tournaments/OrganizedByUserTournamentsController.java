@@ -22,7 +22,7 @@ public class OrganizedByUserTournamentsController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ORGANIZER')")
-    @PostMapping(value = "/page/organized/tournaments", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/page/organized", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Page getPageOfTournaments(@RequestBody GetPageObjectsDTO getPageObjectsDTO) {
         System.out.println("Try to get tournaments");
         return tournamentService.getPageOfTournamentsOrganizedByUser(getPageObjectsDTO.unwrapPageRequest(),
@@ -30,7 +30,7 @@ public class OrganizedByUserTournamentsController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ORGANIZER')")
-    @PostMapping(value = "/delete/organized/tournaments", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/delete/organized", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Page deleteTournaments(@RequestBody GetPageAndModifyDataDTO getPageAndModifyDataDTO) {
         tournamentService.deleteTournaments(getPageAndModifyDataDTO.getNamesOfObjectsToModify());
         GetPageObjectsDTO getPageObjectsDTO = getPageAndModifyDataDTO.getGetPageObjectsDTO();
