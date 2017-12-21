@@ -142,44 +142,6 @@ public abstract class Tournament{
                 }).collect(Collectors.toList()));
     }
 
-    public void addOrganizers(List<Organizer> organizers){
-        this.organizations.addAll(organizers.stream()
-                .map(organizer -> {
-                    Organization organization = new Organization(organizer, this);
-                    organizer.addOrganizationByOneSide(organization);
-                    return organization;
-                })
-                .collect(Collectors.toList()));
-    }
-
-    public void editOrganizers(List<Organizer> organizers) {
-        this.addNewOrganizations(organizers);
-        this.removeNotExistingOrganizations(organizers);
-
-    }
-
-    private void addNewOrganizations(List<Organizer> organizers){
-        this.organizations.addAll(organizers.stream()
-                .filter(organizer -> !this.organizations.stream()
-                        .map(Organization::getOrganizer)
-                        .collect(Collectors.toList()).contains(organizer))
-                .map(organizer -> {
-                    Organization organization = new Organization(organizer, this);
-                    organizer.addOrganizationByOneSide(organization);
-                    return organization; })
-                .collect(Collectors.toList()));
-    }
-
-    private void removeNotExistingOrganizations(List<Organizer> organizers){
-        this.organizations.removeAll(this.organizations.stream()
-                .filter(organization -> !organizers.contains(organization.getOrganizer()))
-                .peek(organization -> {
-                    organization.getOrganizer().deleteOrganizationByOneSide(organization);
-                    organization.setOrganizedTournament(null);
-                    organization.setOrganizer(null);
-                }).collect(Collectors.toList()));
-    }
-
     public void addOrganizationByOneSide(Organization organization) {
         this.deleteOrganizationWithTheSameTournamentName(organization.getOrganizedTournament().getName());
         this.organizations.add(organization);
@@ -221,18 +183,6 @@ public abstract class Tournament{
     public void chooseGame(Game game){
         this.game = game;
         game.addTournamentByOneSide(this);
-    }
-
-    public long getNoExistingGroupNumber(){
-        List<Long> groupsNumbers = this.participation.stream()
-                .map(Participation::getGroupNumber)
-                .distinct()
-                .collect(Collectors.toList());
-        long possibleGroupNumber = new Random().nextLong();
-        while (groupsNumbers.contains(possibleGroupNumber)){
-            possibleGroupNumber = new Random().nextLong();
-        }
-        return possibleGroupNumber;
     }
 
     public TournamentType getTournamentType(){

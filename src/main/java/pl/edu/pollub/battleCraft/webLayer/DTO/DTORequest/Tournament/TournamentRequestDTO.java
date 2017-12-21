@@ -4,7 +4,6 @@ import lombok.*;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.enums.TournamentType;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Address.AddressOwnerRequestDTO;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -14,7 +13,7 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class TournamentRequestDTO extends AddressOwnerRequestDTO{
+public abstract class TournamentRequestDTO  extends AddressOwnerRequestDTO {
     private String name;
     private String nameChange;
     private int toursCount;
@@ -23,7 +22,6 @@ public class TournamentRequestDTO extends AddressOwnerRequestDTO{
     private String game;
     private Date dateOfStart;
     private Date dateOfEnd;
-    private List<List<String>> participants = new ArrayList<>();
     private List<String> organizers;
 
     public TournamentType getTournamentType(){

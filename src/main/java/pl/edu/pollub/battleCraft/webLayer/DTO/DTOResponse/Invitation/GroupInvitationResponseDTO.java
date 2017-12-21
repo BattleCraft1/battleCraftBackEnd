@@ -8,8 +8,8 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class PlayerInvitationResponseDTO extends InvitationResponseDTO{
-    public PlayerInvitationResponseDTO(String secondPlayerName,boolean secondPlayerAccept, String tournamentName,boolean accepted){
+public class GroupInvitationResponseDTO extends InvitationResponseDTO{
+    public GroupInvitationResponseDTO(String tournamentName, String secondPlayerName, boolean secondPlayerAccept, boolean accepted){
         super(tournamentName,accepted);
         this.secondPlayerName = secondPlayerName;
         this.secondPlayerAccept = secondPlayerAccept;

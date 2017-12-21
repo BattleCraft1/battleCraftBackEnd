@@ -11,15 +11,13 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.Player;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.UserAccountRepository;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityValidation.EntityValidationException;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ThisObjectIsBannedException;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.Security.YouAreNotOwnerOfThisObjectException;
-import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationToOrganizationService;
-import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationToParticipationService;
+import pl.edu.pollub.battleCraft.serviceLayer.services.participation.OrganizationService;
+import pl.edu.pollub.battleCraft.serviceLayer.services.participation.ParticipationService;
 import pl.edu.pollub.battleCraft.serviceLayer.services.resources.UserAccountResourcesService;
-import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationDTO.InvitationDTO;
+import pl.edu.pollub.battleCraft.serviceLayer.services.participation.ParticipationDTO.ParticipationDTO;
 import pl.edu.pollub.battleCraft.serviceLayer.services.security.AuthorityRecognizer;
 import pl.edu.pollub.battleCraft.serviceLayer.services.validators.UserAccount.UserAccountWithInvitationsValidator;
-import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.Invitation.UserAccountWithInvitationsRequestDTO;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.WithPariticipation.UserAccountWithParticipationRequestDTO;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,17 +33,17 @@ public class UserAccountService {
 
     private final UserEditor userEditor;
 
-    private final InvitationToParticipationService invitationToParticipationService;
+    private final ParticipationService invitationToParticipationService;
 
-    private final InvitationToOrganizationService invitationToOrganizationService;
+    private final OrganizationService invitationToOrganizationService;
 
     private final AuthorityRecognizer authorityRecognizer;
 
     @Autowired
     public UserAccountService(UserAccountWithInvitationsValidator userAccountValidator, UserAccountRepository userAccountRepository,
                               UserAccountResourcesService userAccountResourcesService, UserEditor userEditor,
-                              InvitationToParticipationService invitationToParticipationService,
-                              InvitationToOrganizationService invitationToOrganizationService, AuthorityRecognizer authorityRecognizer) {
+                              ParticipationService invitationToParticipationService,
+                              OrganizationService invitationToOrganizationService, AuthorityRecognizer authorityRecognizer) {
         this.userAccountRepository = userAccountRepository;
         this.userAccountValidator = userAccountValidator;
         this.userAccountResourcesService = userAccountResourcesService;
@@ -56,13 +54,13 @@ public class UserAccountService {
     }
 
     @Transactional(rollbackFor = {EntityValidationException.class, ObjectNotFoundException.class})
-    public UserAccount editUserAccount(UserAccountWithInvitationsRequestDTO userAccountRequestDTO, BindingResult bindingResult){
+    public UserAccount editUserAccount(UserAccountWithParticipationRequestDTO userAccountRequestDTO, BindingResult bindingResult){
         UserAccount userAccountToEdit = Optional.ofNullable(userAccountRepository.findUserAccountByUniqueName(userAccountRequestDTO.getName()))
                 .orElseThrow(() -> new ObjectNotFoundException(UserAccount.class,userAccountRequestDTO.getName()));
 
         authorityRecognizer.checkIfCurrentUserIsOwnerOfAccount(userAccountToEdit);
 
-        userAccountValidator.checkIfUserWithThisNameOrEmailAlreadyExist(userAccountRequestDTO,bindingResult);
+        userAccountValidator.checkIfUserWithThisNameOrEmailAlreadyExist(userAccountRequestDTO);
         userAccountValidator.validate(userAccountRequestDTO, bindingResult);
 
         userEditor.edit(userAccountToEdit,
@@ -82,13 +80,14 @@ public class UserAccountService {
 
         if(userAccountToEdit instanceof Player){
             Player player = (Player) userAccountToEdit;
-            List<InvitationDTO> participatedTournaments = userAccountValidator.getValidatedPlayersInvitations(player.getName(),userAccountRequestDTO, bindingResult);
-            invitationToParticipationService.sendInvitations(player, participatedTournaments);
+            userAccountRequestDTO.setName(player.getName());
+            List<ParticipationDTO> participatedTournaments = userAccountValidator.getValidatedParticipation(userAccountRequestDTO);
+            invitationToParticipationService.confirmParticipation(player, participatedTournaments);
         }
         if(userAccountToEdit instanceof Organizer){
             Organizer organizer = (Organizer) userAccountToEdit;
-            List<InvitationDTO> organizedTournaments = userAccountValidator.getValidatedOrganizersInvitations(userAccountRequestDTO.getOrganizedTournaments(), bindingResult);
-            invitationToOrganizationService.sendInvitations(organizer, organizedTournaments);
+            List<ParticipationDTO> organizedTournaments = userAccountValidator.getValidatedOrganization(userAccountRequestDTO.getOrganizedTournaments());
+            invitationToOrganizationService.confirmOrganization(organizer, organizedTournaments);
         }
 
         userAccountValidator.finishValidation(bindingResult);

@@ -1,4 +1,4 @@
-package pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationDTO;
+package pl.edu.pollub.battleCraft.serviceLayer.services.participation.ParticipationDTO;
 
 import lombok.*;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.Tournament;
@@ -9,7 +9,7 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.Tournament;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class InvitationDTO {
+public class ParticipationDTO {
     protected Tournament tournament;
     protected boolean accepted;
 }

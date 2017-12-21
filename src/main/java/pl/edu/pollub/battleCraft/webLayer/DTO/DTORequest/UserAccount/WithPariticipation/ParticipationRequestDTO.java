@@ -1,4 +1,4 @@
-package pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.Invitation;
+package pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.WithPariticipation;
 
 import lombok.*;
 
@@ -8,9 +8,9 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class InvitationRequestPlayerDTO {
-    private String name;
-    private boolean accepted;
+public class ParticipationRequestDTO{
+    protected String name;
+    protected boolean accepted;
     private String secondPlayerName;
 
     public String getTournamentName(){

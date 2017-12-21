@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.TournamentRepository;
+import pl.edu.pollub.battleCraft.dataLayer.domain.ParticipantsGroup.ParticipantsGroup;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.enums.TournamentStatus;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.subClasses.GroupTournament;
@@ -85,7 +86,7 @@ public class GroupTournamentManagementService extends TournamentManagementServic
 
         List<Player> firstPlayersGroup = firstPlayersGroupParticipation.stream().map(Participation::getPlayer).collect(Collectors.toList());
 
-        if(!firstPlayersGroupParticipation.get(0).getGroupNumber().equals(firstPlayersGroupParticipation.get(1).getGroupNumber())){
+        if(!ParticipantsGroup.checkIfParticipantsAreInTheSameGroup(firstPlayersGroupParticipation.get(0),firstPlayersGroupParticipation.get(1))){
             throw new ThisPlayersAreNotInTheSameGroup(firstPlayersGroup.get(0).getName(),firstPlayersGroup.get(1).getName());
         }
 
@@ -95,7 +96,7 @@ public class GroupTournamentManagementService extends TournamentManagementServic
 
         List<Player> secondPlayersGroup = secondPlayersGroupParticipation.stream().map(Participation::getPlayer).collect(Collectors.toList());
 
-        if(!secondPlayersGroupParticipation.get(0).getGroupNumber().equals(secondPlayersGroupParticipation.get(1).getGroupNumber())){
+        if(!ParticipantsGroup.checkIfParticipantsAreInTheSameGroup(secondPlayersGroupParticipation.get(0),secondPlayersGroupParticipation.get(1))){
             throw new ThisPlayersAreNotInTheSameGroup(secondPlayersGroup.get(0).getName(),secondPlayersGroup.get(1).getName());
         }
 

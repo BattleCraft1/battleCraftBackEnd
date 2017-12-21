@@ -4,26 +4,31 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
+import pl.edu.pollub.battleCraft.dataLayer.domain.ParticipantsGroup.ParticipantsGroup;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.enums.TournamentType;
 import pl.edu.pollub.battleCraft.dataLayer.domain.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.*;
 import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.Player;
+import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.nullObjectPattern.NullPlayer;
 import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships.Participation;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityValidation.EntityValidationException;
-import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationDTO.DuelTournamentInvitationDTO;
-import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationDTO.GroupTournamentInvitationDTO;
-import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationDTO.InvitationDTO;
+import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
+import pl.edu.pollub.battleCraft.serviceLayer.services.participation.ParticipationDTO.DuelTournamentParticipationDTO;
+import pl.edu.pollub.battleCraft.serviceLayer.services.participation.ParticipationDTO.GroupTournamentParticipationDTO;
+import pl.edu.pollub.battleCraft.serviceLayer.services.participation.ParticipationDTO.ParticipationDTO;
 import pl.edu.pollub.battleCraft.serviceLayer.services.security.AuthorityRecognizer;
-import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.Invitation.InvitationRequestDTO;
-import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.Invitation.InvitationRequestPlayerDTO;
-import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.Invitation.UserAccountWithInvitationsRequestDTO;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.WithPariticipation.OrganizationRequestDTO;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.WithPariticipation.ParticipationRequestDTO;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.UserAccount.WithPariticipation.UserAccountWithParticipationRequestDTO;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
 public class UserAccountWithInvitationsValidator implements Validator {
+
+    private Errors errors;
 
     private final TournamentRepository tournamentRepository;
 
@@ -45,89 +50,97 @@ public class UserAccountWithInvitationsValidator implements Validator {
 
     @Override
     public boolean supports(Class<?> aClass) {
-        return UserAccountWithInvitationsRequestDTO.class.equals(aClass);
+        return UserAccountWithParticipationRequestDTO.class.equals(aClass);
     }
 
     @Override
     public void validate(Object o, Errors errors) {
-        UserAccountWithInvitationsRequestDTO userAccountRequestDTO = (UserAccountWithInvitationsRequestDTO) o;
+        this.errors = errors;
+        UserAccountWithParticipationRequestDTO userAccountRequestDTO = (UserAccountWithParticipationRequestDTO) o;
         userAccountValidator.validate(userAccountRequestDTO,errors);
     }
 
     //
 
-    public void checkIfUserWithThisNameOrEmailAlreadyExist(UserAccountWithInvitationsRequestDTO userAccountRequestDTO, BindingResult bindingResult){
+    public void checkIfUserWithThisNameOrEmailAlreadyExist(UserAccountWithParticipationRequestDTO userAccountRequestDTO){
         if(!userAccountRequestDTO.getName().equals(userAccountRequestDTO.getNameChange())) {
+
             authorityRecognizer.checkIfCurrentUserCanModifyUsername(userAccountRequestDTO.getName());
             UserAccount userExist = userAccountRepository.findUserAccountByUniqueNameOrEmail(userAccountRequestDTO.getNameChange(),userAccountRequestDTO.getEmail());
+
             if (userExist.getName().equals(userAccountRequestDTO.getNameChange()))
-                bindingResult.rejectValue("nameChange", "", "User with this name already exist.");
+                errors.rejectValue("nameChange", "", "User with this name already exist.");
             if (!userExist.getName().equals(userAccountRequestDTO.getName()) && userExist.getEmail().equals(userAccountRequestDTO.getEmail()))
-                bindingResult.rejectValue("email", "", "User with this email already exist.");
+                errors.rejectValue("email", "", "User with this email already exist.");
         }
         else{
             UserAccount userExist = userAccountRepository.findUserAccountByEmailWithOtherUniqueName(userAccountRequestDTO.getNameChange(),userAccountRequestDTO.getEmail());
+
             if (userExist!=null)
-                bindingResult.rejectValue("email", "", "User with this email already exist.");
+                errors.rejectValue("email", "", "User with this email already exist.");
         }
     }
 
     //TO DO: Eliminate n+1 problem with criteria api
-    public List<InvitationDTO> getValidatedPlayersInvitations(String username, UserAccountWithInvitationsRequestDTO userAccountRequestDTO, BindingResult bindingResult){
-        List<InvitationRequestPlayerDTO> invitations = userAccountRequestDTO.getParticipatedTournaments();
-        if(invitations.size()==0)
+    public List<ParticipationDTO> getValidatedParticipation(UserAccountWithParticipationRequestDTO userAccountRequestDTO){
+        List<ParticipationRequestDTO> allPlayerParticipation = userAccountRequestDTO.getParticipatedTournaments();
+
+        if(allPlayerParticipation.size()==0)
             return new ArrayList<>();
-        List<String> tournamentsNames = invitations.stream()
-                .map(InvitationRequestPlayerDTO::getTournamentName)
+
+        List<String> tournamentsNames = allPlayerParticipation.stream()
+                .map(ParticipationRequestDTO::getTournamentName)
                 .collect(Collectors.toList());
+
         if(containsDuplicates(tournamentsNames))
-            bindingResult.rejectValue("participatedTournaments","","You cannot have duplicated tournament");
+            errors.rejectValue("participatedTournaments","","You cannot have duplicated tournament");
 
         List<Tournament> tournaments = tournamentRepository.findAcceptedOrNewTournamentsByUniqueNames(tournamentsNames);
+
         List<String> tournamentsNamesWithTooManyPlayers = new ArrayList<>();
-        List<InvitationDTO> output = tournaments.stream().map(tournament -> {
-            if(tournament.getTournamentType()== TournamentType.GROUP){
-                InvitationRequestPlayerDTO invitation = this.getInvitationByTournamentName(invitations,tournament.getName());
-                Player player;
-                if(invitation.getSecondPlayerName().equals(username))
-                    player = null;
-                else
-                    player = playerRepository.findNotBannedPlayerByUniqueName(invitation.getSecondPlayerName());
-                this.checkIfPlayerAlreadyHaveParticipation(tournament,player,username,bindingResult);
-                this.checkIfPlayersCountIsGreaterThanLimit(tournamentsNamesWithTooManyPlayers,tournament,username,2);
-                return new GroupTournamentInvitationDTO(tournament, invitation.isAccepted(),player);
-            }
-            else{
-                this.checkIfPlayersCountIsGreaterThanLimit(tournamentsNamesWithTooManyPlayers,tournament,username,1);
-                InvitationRequestPlayerDTO invitation = this.getInvitationByTournamentName(invitations,tournament.getName());
-                return new DuelTournamentInvitationDTO(tournament,invitation.isAccepted());
-            }
-        }).collect(Collectors.toList());
+
+        List<ParticipationDTO> output = tournaments.stream().map(
+                tournament -> checkParticipationInTournamentIsValid(
+                        userAccountRequestDTO.getName(),
+                        tournamentsNamesWithTooManyPlayers,
+                        tournament,
+                        allPlayerParticipation
+                )
+        ).collect(Collectors.toList());
+
         if(tournamentsNamesWithTooManyPlayers.size()>0)
-            this.reportTournamentsWithTooManyPlayers(tournamentsNamesWithTooManyPlayers,bindingResult);
+            this.reportTournamentsWithTooManyPlayers(tournamentsNamesWithTooManyPlayers);
+
         return output;
     }
 
     //TO DO: Eliminate n+1 problem with criteria api
-    public List<InvitationDTO> getValidatedOrganizersInvitations(List<InvitationRequestDTO> invitations, BindingResult bindingResult){
-        if(invitations.size()==0)
+    public List<ParticipationDTO> getValidatedOrganization(List<OrganizationRequestDTO> organizations){
+        if(organizations.size()==0)
             return new ArrayList<>();
-        List<String> tournamentsNames = invitations.stream()
-                .map(InvitationRequestDTO::getTournamentName)
+
+        List<String> tournamentsNames = organizations.stream()
+                .map(OrganizationRequestDTO::getTournamentName)
                 .collect(Collectors.toList());
+
         if(containsDuplicates(tournamentsNames))
-            bindingResult.rejectValue("organizedTournaments","","You cannot have duplicated tournament");
+            errors.rejectValue("organizedTournaments","","You cannot have duplicated tournament");
+
         List<Tournament> tournaments = tournamentRepository.findAcceptedOrNewTournamentsByUniqueNames(tournamentsNames);
 
         List<String> tournamentsNamesWithTooManyOrganizers = new ArrayList<>();
-        List<InvitationDTO> output = tournaments.stream().map(tournament -> {
-                boolean invitationAccepted = this.checkIfInvitationIsAcceptedForTournament(invitations,tournament.getName());
-                if(tournament.getOrganizations().size()>=10)
-                    tournamentsNamesWithTooManyOrganizers.add(tournament.getName());
-                return new InvitationDTO(tournament,invitationAccepted);
-        }).collect(Collectors.toList());
+
+        List<ParticipationDTO> output = tournaments.stream().map(
+                tournament -> checkOrganizationInTournamentIsValid(
+                        tournamentsNamesWithTooManyOrganizers,
+                        tournament,
+                        organizations
+                )
+        ).collect(Collectors.toList());
+
         if(tournamentsNamesWithTooManyOrganizers.size()>0)
-            this.reportTournamentsWithTooManyOrganizers(tournamentsNamesWithTooManyOrganizers,bindingResult);
+            this.reportTournamentsWithTooManyOrganizers(tournamentsNamesWithTooManyOrganizers);
+
         return output;
     }
 
@@ -137,14 +150,53 @@ public class UserAccountWithInvitationsValidator implements Validator {
         }
     }
 
-    private InvitationRequestPlayerDTO getInvitationByTournamentName(List<InvitationRequestPlayerDTO> invitations, String tournamentName){
-        return invitations.stream()
-                .filter(invitation -> invitation.getTournamentName().equals(tournamentName))
-                .findFirst().get();
+    private ParticipationDTO checkOrganizationInTournamentIsValid(List<String> tournamentsNamesWithTooManyOrganizers,
+                                                                    Tournament tournament,
+                                                                    List<OrganizationRequestDTO> organizations){
+        boolean accepted = this.checkIfParticipationIsAcceptedForTournament(organizations,tournament.getName());
+        if(tournament.getOrganizations().size()>=10)
+            tournamentsNamesWithTooManyOrganizers.add(tournament.getName());
+        return new ParticipationDTO(tournament,accepted);
     }
 
-    private boolean checkIfInvitationIsAcceptedForTournament(List<InvitationRequestDTO> invitations, String tournamentName){
-        return invitations.stream().filter(invitationRequestDTO -> invitationRequestDTO.getTournamentName().equals(tournamentName))
+    private ParticipationDTO checkParticipationInTournamentIsValid(String username,
+                                                                   List<String> tournamentsNamesWithTooManyPlayers,
+                                                                   Tournament tournament,
+                                                                   List<ParticipationRequestDTO> allPlayerParticipation){
+        if(tournament.getTournamentType() == TournamentType.GROUP){
+
+            ParticipationRequestDTO participation = this.getParticipationByTournamentName(allPlayerParticipation,tournament.getName());
+            Player player;
+
+            if(participation.getSecondPlayerName().equals(username)){
+                player = new NullPlayer();
+            }
+            else{
+                player = Optional.ofNullable(playerRepository.findNotBannedPlayerByUniqueName(participation.getSecondPlayerName()))
+                        .orElse(new NullPlayer());
+            }
+
+            this.checkIfPlayerAlreadyHaveParticipationWithSecondPlayer(tournament,player,username);
+            this.checkIfPlayersCountIsGreaterThanLimit(tournamentsNamesWithTooManyPlayers,tournament,username);
+
+            return new GroupTournamentParticipationDTO(tournament, participation.isAccepted(),player);
+        }
+        else{
+            this.checkIfPlayersCountIsGreaterThanLimit(tournamentsNamesWithTooManyPlayers,tournament,username);
+            ParticipationRequestDTO invitation = this.getParticipationByTournamentName(allPlayerParticipation,tournament.getName());
+
+            return new DuelTournamentParticipationDTO(tournament,invitation.isAccepted());
+        }
+    }
+
+    private ParticipationRequestDTO getParticipationByTournamentName(List<ParticipationRequestDTO> allParticipation, String tournamentName){
+        return allParticipation.stream()
+                .filter(participation -> participation.getTournamentName().equals(tournamentName))
+                .findFirst().orElseThrow(() -> new ObjectNotFoundException(Tournament.class,tournamentName));
+    }
+
+    private boolean checkIfParticipationIsAcceptedForTournament(List<OrganizationRequestDTO> invitations, String tournamentName){
+        return invitations.stream().filter(participationRequestDTO -> participationRequestDTO.getTournamentName().equals(tournamentName))
                 .findFirst().get().isAccepted();
     }
 
@@ -153,41 +205,42 @@ public class UserAccountWithInvitationsValidator implements Validator {
         return setWithoutDuplicates.size() < values.size();
     }
 
-    private void checkIfPlayersCountIsGreaterThanLimit(List<String> tournamentsNamesWithTooManyPlayers, Tournament tournament, String playerName, int slotsCount) {
+    private void checkIfPlayersCountIsGreaterThanLimit(List<String> tournamentsNamesWithTooManyPlayers, Tournament tournament, String playerName) {
+            int requiredSlotsCount = tournament.getPlayersOnTableCount()/2;
             Participation participationOfPlayer = tournament.getParticipation().stream()
                 .filter(participation -> participation.getPlayer().getName().equals(playerName))
                 .findFirst().orElse(null);
 
-            if(participationOfPlayer==null && tournament.getParticipation().size()+slotsCount>=tournament.getMaxPlayers()){
+            if(participationOfPlayer==null && tournament.getParticipation().size()+requiredSlotsCount>=tournament.getMaxPlayers()){
                 tournamentsNamesWithTooManyPlayers.add(tournament.getName());
             }
     }
 
-    private void checkIfPlayerAlreadyHaveParticipation(Tournament tournament, Player secondPlayer, String userName, BindingResult bindingResult){
+    private void checkIfPlayerAlreadyHaveParticipationWithSecondPlayer(Tournament tournament, Player secondPlayer, String userName){
         Participation participationOfSecondPlayer = tournament.getParticipation().stream()
                 .filter(participation -> participation.getPlayer().equals(secondPlayer)).findFirst().orElse(null);
+
         if(participationOfSecondPlayer!=null){
             Participation participationOfEditedPlayer = tournament.getParticipation().stream()
                     .filter(participation -> participation.getPlayer().getName().equals(userName)).findFirst().orElse(null);
-            if(participationOfEditedPlayer==null ||  !participationOfEditedPlayer.getGroupNumber().equals(participationOfSecondPlayer.getGroupNumber())){
-                bindingResult.rejectValue("participatedTournaments","",
-                        new StringBuilder("Player: ").append(secondPlayer.getName()).append(" already participated in tournament: ")
-                                .append(tournament.getName()).toString());
+
+            if(participationOfEditedPlayer==null || !ParticipantsGroup.checkIfParticipantsAreInTheSameGroup(participationOfEditedPlayer,participationOfSecondPlayer)){
+                errors.rejectValue("participatedTournaments","", new StringBuilder("Player: ").append(secondPlayer.getName()).append(" already participated in tournament: ").append(tournament.getName()).toString());
             }
         }
     }
 
-    private void reportTournamentsWithTooManyPlayers(List<String> tournamentsNamesWithTooManyPlayers,BindingResult bindingResult){
+    private void reportTournamentsWithTooManyPlayers(List<String> tournamentsNamesWithTooManyPlayers){
         StringBuilder raport = new StringBuilder("Tournaments: ")
                 .append(tournamentsNamesWithTooManyPlayers.stream().collect(Collectors.joining(", ")))
                 .append(" have too many players");
-        bindingResult.rejectValue("participatedTournaments","",raport.toString());
+        errors.rejectValue("participatedTournaments","",raport.toString());
     }
 
-    private void reportTournamentsWithTooManyOrganizers(List<String> tournamentsNamesWithTooManyPlayers,BindingResult bindingResult){
+    private void reportTournamentsWithTooManyOrganizers(List<String> tournamentsNamesWithTooManyPlayers){
         StringBuilder raport = new StringBuilder("Tournaments: ")
                 .append(tournamentsNamesWithTooManyPlayers.stream().collect(Collectors.joining(", ")))
                 .append(" have too many organizers");
-        bindingResult.rejectValue("organizedTournaments","",raport.toString());
+        errors.rejectValue("organizedTournaments","",raport.toString());
     }
 }

@@ -73,6 +73,7 @@ public abstract class TournamentManagementService {
                 .map(UserAccount::getName)
                 .collect(Collectors.toList());
 
+        if(playersToAdvanceNames.size()>0)
         entityManager.createNativeQuery("UPDATE user_account SET status = 'ORGANIZER', role = 'Organizer' WHERE name in (:uniqueNames)")
                 .setParameter("uniqueNames",playersToAdvanceNames).executeUpdate();
     }

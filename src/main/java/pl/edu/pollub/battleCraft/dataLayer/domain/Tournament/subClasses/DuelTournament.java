@@ -30,45 +30,6 @@ public class DuelTournament extends Tournament{
         super(2);
     }
 
-    public void addParticipants(List<Player> participants){
-        this.participation.addAll(participants.stream()
-                .map(participant -> {
-                    Participation participation =
-                            new Participation(participant, this, this.getNoExistingGroupNumber());
-                    participant.addParticipationByOneSide(participation);
-                    return participation;
-                })
-                .collect(Collectors.toList()));
-    }
-
-    public void editParticipants(List<Player> participants) {
-        this.addNewParticipation(participants);
-        this.removeNotExistingParticipation(participants);
-    }
-
-    private void addNewParticipation(List<Player> participants){
-        this.participation.addAll(participants.stream()
-                .filter(participant -> !this.participation.stream()
-                        .map(Participation::getPlayer)
-                        .collect(Collectors.toList()).contains(participant))
-                .map(participant -> {
-                    Participation participation =
-                            new Participation(participant, this, this.getNoExistingGroupNumber());
-                    participant.addParticipationByOneSide(participation);
-                    return participation; })
-                .collect(Collectors.toList()));
-    }
-
-    private void removeNotExistingParticipation(List<Player> participants){
-        this.participation.removeAll(this.participation.stream()
-                .filter(participation -> !participants.contains(participation.getPlayer()))
-                .peek(participation -> {
-                    participation.getPlayer().deleteParticipationByOneSide(participation);
-                    participation.setPlayer(null);
-                    participation.setParticipatedTournament(null);
-                }).collect(Collectors.toList()));
-    }
-
     public void filterNoAcceptedParticipation(){
         this.participation.removeAll(this.participation.stream()
                 .filter(participation -> !participation.isAccepted())

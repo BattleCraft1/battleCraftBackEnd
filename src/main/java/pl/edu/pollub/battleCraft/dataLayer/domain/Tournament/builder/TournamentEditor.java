@@ -29,11 +29,6 @@ public class TournamentEditor{
         return this;
     }
 
-    public TournamentEditor editOrganizers(List<Organizer> coOrganisers) {
-        tournamentBuilder.getInstance().editOrganizers(coOrganisers);
-        return this;
-    }
-
     public TournamentEditor changeAddress(String province, String city, String street, String zipCode, String description) {
         tournamentBuilder.getInstance().getAddressOwnership().changeAddress(province, city, street, zipCode, description);
         return this;
@@ -41,14 +36,6 @@ public class TournamentEditor{
 
     public TournamentEditor withGame(Game game){
         tournamentBuilder.getInstance().chooseGame(game);
-        return this;
-    }
-
-    public TournamentEditor editParticipants(List<List<Player>>  participants) {
-        if(tournamentBuilder.getInstance().getPlayersOnTableCount() == TournamentType.DUEL.value())
-            ((DuelTournament)tournamentBuilder.getInstance()).editParticipants(participants.stream().flatMap(List::stream).collect(Collectors.toList()));
-        else
-            ((GroupTournament)tournamentBuilder.getInstance()).editParticipants(participants);
         return this;
     }
 

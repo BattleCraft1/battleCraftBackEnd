@@ -21,6 +21,9 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.Player;
 import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.builder.PlayerBuilder;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.TournamentRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.UserAccountRepository;
+import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.GroupInvitationSender;
+import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationSender;
+import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationToOrganizationSender;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -38,18 +41,25 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
     private final UserCreator userCreator;
     private final AdministratorBuilder administratorBuilder;
 
+    private final GroupInvitationSender groupInvitationSender;
+    private final InvitationSender invitationSender;
+    private final InvitationToOrganizationSender invitationToOrganizationSender;
+
     private final TournamentCreator tournamentCreator;
 
     private DateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 
     @Autowired
-    public DatabaseInitializer(TournamentRepository tournamentRepository, UserAccountRepository userAccountRepository, PlayerBuilder playerBuilder, OrganizerBuilder organizerBuilder, UserCreator userCreator, AdministratorBuilder administratorBuilder, TournamentCreator tournamentCreator) {
+    public DatabaseInitializer(TournamentRepository tournamentRepository, UserAccountRepository userAccountRepository, PlayerBuilder playerBuilder, OrganizerBuilder organizerBuilder, UserCreator userCreator, AdministratorBuilder administratorBuilder, GroupInvitationSender groupInvitationSender, InvitationSender invitationSender, InvitationToOrganizationSender invitationToOrganizationSender, TournamentCreator tournamentCreator) {
         this.userAccountRepository = userAccountRepository;
         this.tournamentRepository = tournamentRepository;
         this.playerBuilder = playerBuilder;
         this.organizerBuilder = organizerBuilder;
         this.userCreator = userCreator;
         this.administratorBuilder = administratorBuilder;
+        this.groupInvitationSender = groupInvitationSender;
+        this.invitationSender = invitationSender;
+        this.invitationToOrganizationSender = invitationToOrganizationSender;
         this.tournamentCreator = tournamentCreator;
     }
 
@@ -83,7 +93,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
 
         Player testUser1 = playerBuilder
                 .create("Bartek", "Nowogrodzki", "bart2123", "bart2123@gmail.com")
-                .setPassword("bart2123")
+                .setPassword("bart21232123")
                 .from(testAddress1)
                 .withPhoneNumber("123123123").build();
         Player testUser2 = playerBuilder
@@ -148,71 +158,84 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
         try {
             Tournament testTournament1 = tournamentCreator
                     .startOrganizeTournament("Tournament1", 2, TournamentType.GROUP,4)
-                    .with(Arrays.asList(testUser8,testUser9))
                     .in(testAddress11)
                     .withGame( testGame1)
                     .startAt(format.parse("08-01-2018 13:05:00"))
                     .endingIn(format.parse("09-01-2018 14:05:00"))
-                    .inviteParticipants(
-                            Arrays.asList(
-                                    Arrays.asList(testUser1,testUser2),
-                                    Arrays.asList(testUser3,testUser4),
-                                    Arrays.asList(testUser5,testUser6),
-                                    Arrays.asList(testUser7,testUser8)))
                     .finishOrganize();
             testTournament1.setStatus(TournamentStatus.ACCEPTED);
 
+            invitationToOrganizationSender.inviteOrganizersList(testTournament1,Arrays.asList(testUser8,testUser9));
+
+            groupInvitationSender.inviteParticipantsGroupsList(
+                    testTournament1,
+                    Arrays.asList(
+                            Arrays.asList(testUser1,testUser2),
+                            Arrays.asList(testUser3,testUser4),
+                            Arrays.asList(testUser5,testUser6))
+            );
+
             Tournament testTournament2 = tournamentCreator
                     .startOrganizeTournament("Tournament2", 4,TournamentType.DUEL,4)
-                    .with(Collections.singletonList(testUser9))
                     .in(testAddress12)
                     .withGame( testGame1)
                     .startAt(format.parse("09-02-2018 14:11:00"))
                     .endingIn(format.parse("11-02-2018 14:05:00"))
-                    .inviteParticipants(testUser2,testUser3,testUser5,testUser9,testUser1)
                     .finishOrganize();
             testTournament2.setStatus(TournamentStatus.ACCEPTED);
 
+            invitationToOrganizationSender.inviteOrganizersList(testTournament2,Collections.singletonList(testUser9));
+
+            invitationSender.inviteParticipantsList(testTournament2,Arrays.asList(testUser2,testUser3,testUser5,testUser9,testUser1));
 
             Tournament testTournament3 = tournamentCreator
                     .startOrganizeTournament("Tournament3", 3,TournamentType.DUEL,2)
-                    .with(Collections.singletonList(testUser9))
                     .in(testAddress13)
                     .withGame( testGame1)
                     .startAt(format.parse("12-03-2018 15:15:00"))
                     .endingIn(format.parse("12-03-2018 16:05:00"))
-                    .inviteParticipants(testUser1,testUser3,testUser5,testUser7)
                     .finishOrganize();
+
+            invitationToOrganizationSender.inviteOrganizersList(testTournament3,Collections.singletonList(testUser9));
+
+            invitationSender.inviteParticipantsList(testTournament3,Arrays.asList(testUser1,testUser3,testUser5,testUser7));
 
 
             Tournament testTournament4 = tournamentCreator
                     .startOrganizeTournament("Tournament4",  5,TournamentType.DUEL,2)
                     .in(testAddress14)
-                    .withGame( testGame1)
+                    .withGame(testGame1)
                     .startAt(format.parse("25-04-2018 16:25:00"))
                     .endingIn(format.parse("27-04-2018 16:05:00"))
-                    .inviteParticipants(testUser2,testUser4,testUser6,testUser8)
                     .finishOrganize();
+
+            invitationToOrganizationSender.inviteOrganizersList(testTournament4,Collections.singletonList(testUser7));
+
+            invitationSender.inviteParticipantsList(testTournament4,Arrays.asList(testUser2,testUser4,testUser6,testUser8));
 
             Tournament testTournament5 = tournamentCreator
                     .startOrganizeTournament("Tournament5", 4,TournamentType.DUEL,1)
-                    .with(Collections.singletonList(testUser7))
                     .in(testAddress15)
                     .withGame( testGame1)
                     .startAt(format.parse("13-05-2018 11:24:00"))
                     .endingIn(format.parse("15-05-2018 16:05:00"))
-                    .inviteParticipants(testUser5,testUser10)
                     .finishOrganize();
+
+            invitationToOrganizationSender.inviteOrganizersList(testTournament5,Collections.singletonList(testUser7));
+
+            invitationSender.inviteParticipantsList(testTournament5,Arrays.asList(testUser5,testUser10));
 
             Tournament testTournament6 = tournamentCreator
                     .startOrganizeTournament("Tournament6", 3,TournamentType.DUEL,2)
-                    .with(Collections.singletonList(testUser9))
                     .in(testAddress16)
                     .withGame( testGame1)
                     .startAt(format.parse("11-11-2018 10:13:00"))
                     .endingIn(format.parse("13-11-2018 10:13:00"))
-                    .inviteParticipants(testUser5,testUser10,testUser1,testUser2)
                     .finishOrganize();
+
+            invitationToOrganizationSender.inviteOrganizersList(testTournament6,Collections.singletonList(testUser9));
+
+            invitationSender.inviteParticipantsList(testTournament6,Arrays.asList(testUser5,testUser10,testUser1,testUser2));
 
             Tournament testTournament7 = tournamentCreator
                     .startOrganizeTournament("Tournament7", 2,TournamentType.DUEL,2)
@@ -220,19 +243,24 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
                     .withGame( testGame1)
                     .startAt(format.parse("01-12-2018 11:06:00"))
                     .endingIn(format.parse("02-12-2018 11:06:00"))
-                    .inviteParticipants(testUser10,testUser1,testUser3,testUser5)
                     .finishOrganize();
+
+            invitationToOrganizationSender.inviteOrganizersList(testTournament7,Collections.singletonList(testUser8));
+
+            invitationSender.inviteParticipantsList(testTournament7,Arrays.asList(testUser10,testUser1,testUser3,testUser5));
 
             Tournament testTournament8 = tournamentCreator
                     .startOrganizeTournament("Tournament8", 10,TournamentType.DUEL,2)
-                    .with(Collections.singletonList(testUser8))
                     .in(testAddress18)
                     .withGame( testGame1)
                     .startAt(format.parse("02-06-2018 13:12:00"))
                     .endingIn(format.parse("03-06-2018 19:12:00"))
-                    .inviteParticipants(testUser1,testUser2,testUser5,testUser6)
                     .finishOrganize();
             testTournament8.setStatus(TournamentStatus.ACCEPTED);
+
+            invitationToOrganizationSender.inviteOrganizersList(testTournament8,Collections.singletonList(testUser8));
+
+            invitationSender.inviteParticipantsList(testTournament8,Arrays.asList(testUser1,testUser2,testUser5,testUser6));
 
             Tournament testTournament9 = tournamentCreator
                     .startOrganizeTournament("Tournament9", 4,TournamentType.DUEL,2)
@@ -240,20 +268,25 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
                     .withGame( testGame1)
                     .startAt(format.parse("13-07-2018 08:17:00"))
                     .endingIn(format.parse("16-07-2018 14:17:00"))
-                    .inviteParticipants(testUser10,testUser8)
                     .finishOrganize();
             testTournament9.setStatus(TournamentStatus.ACCEPTED);
 
+            invitationToOrganizationSender.inviteOrganizersList(testTournament9,Collections.singletonList(testUser7));
+
+            invitationSender.inviteParticipantsList(testTournament9,Arrays.asList(testUser10,testUser8));
+
             Tournament testTournament10 = tournamentCreator
                     .startOrganizeTournament("Tournament 10", 3,TournamentType.DUEL,2)
-                    .with(Collections.singletonList(testUser8))
                     .in(testAddress20)
                     .withGame( testGame1)
                     .startAt(format.parse("26-08-2018 10:05:00"))
                     .endingIn(format.parse("26-08-2018 21:06:00"))
-                    .inviteParticipants(testUser10,testUser7,testUser6,testUser2)
                     .finishOrganize();
             testTournament10.setStatus(TournamentStatus.ACCEPTED);
+
+            invitationToOrganizationSender.inviteOrganizersList(testTournament10,Collections.singletonList(testUser8));
+
+            invitationSender.inviteParticipantsList(testTournament10,Arrays.asList(testUser10,testUser7,testUser6,testUser2));
 
             tournamentRepository.save(testTournament1);
             tournamentRepository.save(testTournament2);

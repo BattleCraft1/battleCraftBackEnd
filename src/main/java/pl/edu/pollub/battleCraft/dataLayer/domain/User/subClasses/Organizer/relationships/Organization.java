@@ -42,9 +42,4 @@ public class Organization{
     private Tournament organizedTournament;
 
     private boolean accepted;
-
-    @JsonIgnore
-    public Organization copy(){
-        return new Organization(this.organizer,this.organizedTournament,this.accepted);
-    }
 }

@@ -2,6 +2,7 @@ package pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relati
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import pl.edu.pollub.battleCraft.dataLayer.domain.ParticipantsGroup.ParticipantsGroup;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.Player;
 
@@ -17,23 +18,39 @@ import javax.persistence.*;
 @ToString
 public class Participation{
 
-    public Participation(Player player, Tournament participatedTournament, Long groupNumber) {
+    public Participation(Player player, Tournament participatedTournament, ParticipantsGroup participantsGroup) {
         this.player = player;
         this.participatedTournament = participatedTournament;
         this.accepted = true;//true only for test
-        this.groupNumber = groupNumber;
+        participantsGroup.getParticipation().add(this);
+        this.participantsGroup = participantsGroup;
     }
 
-    private Participation(Player player, Tournament participatedTournament, boolean accepted, Long groupNumber) {
+    private Participation(Player player, Tournament participatedTournament, boolean accepted, ParticipantsGroup participantsGroup) {
         this.player = player;
         this.participatedTournament = participatedTournament;
         this.accepted = accepted;
-        this.groupNumber = groupNumber;
+        participantsGroup.getParticipation().add(this);
+        this.participantsGroup = participantsGroup;
+    }
+
+    public Participation(Player player, Tournament participatedTournament) {
+        this.player = player;
+        this.participatedTournament = participatedTournament;
+        this.accepted = true;//true only for test
+        this.participantsGroup = null;
+    }
+
+    private Participation(Player player, Tournament participatedTournament, boolean accepted) {
+        this.player = player;
+        this.participatedTournament = participatedTournament;
+        this.accepted = accepted;
+        this.participantsGroup = null;
     }
     
     @Id
     @GeneratedValue
-    private Long id;
+    protected Long id;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "player_id")
@@ -43,12 +60,9 @@ public class Participation{
     @JoinColumn(name = "tournament_id")
     protected Tournament participatedTournament;
 
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinColumn(name = "participants_group_id")
+    protected ParticipantsGroup participantsGroup;
+
     protected boolean accepted;
-
-    protected Long groupNumber;
-
-    @JsonIgnore
-    public Participation copy(){
-        return new Participation(this.player,this.participatedTournament,this.accepted,this.groupNumber);
-    }
 }

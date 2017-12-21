@@ -9,15 +9,21 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.builder.TournamentC
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.builder.TournamentEditor;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Game.Game;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.Tournament;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.subClasses.GroupTournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Organizer.Organizer;
 import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.Player;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.*;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityValidation.EntityValidationException;
+import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.GroupInvitationSender;
+import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationSender;
 import pl.edu.pollub.battleCraft.serviceLayer.services.security.AuthorityRecognizer;
 import pl.edu.pollub.battleCraft.serviceLayer.services.validators.TournamentValidator;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Tournament.DuelTournamentRequestDTO;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Tournament.GroupTournamentRequestDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Tournament.TournamentRequestDTO;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,14 +39,20 @@ public class TournamentService {
 
     private final AuthorityRecognizer authorityRecognizer;
 
+    private final InvitationSender invitationSender;
+
+    private final GroupInvitationSender groupInvitationSender;
+
 
     @Autowired
-    public TournamentService(TournamentRepository tournamentRepository, TournamentValidator tournamentValidator, TournamentCreator tournamentCreator, TournamentEditor tournamentEditor, AuthorityRecognizer authorityRecognizer) {
+    public TournamentService(TournamentRepository tournamentRepository, TournamentValidator tournamentValidator, TournamentCreator tournamentCreator, TournamentEditor tournamentEditor, AuthorityRecognizer authorityRecognizer, InvitationSender invitationSender, GroupInvitationSender groupInvitationSender) {
         this.tournamentRepository = tournamentRepository;
         this.tournamentValidator = tournamentValidator;
         this.tournamentCreator = tournamentCreator;
         this.tournamentEditor = tournamentEditor;
         this.authorityRecognizer = authorityRecognizer;
+        this.invitationSender = invitationSender;
+        this.groupInvitationSender = groupInvitationSender;
     }
 
     @Transactional(rollbackFor = {EntityValidationException.class,ObjectNotFoundException.class})
@@ -52,17 +64,24 @@ public class TournamentService {
         String currentUserName = authorityRecognizer.getCurrentUserNameFromContext();
         tournamentWebDTO.getOrganizers().add(currentUserName);
         List<Organizer> organizers = tournamentValidator.getValidatedOrganizers(tournamentWebDTO,bindingResult);
-        List<List<Player>> participants = tournamentValidator.getValidatedParticipants(tournamentWebDTO,bindingResult);
+
+        List<List<Player>> groupParticipants = new ArrayList<>();
+        List<Player> participants = new ArrayList<>();
+
+        if(tournamentWebDTO instanceof GroupTournamentRequestDTO){
+            groupParticipants = tournamentValidator.getValidatedParticipantsGroups((GroupTournamentRequestDTO) tournamentWebDTO,bindingResult);
+        }
+        else{
+            participants = tournamentValidator.getValidatedParticipants((DuelTournamentRequestDTO) tournamentWebDTO,bindingResult);
+        }
 
         tournamentValidator.finishValidation(bindingResult);
 
-        Tournament organizedTournament = tournamentCreator
-                .startOrganizeTournament(
+        Tournament organizedTournament = tournamentCreator.startOrganizeTournament(
                         tournamentWebDTO.getName(),
                         tournamentWebDTO.getTablesCount(),
                         tournamentWebDTO.getTournamentType(),
                         tournamentWebDTO.getToursCount())
-                .with(organizers)
                 .in(new Address(
                         tournamentWebDTO.getProvince(),
                         tournamentWebDTO.getCity(),
@@ -72,8 +91,14 @@ public class TournamentService {
                 .withGame(tournamentGame)
                 .startAt(tournamentWebDTO.getDateOfStart())
                 .endingIn(tournamentWebDTO.getDateOfEnd())
-                .inviteParticipants(participants)
                 .finishOrganize();
+
+        if(organizedTournament instanceof GroupTournament){
+            groupInvitationSender.inviteParticipantsGroupsList(organizedTournament,groupParticipants);
+        }
+        else{
+            invitationSender.inviteParticipantsList(organizedTournament,participants);
+        }
 
         return this.tournamentRepository.save(organizedTournament);
     }
@@ -90,7 +115,16 @@ public class TournamentService {
         tournamentValidator.validate(tournamentWebDTO,bindingResult);
         Game tournamentGame = tournamentValidator.getValidatedGame(tournamentWebDTO,bindingResult);
         List<Organizer> organizers = tournamentValidator.getValidatedOrganizers(tournamentWebDTO,bindingResult);
-        List<List<Player>> participants = tournamentValidator.getValidatedParticipants(tournamentWebDTO,bindingResult);
+
+        List<List<Player>> groupParticipants = new ArrayList<>();
+        List<Player> participants = new ArrayList<>();
+
+        if(tournamentWebDTO instanceof GroupTournamentRequestDTO){
+            groupParticipants = tournamentValidator.getValidatedParticipantsGroups((GroupTournamentRequestDTO) tournamentWebDTO,bindingResult);
+        }
+        else{
+            participants = tournamentValidator.getValidatedParticipants((DuelTournamentRequestDTO) tournamentWebDTO,bindingResult);
+        }
 
         tournamentValidator.finishValidation(bindingResult);
 
@@ -100,7 +134,6 @@ public class TournamentService {
                         tournamentWebDTO.getTablesCount(),
                         tournamentWebDTO.getTournamentType(),
                         tournamentWebDTO.getToursCount())
-                .editOrganizers(organizers)
                 .changeAddress(
                         tournamentWebDTO.getProvince(),
                         tournamentWebDTO.getCity(),
@@ -110,8 +143,14 @@ public class TournamentService {
                 .withGame(tournamentGame)
                 .startAt(tournamentWebDTO.getDateOfStart())
                 .endingIn(tournamentWebDTO.getDateOfEnd())
-                .editParticipants(participants)
                 .finishEditing();
+
+        if(tournamentToEdit instanceof GroupTournament){
+            groupInvitationSender.inviteEditedParticipantsGroupsList(tournamentToEdit,groupParticipants);
+        }
+        else{
+            invitationSender.inviteEditedParticipantsList(tournamentToEdit,participants);
+        }
 
         authorityRecognizer.checkIfEditedTournamentNeedReAcceptation(tournamentToEdit);
 

@@ -14,9 +14,9 @@ import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.GameRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.OrganizerRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.PlayerRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.TournamentRepository;
-import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityValidation.EntityValidationException;
-import pl.edu.pollub.battleCraft.serviceLayer.services.security.AuthorityRecognizer;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Tournament.DuelTournamentRequestDTO;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Tournament.GroupTournamentRequestDTO;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Tournament.TournamentRequestDTO;
 
 import java.util.*;
@@ -111,7 +111,7 @@ public class TournamentValidator implements Validator {
         }
     }
 
-    public void checkIfTournamentExist(TournamentRequestDTO tournamentWebDTO,BindingResult bindingResult){
+    public void checkIfTournamentExist(TournamentRequestDTO tournamentWebDTO, BindingResult bindingResult){
         Tournament tournamentExist = tournamentRepository.findTournamentToEditByUniqueName(tournamentWebDTO.getNameChange());
         if(tournamentExist!=null)
             bindingResult.rejectValue("nameChange","","Tournament with this name already exist.");
@@ -125,7 +125,7 @@ public class TournamentValidator implements Validator {
         }
     }
 
-    public Game getValidatedGame(TournamentRequestDTO tournamentWebDTO,BindingResult bindingResult){
+    public Game getValidatedGame(TournamentRequestDTO tournamentWebDTO, BindingResult bindingResult){
         Game tournamentGame = gameRepository.findAcceptedGameByUniqueName(tournamentWebDTO.getGame());
         if(tournamentGame==null){
             bindingResult.rejectValue("game","", new StringBuilder("game: ").append(tournamentWebDTO.getGame()).append(" does not exist").toString());
@@ -134,27 +134,42 @@ public class TournamentValidator implements Validator {
     }
 
     //TO DO: Eliminate n+1 problem with criteria api
-    public List<List<Player>> getValidatedParticipants(TournamentRequestDTO tournamentWebDTO,BindingResult bindingResult){
+    public List<Player> getValidatedParticipants(DuelTournamentRequestDTO tournamentWebDTO, BindingResult bindingResult){
+
         if(tournamentWebDTO.getParticipants().size()==0)
             return new ArrayList<>();
+
+        if(containsDuplicates(tournamentWebDTO.getParticipants()))
+            bindingResult.rejectValue("participants","","You can invite player only once");
+
+        List<Player> participantsList = playerRepository.findPlayersByUniqueName(tournamentWebDTO.getParticipants());
+
+        this.checkIfPlayersCountIsGreaterThanLimit(bindingResult,tournamentWebDTO,participantsList);
+
+        return participantsList;
+    }
+
+    public List<List<Player>> getValidatedParticipantsGroups(GroupTournamentRequestDTO tournamentWebDTO, BindingResult bindingResult){
+        if(tournamentWebDTO.getParticipants().size()==0)
+            return new ArrayList<>();
+
         List<String> flatMapOfPlayersNames = tournamentWebDTO.getParticipants().stream()
                 .flatMap(Collection::stream).collect(Collectors.toList());
+
         if(containsDuplicates(flatMapOfPlayersNames))
             bindingResult.rejectValue("participants","","You can invite player only once");
+
         List<Player> participantsList = playerRepository.findPlayersByUniqueName(flatMapOfPlayersNames);
+
         List<List<Player>> groupedParticipants;
-        if(tournamentWebDTO.getTournamentType() == TournamentType.GROUP){
-            groupedParticipants = this.groupPlayers(tournamentWebDTO.getParticipants(),participantsList);
-            this.checkIfPlayersCountIsGreaterThanLimit(bindingResult,tournamentWebDTO,groupedParticipants);
-        }
-        else{
-            groupedParticipants = this.groupPlayers(participantsList);
-            this.checkIfPlayersCountIsGreaterThanLimit(bindingResult,tournamentWebDTO,groupedParticipants);
-        }
+
+        groupedParticipants = this.groupPlayers(tournamentWebDTO.getParticipants(),participantsList);
+        this.checkIfPlayersCountIsGreaterThanLimit(bindingResult,tournamentWebDTO,groupedParticipants);
+
         return groupedParticipants;
     }
 
-    public List<Organizer> getValidatedOrganizers(TournamentRequestDTO tournamentWebDTO,BindingResult bindingResult){
+    public List<Organizer> getValidatedOrganizers(TournamentRequestDTO tournamentWebDTO, BindingResult bindingResult){
         if(tournamentWebDTO.getOrganizers().size()==0) {
             bindingResult.rejectValue("organizers","","Count of Organizer must be greater than 0");
             return new ArrayList<>();
@@ -183,7 +198,7 @@ public class TournamentValidator implements Validator {
             String playerName1 = groupPattern.get(0);
             if(groupPattern.size() == 1){
                 if(playersNames.contains(playerName1))
-                groupedPlayers.add(Collections.singletonList(this.getPlayerByName(players,playerName1)));
+                    groupedPlayers.add(Collections.singletonList(this.getPlayerByName(players,playerName1)));
             }
             if(groupPattern.size() == 2) {
                 String playerName2 = groupPattern.get(1);
@@ -205,23 +220,8 @@ public class TournamentValidator implements Validator {
         return groupedPlayers;
     }
 
-    private List<List<Player>> groupPlayers(List<Player> players){
-        List<List<Player>> groupedPlayers = new ArrayList<>();
-        players.forEach(player -> {
-            groupedPlayers.add(Collections.singletonList(player));
-        });
-        return groupedPlayers;
-    }
-
     private Player getPlayerByName(List<Player> players, String name){
         return players.stream().filter(player -> player.getName().equals(name)).findFirst().get();
-    }
-
-    private boolean containsDuplicates(String[] values){
-        Set<String> setWithoutDuplicates = new HashSet<>(Arrays.asList(values));
-        if(setWithoutDuplicates.size()<values.length)
-            return true;
-        return false;
     }
 
     private boolean containsDuplicates(List<String> values){
@@ -231,8 +231,8 @@ public class TournamentValidator implements Validator {
         return false;
     }
 
-    private void checkIfPlayersCountIsGreaterThanLimit(BindingResult bindingResult, TournamentRequestDTO tournamentWebDTO, List<List<Player>> groupedParticipants){
-        if(groupedParticipants.size() * tournamentWebDTO.getPlayersOnTableCount()/2>tournamentWebDTO.getPlayersOnTableCount()*tournamentWebDTO.getTablesCount())
+    private void checkIfPlayersCountIsGreaterThanLimit(BindingResult bindingResult, TournamentRequestDTO tournamentWebDTO, List players){
+        if(players.size() * tournamentWebDTO.getPlayersOnTableCount()/2>tournamentWebDTO.getPlayersOnTableCount()*tournamentWebDTO.getTablesCount())
             bindingResult.rejectValue("participants","",
                     new StringBuilder("Participants count must be less than ").append(tournamentWebDTO.getPlayersOnTableCount()*tournamentWebDTO.getTablesCount()).toString());
     }

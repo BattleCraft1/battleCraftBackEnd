@@ -2,6 +2,7 @@ package pl.edu.pollub.battleCraft.webLayer.toResponseDTOsMappers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import pl.edu.pollub.battleCraft.dataLayer.domain.ParticipantsGroup.ParticipantsGroup;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.enums.TournamentType;
 import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Organizer.Organizer;
@@ -93,13 +94,12 @@ public class TournamentToResponseDTOMapper {
             includedPlayersNames.add(playerName);
 
             participation.stream().filter(participationElement2 ->
-                    participationElement2.getGroupNumber().equals(participationElement.getGroupNumber()) &&
-                    !includedPlayersNames.contains(participationElement2.getPlayer().getName()))
-                    .findFirst()
+                    ParticipantsGroup.checkIfParticipantsAreInTheSameGroup(participationElement,participationElement2)
+                    && !includedPlayersNames.contains(participationElement2.getPlayer().getName())).findFirst()
                     .ifPresent(participationElement2 ->{
-                        String player2Name = participationElement2.getPlayer().getName();
-                        playersGroup.add(new InvitationResponseDTO(player2Name,participationElement2.isAccepted()));
-                        includedPlayersNames.add(player2Name);
+                        String secondPlayerName = participationElement2.getPlayer().getName();
+                        playersGroup.add(new InvitationResponseDTO(secondPlayerName,participationElement2.isAccepted()));
+                        includedPlayersNames.add(secondPlayerName);
                     });
 
             playersGroups.add(playersGroup);

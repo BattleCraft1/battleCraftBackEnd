@@ -35,11 +35,6 @@ public class TournamentCreator{
         return this;
     }
 
-    public TournamentCreator with(List<Organizer> organizers){
-        tournamentBuilder.getInstance().addOrganizers(organizers);
-        return this;
-    }
-
     public TournamentCreator in(Address address){
         tournamentBuilder.getInstance().getAddressOwnership().insertAddress(address);
         return this;
@@ -47,19 +42,6 @@ public class TournamentCreator{
 
     public TournamentCreator withGame(Game game){
         tournamentBuilder.getInstance().chooseGame(game);
-        return this;
-    }
-
-    public TournamentCreator inviteParticipants(Player... players){
-        ((DuelTournament)tournamentBuilder.getInstance()).addParticipants(Arrays.asList(players));
-        return this;
-    }
-
-    public TournamentCreator inviteParticipants(List<List<Player>> participants){
-        if(tournamentBuilder.getInstance().getPlayersOnTableCount() == TournamentType.DUEL.value())
-            ((DuelTournament)tournamentBuilder.getInstance()).addParticipants(participants.stream().flatMap(List::stream).collect(Collectors.toList()));
-        else
-            ((GroupTournament)tournamentBuilder.getInstance()).addParticipants(participants);
         return this;
     }
 
