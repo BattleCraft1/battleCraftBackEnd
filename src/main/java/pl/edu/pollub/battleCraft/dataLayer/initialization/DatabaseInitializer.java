@@ -21,8 +21,8 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.Player;
 import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.builder.PlayerBuilder;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.TournamentRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.UserAccountRepository;
-import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.GroupInvitationSender;
-import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationSender;
+import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationToGroupParticipationSender;
+import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationToParticipationSender;
 import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationToOrganizationSender;
 
 import java.text.DateFormat;
@@ -41,8 +41,8 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
     private final UserCreator userCreator;
     private final AdministratorBuilder administratorBuilder;
 
-    private final GroupInvitationSender groupInvitationSender;
-    private final InvitationSender invitationSender;
+    private final InvitationToGroupParticipationSender invitationToGroupParticipationSender;
+    private final InvitationToParticipationSender invitationToParticipationSender;
     private final InvitationToOrganizationSender invitationToOrganizationSender;
 
     private final TournamentCreator tournamentCreator;
@@ -50,15 +50,15 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
     private DateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 
     @Autowired
-    public DatabaseInitializer(TournamentRepository tournamentRepository, UserAccountRepository userAccountRepository, PlayerBuilder playerBuilder, OrganizerBuilder organizerBuilder, UserCreator userCreator, AdministratorBuilder administratorBuilder, GroupInvitationSender groupInvitationSender, InvitationSender invitationSender, InvitationToOrganizationSender invitationToOrganizationSender, TournamentCreator tournamentCreator) {
+    public DatabaseInitializer(TournamentRepository tournamentRepository, UserAccountRepository userAccountRepository, PlayerBuilder playerBuilder, OrganizerBuilder organizerBuilder, UserCreator userCreator, AdministratorBuilder administratorBuilder, InvitationToGroupParticipationSender groupInvitationSender, InvitationToParticipationSender invitationSender, InvitationToOrganizationSender invitationToOrganizationSender, TournamentCreator tournamentCreator) {
         this.userAccountRepository = userAccountRepository;
         this.tournamentRepository = tournamentRepository;
         this.playerBuilder = playerBuilder;
         this.organizerBuilder = organizerBuilder;
         this.userCreator = userCreator;
         this.administratorBuilder = administratorBuilder;
-        this.groupInvitationSender = groupInvitationSender;
-        this.invitationSender = invitationSender;
+        this.invitationToGroupParticipationSender = groupInvitationSender;
+        this.invitationToParticipationSender = invitationSender;
         this.invitationToOrganizationSender = invitationToOrganizationSender;
         this.tournamentCreator = tournamentCreator;
     }
@@ -131,7 +131,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
                 .withPhoneNumber("123123123").build();
         Organizer testUser9 = organizerBuilder
                 .create("Albert", "Kwasny", "kwas2123", "kwas2123@gmail.com")
-                .setPassword("kwas2123")
+                .setPassword("kwas21232123")
                 .from(testAddress9)
                 .withPhoneNumber("123123123").build();
         Organizer testUser10 = organizerBuilder
@@ -167,7 +167,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
 
             invitationToOrganizationSender.inviteOrganizersList(testTournament1,Arrays.asList(testUser8,testUser9));
 
-            groupInvitationSender.inviteParticipantsGroupsList(
+            invitationToGroupParticipationSender.inviteParticipantsGroupsList(
                     testTournament1,
                     Arrays.asList(
                             Arrays.asList(testUser1,testUser2),
@@ -185,7 +185,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
 
             invitationToOrganizationSender.inviteOrganizersList(testTournament2,Collections.singletonList(testUser9));
 
-            invitationSender.inviteParticipantsList(testTournament2,Arrays.asList(testUser2,testUser3,testUser5,testUser9,testUser1));
+            invitationToParticipationSender.inviteParticipantsList(testTournament2,Arrays.asList(testUser2,testUser3,testUser5,testUser9,testUser1));
 
             Tournament testTournament3 = tournamentCreator
                     .startOrganizeTournament("Tournament3", 3,TournamentType.DUEL,2)
@@ -197,7 +197,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
 
             invitationToOrganizationSender.inviteOrganizersList(testTournament3,Collections.singletonList(testUser9));
 
-            invitationSender.inviteParticipantsList(testTournament3,Arrays.asList(testUser1,testUser3,testUser5,testUser7));
+            invitationToParticipationSender.inviteParticipantsList(testTournament3,Arrays.asList(testUser1,testUser3,testUser5,testUser7));
 
 
             Tournament testTournament4 = tournamentCreator
@@ -210,7 +210,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
 
             invitationToOrganizationSender.inviteOrganizersList(testTournament4,Collections.singletonList(testUser7));
 
-            invitationSender.inviteParticipantsList(testTournament4,Arrays.asList(testUser2,testUser4,testUser6,testUser8));
+            invitationToParticipationSender.inviteParticipantsList(testTournament4,Arrays.asList(testUser2,testUser4,testUser6,testUser8));
 
             Tournament testTournament5 = tournamentCreator
                     .startOrganizeTournament("Tournament5", 4,TournamentType.DUEL,1)
@@ -222,7 +222,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
 
             invitationToOrganizationSender.inviteOrganizersList(testTournament5,Collections.singletonList(testUser7));
 
-            invitationSender.inviteParticipantsList(testTournament5,Arrays.asList(testUser5,testUser10));
+            invitationToParticipationSender.inviteParticipantsList(testTournament5,Arrays.asList(testUser5,testUser10));
 
             Tournament testTournament6 = tournamentCreator
                     .startOrganizeTournament("Tournament6", 3,TournamentType.DUEL,2)
@@ -234,7 +234,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
 
             invitationToOrganizationSender.inviteOrganizersList(testTournament6,Collections.singletonList(testUser9));
 
-            invitationSender.inviteParticipantsList(testTournament6,Arrays.asList(testUser5,testUser10,testUser1,testUser2));
+            invitationToParticipationSender.inviteParticipantsList(testTournament6,Arrays.asList(testUser5,testUser10,testUser1,testUser2));
 
             Tournament testTournament7 = tournamentCreator
                     .startOrganizeTournament("Tournament7", 2,TournamentType.DUEL,2)
@@ -246,7 +246,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
 
             invitationToOrganizationSender.inviteOrganizersList(testTournament7,Collections.singletonList(testUser8));
 
-            invitationSender.inviteParticipantsList(testTournament7,Arrays.asList(testUser10,testUser1,testUser3,testUser5));
+            invitationToParticipationSender.inviteParticipantsList(testTournament7,Arrays.asList(testUser10,testUser1,testUser3,testUser5));
 
             Tournament testTournament8 = tournamentCreator
                     .startOrganizeTournament("Tournament8", 10,TournamentType.DUEL,2)
@@ -259,7 +259,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
 
             invitationToOrganizationSender.inviteOrganizersList(testTournament8,Collections.singletonList(testUser8));
 
-            invitationSender.inviteParticipantsList(testTournament8,Arrays.asList(testUser1,testUser2,testUser5,testUser6));
+            invitationToParticipationSender.inviteParticipantsList(testTournament8,Arrays.asList(testUser1,testUser2,testUser5,testUser6));
 
             Tournament testTournament9 = tournamentCreator
                     .startOrganizeTournament("Tournament9", 4,TournamentType.DUEL,2)
@@ -272,7 +272,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
 
             invitationToOrganizationSender.inviteOrganizersList(testTournament9,Collections.singletonList(testUser7));
 
-            invitationSender.inviteParticipantsList(testTournament9,Arrays.asList(testUser10,testUser8));
+            invitationToParticipationSender.inviteParticipantsList(testTournament9,Arrays.asList(testUser10,testUser8));
 
             Tournament testTournament10 = tournamentCreator
                     .startOrganizeTournament("Tournament 10", 3,TournamentType.DUEL,2)
@@ -285,7 +285,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
 
             invitationToOrganizationSender.inviteOrganizersList(testTournament10,Collections.singletonList(testUser8));
 
-            invitationSender.inviteParticipantsList(testTournament10,Arrays.asList(testUser10,testUser7,testUser6,testUser2));
+            invitationToParticipationSender.inviteParticipantsList(testTournament10,Arrays.asList(testUser10,testUser7,testUser6,testUser2));
 
             tournamentRepository.save(testTournament1);
             tournamentRepository.save(testTournament2);

@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class GroupInvitationSender {
+public class InvitationToGroupParticipationSender {
 
     public void inviteParticipantsGroupsList(Tournament tournament, List<List<Player>> groupParticipants){
         tournament.getParticipation().addAll(

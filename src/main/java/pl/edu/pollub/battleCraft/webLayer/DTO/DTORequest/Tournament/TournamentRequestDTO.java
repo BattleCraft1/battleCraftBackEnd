@@ -16,7 +16,7 @@ import java.util.List;
 public abstract class TournamentRequestDTO  extends AddressOwnerRequestDTO {
     private String name;
     private String nameChange;
-    private int toursCount;
+    private int turnsCount;
     private int tablesCount;
     private int playersOnTableCount;
     private String game;

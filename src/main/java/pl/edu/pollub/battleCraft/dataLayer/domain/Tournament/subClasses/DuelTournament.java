@@ -77,7 +77,9 @@ public class DuelTournament extends Tournament{
     }
 
     public List<Player> getPlayersWithoutBattleInTour(int tourNumber){
-        List<Player> playersWithoutBattle = this.getParticipation().stream().map(Participation::getPlayer).collect(Collectors.toList());
+        List<Player> playersWithoutBattle = this.getParticipation().stream()
+                .map(Participation::getPlayer)
+                .collect(Collectors.toList());
         List<Player> allPlayersWhoHaveBattleInCurrentTour = this.getTurnByNumber(tourNumber).getAllPlayersInTour();
         playersWithoutBattle.removeAll(allPlayersWhoHaveBattleInCurrentTour);
         return playersWithoutBattle;

@@ -96,6 +96,15 @@ public abstract class Tournament{
     @Embedded
     private AddressOwnership addressOwnership;
 
+    public int getTableNumberForPlayer(Player firstPlayer, int turnNumber) {
+        return this.getTurnByNumber(turnNumber).getBattles().stream()
+                .filter(battle -> battle.getPlayers().stream()
+                        .filter(play -> play.getPlayer().equals(firstPlayer))
+                        .findFirst().orElse(null)!=null)
+                .findFirst().orElseThrow(() -> new ObjectNotFoundException(Battle.class,firstPlayer.getName()))
+                .getTableNumber();
+    }
+
     public Player getPlayerByName(String playerName){
         return this.getParticipation().stream()
                 .map(Participation::getPlayer)
@@ -213,14 +222,5 @@ public abstract class Tournament{
 
     private void setOrganizations(List<Organization> organizations){
         this.organizations = organizations;
-    }
-
-    public int getTableNumberForPlayer(Player firstPlayer, int turnNumber) {
-        return this.getTurnByNumber(turnNumber).getBattles().stream()
-                .filter(battle -> battle.getPlayers().stream()
-                        .filter(play -> play.getPlayer().equals(firstPlayer))
-                        .findFirst().orElse(null)!=null)
-                .findFirst().orElseThrow(() -> new ObjectNotFoundException(Battle.class,firstPlayer.getName()))
-                .getTableNumber();
     }
 }

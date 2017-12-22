@@ -15,8 +15,9 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.Player;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.*;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.EntityValidation.EntityValidationException;
-import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.GroupInvitationSender;
-import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationSender;
+import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationToGroupParticipationSender;
+import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationToOrganizationSender;
+import pl.edu.pollub.battleCraft.serviceLayer.services.invitation.InvitationToParticipationSender;
 import pl.edu.pollub.battleCraft.serviceLayer.services.security.AuthorityRecognizer;
 import pl.edu.pollub.battleCraft.serviceLayer.services.validators.TournamentValidator;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Tournament.DuelTournamentRequestDTO;
@@ -39,20 +40,23 @@ public class TournamentService {
 
     private final AuthorityRecognizer authorityRecognizer;
 
-    private final InvitationSender invitationSender;
+    private final InvitationToParticipationSender invitationToParticipationSender;
 
-    private final GroupInvitationSender groupInvitationSender;
+    private final InvitationToGroupParticipationSender invitationToGroupParticipationSender;
+
+    private final InvitationToOrganizationSender invitationToOrganizationSender;
 
 
     @Autowired
-    public TournamentService(TournamentRepository tournamentRepository, TournamentValidator tournamentValidator, TournamentCreator tournamentCreator, TournamentEditor tournamentEditor, AuthorityRecognizer authorityRecognizer, InvitationSender invitationSender, GroupInvitationSender groupInvitationSender) {
+    public TournamentService(TournamentRepository tournamentRepository, TournamentValidator tournamentValidator, TournamentCreator tournamentCreator, TournamentEditor tournamentEditor, AuthorityRecognizer authorityRecognizer, InvitationToParticipationSender invitationSender, InvitationToGroupParticipationSender groupInvitationSender, InvitationToOrganizationSender invitationToOrganizationSender) {
         this.tournamentRepository = tournamentRepository;
         this.tournamentValidator = tournamentValidator;
         this.tournamentCreator = tournamentCreator;
         this.tournamentEditor = tournamentEditor;
         this.authorityRecognizer = authorityRecognizer;
-        this.invitationSender = invitationSender;
-        this.groupInvitationSender = groupInvitationSender;
+        this.invitationToParticipationSender = invitationSender;
+        this.invitationToGroupParticipationSender = groupInvitationSender;
+        this.invitationToOrganizationSender = invitationToOrganizationSender;
     }
 
     @Transactional(rollbackFor = {EntityValidationException.class,ObjectNotFoundException.class})
@@ -81,7 +85,7 @@ public class TournamentService {
                         tournamentWebDTO.getName(),
                         tournamentWebDTO.getTablesCount(),
                         tournamentWebDTO.getTournamentType(),
-                        tournamentWebDTO.getToursCount())
+                        tournamentWebDTO.getTurnsCount())
                 .in(new Address(
                         tournamentWebDTO.getProvince(),
                         tournamentWebDTO.getCity(),
@@ -94,11 +98,13 @@ public class TournamentService {
                 .finishOrganize();
 
         if(organizedTournament instanceof GroupTournament){
-            groupInvitationSender.inviteParticipantsGroupsList(organizedTournament,groupParticipants);
+            invitationToGroupParticipationSender.inviteParticipantsGroupsList(organizedTournament,groupParticipants);
         }
         else{
-            invitationSender.inviteParticipantsList(organizedTournament,participants);
+            invitationToParticipationSender.inviteParticipantsList(organizedTournament,participants);
         }
+
+        invitationToOrganizationSender.inviteOrganizersList(organizedTournament,organizers);
 
         return this.tournamentRepository.save(organizedTournament);
     }
@@ -133,7 +139,7 @@ public class TournamentService {
                         tournamentWebDTO.getNameChange(),
                         tournamentWebDTO.getTablesCount(),
                         tournamentWebDTO.getTournamentType(),
-                        tournamentWebDTO.getToursCount())
+                        tournamentWebDTO.getTurnsCount())
                 .changeAddress(
                         tournamentWebDTO.getProvince(),
                         tournamentWebDTO.getCity(),
@@ -146,11 +152,13 @@ public class TournamentService {
                 .finishEditing();
 
         if(tournamentToEdit instanceof GroupTournament){
-            groupInvitationSender.inviteEditedParticipantsGroupsList(tournamentToEdit,groupParticipants);
+            invitationToGroupParticipationSender.inviteEditedParticipantsGroupsList(tournamentToEdit,groupParticipants);
         }
         else{
-            invitationSender.inviteEditedParticipantsList(tournamentToEdit,participants);
+            invitationToParticipationSender.inviteEditedParticipantsList(tournamentToEdit,participants);
         }
+
+        invitationToOrganizationSender.inviteOrganizersList(tournamentToEdit,organizers);
 
         authorityRecognizer.checkIfEditedTournamentNeedReAcceptation(tournamentToEdit);
 

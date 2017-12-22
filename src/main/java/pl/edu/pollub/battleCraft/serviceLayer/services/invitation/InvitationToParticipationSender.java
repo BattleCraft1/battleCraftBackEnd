@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class InvitationSender {
+public class InvitationToParticipationSender {
 
     public void inviteParticipantsList(Tournament tournament, List<Player> participants){
         List<Participation> currentParticipation = tournament.getParticipation();

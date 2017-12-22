@@ -4,7 +4,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Validator;
 import org.springframework.validation.Errors;
-import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.enums.TournamentType;
 import pl.edu.pollub.battleCraft.dataLayer.domain.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Game.Game;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.Tournament;
@@ -58,7 +57,7 @@ public class TournamentValidator implements Validator {
         this.validateTournamentName(tournamentWebDTO.getNameChange());
         this.validatePlayersOnTableCount(tournamentWebDTO.getPlayersOnTableCount());
         this.validateTablesCount(tournamentWebDTO.getPlayersOnTableCount(),tournamentWebDTO.getTablesCount());
-        this.validateToursCount(tournamentWebDTO.getToursCount(), tournamentWebDTO.getTablesCount());
+        this.validateTurnsCount(tournamentWebDTO.getTurnsCount(), tournamentWebDTO.getTablesCount());
         this.validateStartDate(tournamentWebDTO.getDateOfStart());
         this.validateEndDate(tournamentWebDTO.getDateOfStart(),tournamentWebDTO.getDateOfEnd());
         addressValidator.validate(tournamentWebDTO,errors);
@@ -86,10 +85,12 @@ public class TournamentValidator implements Validator {
         }
     }
 
-    private void validateToursCount(int toursCount, int tablesCount){
+    private void validateTurnsCount(int toursCount, int tablesCount){
         int maxToursNumber = 2 * tablesCount;
         if(toursCount>maxToursNumber)
             errors.rejectValue("turnsCount","", new StringBuilder("Max turns number in this tournament is: ").append(maxToursNumber).toString());
+        if(toursCount<=0)
+            errors.rejectValue("turnsCount","", new StringBuilder("Turns count in this tournament must by grater than 0").toString());
     }
 
     private void validateStartDate(Date startDate){
