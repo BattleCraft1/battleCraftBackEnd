@@ -7,7 +7,7 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.subClasses.DuelTournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.subClasses.GroupTournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.Player;
-import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships.Play;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Play.Play;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Battle.Battle;
 import javax.persistence.*;
 import java.util.*;

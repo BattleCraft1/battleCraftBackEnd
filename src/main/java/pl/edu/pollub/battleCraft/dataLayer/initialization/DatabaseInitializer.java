@@ -171,8 +171,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
                     testTournament1,
                     Arrays.asList(
                             Arrays.asList(testUser1,testUser2),
-                            Arrays.asList(testUser3,testUser4),
-                            Arrays.asList(testUser5,testUser6))
+                            Arrays.asList(testUser3,testUser4))
             );
 
             Tournament testTournament2 = tournamentCreator

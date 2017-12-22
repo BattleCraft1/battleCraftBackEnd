@@ -7,7 +7,7 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.enums.TournamentSta
 import pl.edu.pollub.battleCraft.dataLayer.domain.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.domain.User.enums.UserType;
 import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Organizer.Organizer;
-import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships.Participation;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Participation.Participation;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentManagement.TournamentCannotStartYet;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.TournamentManagement.TournamentIsOutOfDate;

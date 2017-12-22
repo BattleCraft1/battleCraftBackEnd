@@ -1,4 +1,4 @@
-package pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships;
+package pl.edu.pollub.battleCraft.dataLayer.domain.Participation;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
@@ -26,14 +26,6 @@ public class Participation{
         this.participantsGroup = participantsGroup;
     }
 
-    private Participation(Player player, Tournament participatedTournament, boolean accepted, ParticipantsGroup participantsGroup) {
-        this.player = player;
-        this.participatedTournament = participatedTournament;
-        this.accepted = accepted;
-        participantsGroup.getParticipation().add(this);
-        this.participantsGroup = participantsGroup;
-    }
-
     public Participation(Player player, Tournament participatedTournament) {
         this.player = player;
         this.participatedTournament = participatedTournament;
@@ -41,13 +33,6 @@ public class Participation{
         this.participantsGroup = null;
     }
 
-    private Participation(Player player, Tournament participatedTournament, boolean accepted) {
-        this.player = player;
-        this.participatedTournament = participatedTournament;
-        this.accepted = accepted;
-        this.participantsGroup = null;
-    }
-    
     @Id
     @GeneratedValue
     protected Long id;

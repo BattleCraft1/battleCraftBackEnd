@@ -11,7 +11,7 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.enums.TournamentSta
 import pl.edu.pollub.battleCraft.dataLayer.domain.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.domain.User.enums.UserType;
 import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Organizer.Organizer;
-import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Organizer.relationships.Organization;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Organization.Organization;
 import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.Player;
 import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.search.field.Join;
 import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.search.field.Field;
@@ -19,7 +19,7 @@ import pl.edu.pollub.battleCraft.dataLayer.dao.pageOfEntity.search.criteria.Sear
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.OrganizerRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.PlayerRepository;
 import pl.edu.pollub.battleCraft.dataLayer.dao.jpaRepositories.UserAccountRepository;
-import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships.Participation;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Participation.Participation;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.PageOfEntities.AnyObjectNotFoundException;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.PageOfEntities.PageNotFoundException;
 

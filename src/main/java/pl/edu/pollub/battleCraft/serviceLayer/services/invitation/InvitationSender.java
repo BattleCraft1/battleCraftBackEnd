@@ -3,7 +3,7 @@ package pl.edu.pollub.battleCraft.serviceLayer.services.invitation;
 import org.springframework.stereotype.Service;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.Player;
-import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships.Participation;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Participation.Participation;
 
 import java.util.List;
 import java.util.stream.Collectors;

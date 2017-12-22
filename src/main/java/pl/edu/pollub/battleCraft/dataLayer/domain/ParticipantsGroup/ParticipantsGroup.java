@@ -2,7 +2,7 @@ package pl.edu.pollub.battleCraft.dataLayer.domain.ParticipantsGroup;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
-import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships.Participation;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Participation.Participation;
 
 import javax.persistence.*;
 import java.util.ArrayList;

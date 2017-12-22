@@ -1,8 +1,8 @@
-package pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships;
+package pl.edu.pollub.battleCraft.dataLayer.domain.Play;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
-import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships.emuns.ColorOfSideInBattle;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Play.emuns.ColorOfSideInBattle;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Battle.Battle;
 import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.Player;
 

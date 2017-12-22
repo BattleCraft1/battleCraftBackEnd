@@ -6,9 +6,9 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.enums.TournamentSta
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.subClasses.DuelTournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.Player;
-import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships.Participation;
-import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships.Play;
-import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships.emuns.ColorOfSideInBattle;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Participation.Participation;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Play.Play;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Play.emuns.ColorOfSideInBattle;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Turn.Turn;
 import pl.edu.pollub.battleCraft.serviceLayer.services.security.AuthorityRecognizer;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.TournamentProgress.PlayerDTO;

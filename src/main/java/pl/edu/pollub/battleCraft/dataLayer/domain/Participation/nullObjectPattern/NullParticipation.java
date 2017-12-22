@@ -1,9 +1,9 @@
-package pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships.nullObjectPattern;
+package pl.edu.pollub.battleCraft.dataLayer.domain.Participation.nullObjectPattern;
 
 import pl.edu.pollub.battleCraft.dataLayer.domain.ParticipantsGroup.ParticipantsGroup;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.nullObjectPattern.NullTournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.nullObjectPattern.NullPlayer;
-import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships.Participation;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Participation.Participation;
 
 public class NullParticipation extends Participation {
     public NullParticipation(){

@@ -8,14 +8,13 @@ import lombok.ToString;
 import org.hibernate.annotations.Formula;
 import pl.edu.pollub.battleCraft.dataLayer.domain.AddressOwnership.AddressOwnership;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.enums.TournamentType;
-import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships.Play;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Play.Play;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Battle.Battle;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Game.Game;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.enums.TournamentStatus;
-import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Organizer.Organizer;
-import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Organizer.relationships.Organization;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Organization.Organization;
 import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.Player;
-import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships.Participation;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Participation.Participation;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Turn.Turn;
 import pl.edu.pollub.battleCraft.serviceLayer.exceptions.UncheckedExceptions.ObjectStatus.ObjectNotFoundException;
 

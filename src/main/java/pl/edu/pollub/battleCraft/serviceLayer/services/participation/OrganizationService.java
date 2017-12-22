@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.enums.TournamentStatus;
 import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Organizer.Organizer;
-import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Organizer.relationships.Organization;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Organization.Organization;
 import pl.edu.pollub.battleCraft.serviceLayer.services.participation.ParticipationDTO.ParticipationDTO;
 
 import java.util.List;

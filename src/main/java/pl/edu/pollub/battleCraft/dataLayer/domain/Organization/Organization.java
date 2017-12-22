@@ -1,6 +1,5 @@
-package pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Organizer.relationships;
+package pl.edu.pollub.battleCraft.dataLayer.domain.Organization;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Organizer.Organizer;

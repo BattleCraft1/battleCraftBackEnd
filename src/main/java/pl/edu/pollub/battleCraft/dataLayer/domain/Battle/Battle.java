@@ -3,10 +3,10 @@ package pl.edu.pollub.battleCraft.dataLayer.domain.Battle;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
-import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships.emuns.ColorOfSideInBattle;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Play.emuns.ColorOfSideInBattle;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Turn.Turn;
 import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.Player;
-import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships.Play;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Play.Play;
 
 import javax.persistence.*;
 import java.util.ArrayList;

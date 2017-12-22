@@ -1,4 +1,4 @@
-package pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships.emuns;
+package pl.edu.pollub.battleCraft.dataLayer.domain.Play.emuns;
 
 import lombok.ToString;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.enums.TournamentStatus;

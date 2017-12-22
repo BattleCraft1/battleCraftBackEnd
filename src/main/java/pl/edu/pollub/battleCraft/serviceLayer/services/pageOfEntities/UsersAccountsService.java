@@ -13,9 +13,9 @@ import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.enums.TournamentSta
 import pl.edu.pollub.battleCraft.dataLayer.domain.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Admin.Administrator;
 import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Organizer.Organizer;
-import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Organizer.relationships.Organization;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Organization.Organization;
 import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.Player;
-import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships.Participation;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Participation.Participation;
 import pl.edu.pollub.battleCraft.serviceLayer.services.resources.UserAccountResourcesService;
 import pl.edu.pollub.battleCraft.serviceLayer.services.security.AuthorityRecognizer;
 import pl.edu.pollub.battleCraft.serviceLayer.services.validators.UniqueNamesValidator;

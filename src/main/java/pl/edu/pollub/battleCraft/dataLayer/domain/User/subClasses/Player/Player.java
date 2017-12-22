@@ -8,8 +8,8 @@ import lombok.Setter;
 import lombok.ToString;
 import pl.edu.pollub.battleCraft.dataLayer.domain.User.UserAccount;
 import pl.edu.pollub.battleCraft.dataLayer.domain.User.enums.UserType;
-import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships.Participation;
-import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships.Play;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Participation.Participation;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Play.Play;
 
 import javax.persistence.*;
 import java.util.*;

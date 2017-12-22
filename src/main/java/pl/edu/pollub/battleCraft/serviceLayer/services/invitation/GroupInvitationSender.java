@@ -4,12 +4,9 @@ import org.springframework.stereotype.Service;
 import pl.edu.pollub.battleCraft.dataLayer.domain.ParticipantsGroup.ParticipantsGroup;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.Player;
-import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships.Participation;
-import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships.nullObjectPattern.NullParticipation;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Participation.Participation;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Participation.nullObjectPattern.NullParticipation;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -17,8 +14,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class GroupInvitationSender {
-    @PersistenceContext
-    private EntityManager entityManager;
 
     public void inviteParticipantsGroupsList(Tournament tournament, List<List<Player>> groupParticipants){
         tournament.getParticipation().addAll(
@@ -45,8 +40,8 @@ public class GroupInvitationSender {
 
     public void inviteEditedParticipantsGroupsList(Tournament tournament, List<List<Player>> groupParticipants){
         List<PlayerWithGroupDTO> participantsWithGroupsNumbers = this.giveGroupNumbersForParticipants(tournament, groupParticipants);
-        this.addNewParticipation(tournament,participantsWithGroupsNumbers);
         this.modifyExistingParticipation(tournament,participantsWithGroupsNumbers);
+        this.addNewParticipation(tournament,participantsWithGroupsNumbers);
         this.removeNotExistingParticipation(tournament,participantsWithGroupsNumbers);
     }
 
@@ -72,7 +67,7 @@ public class GroupInvitationSender {
         existingParticipation.stream().filter(participation -> newParticipants.contains(participation.getPlayer()))
                 .forEach(participation -> {
                     ParticipantsGroup newGroup = participantsWithGroups.stream()
-                            .filter(participantWithGroupsNumbers -> participantWithGroupsNumbers.getPlayer().getName().equals(participation.getPlayer().getName()))
+                            .filter(participantWithGroups -> participantWithGroups.getPlayer().getName().equals(participation.getPlayer().getName()))
                             .findFirst().get().getParticipantsGroup();
                     if(!participation.getParticipantsGroup().getId().equals(newGroup.getId()))
                         participation.setParticipantsGroup(newGroup);

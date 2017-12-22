@@ -8,10 +8,10 @@ import lombok.ToString;
 import pl.edu.pollub.battleCraft.dataLayer.domain.ParticipantsGroup.ParticipantsGroup;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.Tournament;
 import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.Player;
-import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships.Participation;
-import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships.Play;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Participation.Participation;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Play.Play;
 import pl.edu.pollub.battleCraft.dataLayer.domain.Turn.Turn;
-import pl.edu.pollub.battleCraft.dataLayer.domain.User.subClasses.Player.relationships.nullObjectPattern.NullParticipation;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Participation.nullObjectPattern.NullParticipation;
 
 import javax.persistence.Entity;
 import java.util.*;
