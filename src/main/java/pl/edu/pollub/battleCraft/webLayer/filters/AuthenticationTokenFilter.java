@@ -33,7 +33,7 @@ public class AuthenticationTokenFilter extends UsernamePasswordAuthenticationFil
         userDetailsService = WebApplicationContextUtils
                 .getRequiredWebApplicationContext(this.getServletContext())
                 .getBean(UserDetailsService.class);
-        
+
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String authToken = httpRequest.getHeader("X-Auth-Token");
         String username = this.tokenUtils.getUsernameFromToken(authToken);
