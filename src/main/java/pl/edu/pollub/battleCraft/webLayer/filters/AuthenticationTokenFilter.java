@@ -33,14 +33,7 @@ public class AuthenticationTokenFilter extends UsernamePasswordAuthenticationFil
         userDetailsService = WebApplicationContextUtils
                 .getRequiredWebApplicationContext(this.getServletContext())
                 .getBean(UserDetailsService.class);
-
-        HttpServletResponse resp = (HttpServletResponse) response;
-        resp.setHeader("Access-Control-Allow-Origin", "*");
-        resp.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, OPTIONS, DELETE, PATCH");
-        resp.setHeader("Access-Control-Max-Age", "3600");
-        resp.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, X-Auth-Token");
-
-
+        
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String authToken = httpRequest.getHeader("X-Auth-Token");
         String username = this.tokenUtils.getUsernameFromToken(authToken);
