@@ -37,7 +37,10 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(value = {PageNotFoundException.class, ObjectNotFoundException.class, StorageFileNotFoundException.class, AnyObjectNotFoundException.class})
+    @ExceptionHandler(value = {PageNotFoundException.class,
+                                ObjectNotFoundException.class,
+                                StorageFileNotFoundException.class,
+                                AnyObjectNotFoundException.class})
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     protected ResponseEntity<String> handleNotFoundException(Exception ex, WebRequest req) {
         System.out.println("exception: "+ex.getClass().getSimpleName()+" message: " + ex.getMessage());

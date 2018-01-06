@@ -55,17 +55,14 @@ public class AuthorityRecognizer {
 
     private final GameRepository gameRepository;
 
-    private final AuthenticationManager authenticationManager;
-
     private final UserDetailsService userDetailsService;
 
     private final JWTTokenUtils tokenUtils;
 
     @Autowired
-    public AuthorityRecognizer(TournamentRepository tournamentRepository, GameRepository gameRepository, AuthenticationManager authenticationManager, UserDetailsService userDetailsService, JWTTokenUtils tokenUtils){
+    public AuthorityRecognizer(TournamentRepository tournamentRepository, GameRepository gameRepository, UserDetailsService userDetailsService, JWTTokenUtils tokenUtils){
         this.tournamentRepository = tournamentRepository;
         this.gameRepository = gameRepository;
-        this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
         this.tokenUtils = tokenUtils;
     }
@@ -174,8 +171,10 @@ public class AuthorityRecognizer {
 
     public void checkIfUserCanManageTournament(Tournament tournament){
         String username = this.getCurrentUserNameFromContext();
+
         if(!this.getCurrentUserRoleFromContext().equals("ROLE_ORGANIZER"))
             throw new YouAreNotOwnerOfThisObjectException(Tournament.class,tournament.getName());
+
         tournament.getOrganizations().stream()
                 .map(organization -> organization.getOrganizer().getName())
                 .filter(organizerName -> organizerName.equals(username))

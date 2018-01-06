@@ -22,7 +22,8 @@ public class UserResourcesController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ORGANIZER','ROLE_ACCEPTED')")
     @PostMapping(value = "/upload/user/avatar")
-    public void uploadUserAvatar(@RequestParam("avatar") MultipartFile file, @RequestParam(value = "username") String username) throws IOException {
+    public void uploadUserAvatar(@RequestParam("avatar") MultipartFile file,
+                                 @RequestParam(value = "username") String username) throws IOException {
         userAccountResourcesService.saveUserAvatar(username,file);
     }
 

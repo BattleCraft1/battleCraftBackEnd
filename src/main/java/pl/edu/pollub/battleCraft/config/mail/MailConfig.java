@@ -4,12 +4,10 @@ import org.apache.velocity.runtime.resource.loader.ResourceLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.ui.velocity.VelocityEngineFactoryBean;
 import pl.edu.pollub.battleCraft.serviceLayer.services.registration.utils.MailUtil;
 
-import java.io.IOException;
 import java.util.Properties;
 
 /**

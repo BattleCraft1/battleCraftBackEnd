@@ -12,16 +12,20 @@ import java.util.List;
 @Repository
 @Transactional
 public interface TournamentRepository extends JpaRepository<Tournament, Long> {
+
+    Tournament findByName(String name);
+
     @Modifying
     @Query("DELETE FROM Participation p WHERE (SELECT t.name FROM Tournament t WHERE t.id=p.participatedTournament) IN ?1")
     void deleteParticipationByTournamentsUniqueNames(String... tournamentsToDeleteUniqueNames);
+
+    @Query("SELECT t.name FROM Tournament t WHERE t.name in ?1")
+    List<String> selectTournamentsToDeleteUniqueNames(String... tournamentsToDeleteUniqueNames);
 
     @Modifying
     @Query("DELETE FROM Organization o WHERE (SELECT t.name FROM Tournament t WHERE t.id=o.organizedTournament) IN ?1")
     void deleteOrganizationByTournamentsUniqueNames(String... tournamentsToDeleteUniqueNames);
 
-    @Query("SELECT t.name FROM Tournament t WHERE t.name in ?1")
-    List<String> selectTournamentsToDeleteUniqueNames(String... tournamentsToDeleteUniqueNames);
 
     @Modifying
     @Query("DELETE FROM Tournament t WHERE t.name in ?1")
@@ -102,8 +106,6 @@ public interface TournamentRepository extends JpaRepository<Tournament, Long> {
 
     @Query("SELECT t FROM Tournament t Where t.name in ?1 and t.banned = true ")
     List<Tournament> findBannedTournamentsByUniqueNames(String... uniqueNames);
-
-    Tournament findByName(String name);
 
     @Modifying
     @Query("UPDATE Tournament t SET t.banned = true WHERE (SELECT g.name FROM Game g WHERE t.game=g.id) IN ?1")

@@ -64,20 +64,13 @@ public class TournamentService {
 
         tournamentValidator.checkIfTournamentExist(tournamentWebDTO,bindingResult);
         tournamentValidator.validate(tournamentWebDTO,bindingResult);
+
         Game tournamentGame = tournamentValidator.getValidatedGame(tournamentWebDTO,bindingResult);
         String currentUserName = authorityRecognizer.getCurrentUserNameFromContext();
         tournamentWebDTO.getOrganizers().add(currentUserName);
+
         List<Organizer> organizers = tournamentValidator.getValidatedOrganizers(tournamentWebDTO,bindingResult);
-
-        List<List<Player>> groupParticipants = new ArrayList<>();
-        List<Player> participants = new ArrayList<>();
-
-        if(tournamentWebDTO instanceof GroupTournamentRequestDTO){
-            groupParticipants = tournamentValidator.getValidatedParticipantsGroups((GroupTournamentRequestDTO) tournamentWebDTO,bindingResult);
-        }
-        else{
-            participants = tournamentValidator.getValidatedParticipants((DuelTournamentRequestDTO) tournamentWebDTO,bindingResult);
-        }
+        List<Player> participants = tournamentValidator.getValidatedParticipants((DuelTournamentRequestDTO) tournamentWebDTO,bindingResult);
 
         tournamentValidator.finishValidation(bindingResult);
 
@@ -97,13 +90,7 @@ public class TournamentService {
                 .endingIn(tournamentWebDTO.getDateOfEnd())
                 .finishOrganize();
 
-        if(organizedTournament instanceof GroupTournament){
-            invitationToGroupParticipationSender.inviteParticipantsGroupsList(organizedTournament,groupParticipants);
-        }
-        else{
-            invitationToParticipationSender.inviteParticipantsList(organizedTournament,participants);
-        }
-
+        invitationToParticipationSender.inviteParticipantsList(organizedTournament,participants);
         invitationToOrganizationSender.inviteOrganizersList(organizedTournament,organizers);
 
         return this.tournamentRepository.save(organizedTournament);

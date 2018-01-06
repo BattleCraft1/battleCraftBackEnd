@@ -31,8 +31,9 @@ public class TournamentController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ORGANIZER')")
-    @PostMapping(value = "/edit/duel/tournament", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public TournamentResponseDTO editDuelTournament(@RequestBody DuelTournamentRequestDTO tournamentRequestDTO, BindingResult bindingResult){
+    @PostMapping(value = "/edit/duel/tournament")
+    public TournamentResponseDTO editDuelTournament(@RequestBody DuelTournamentRequestDTO tournamentRequestDTO,
+                                                    BindingResult bindingResult){
         return tournamentToResponseDTOMapper.map(tournamentService.editTournament(tournamentRequestDTO, bindingResult));
     }
 

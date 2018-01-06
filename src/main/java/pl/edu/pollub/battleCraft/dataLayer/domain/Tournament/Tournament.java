@@ -23,19 +23,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-@Entity
+
 @Getter
 @Setter
 @ToString
+
+@Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public abstract class Tournament{
-
-    protected Tournament(int playersOnTableCount) {
-        this.playersOnTableCount = playersOnTableCount;
-        this.status = TournamentStatus.NEW;
-        this.banned = false;
-        this.addressOwnership = new AddressOwnership();
-    }
 
     @Id
     @GeneratedValue
@@ -48,35 +43,41 @@ public abstract class Tournament{
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateOfStart;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date dateOfEnd;
-
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn
     private Game game;
 
-    @Enumerated(EnumType.STRING)
-    private TournamentStatus status;
-
-    private boolean banned;
-
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true, mappedBy = "participatedTournament")
     protected List<Participation> participation = new ArrayList<>();
+
+    @Enumerated(EnumType.STRING)
+    private TournamentStatus status;
+
+    @Column(name = "players_on_table_count")
+    private int playersOnTableCount;
+
+    @Column(name = "turns_count")
+    private int turnsCount;
+
+    @Formula("tables_count * players_on_table_count")
+    private int maxPlayers;
+
+    @Embedded
+    private AddressOwnership addressOwnership;
+
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateOfEnd;
+
+    private boolean banned;
 
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true, mappedBy = "organizedTournament")
     private List<Organization> organizations = new ArrayList<>();
 
     private int tablesCount;
-
-    private int playersOnTableCount;
-
-    private int turnsCount;
-
-    @Formula("tables_count * players_on_table_count")
-    private int maxPlayers;
 
     @Formula("(select count(*) from participation p where p.tournament_id = id)")
     private int playersNumber;
@@ -93,8 +94,12 @@ public abstract class Tournament{
 
     private int currentTurnNumber;
 
-    @Embedded
-    private AddressOwnership addressOwnership;
+    protected Tournament(int playersOnTableCount) {
+        this.playersOnTableCount = playersOnTableCount;
+        this.status = TournamentStatus.NEW;
+        this.banned = false;
+        this.addressOwnership = new AddressOwnership();
+    }
 
     public int getTableNumberForPlayer(Player firstPlayer, int turnNumber) {
         return this.getTurnByNumber(turnNumber).getBattles().stream()

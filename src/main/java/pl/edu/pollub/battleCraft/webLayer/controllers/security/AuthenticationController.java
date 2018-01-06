@@ -66,10 +66,7 @@ public class AuthenticationController {
 
         // Return the token
         return ResponseEntity.ok(
-                new AuthResponseDTO(
-                        token,
-                        roleRecognizer.getCurrentUserRoleFromUserDetails(userDetails),
-                        roleRecognizer.getCurrentUserNameFromContext()));
+                new AuthResponseDTO(token, roleRecognizer.getCurrentUserRoleFromUserDetails(userDetails), userDetails.getUsername()));
     }
 
     @GetMapping(value = "refresh")

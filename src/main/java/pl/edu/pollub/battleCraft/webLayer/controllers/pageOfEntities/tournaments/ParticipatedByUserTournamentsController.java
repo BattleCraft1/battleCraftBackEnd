@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.edu.pollub.battleCraft.serviceLayer.services.pageOfEntities.TournamentsService;
 import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Page.GetPageObjectsDTO;
@@ -23,6 +24,8 @@ public class ParticipatedByUserTournamentsController {
     @PreAuthorize("hasAnyRole('ROLE_ACCEPTED','ROLE_ORGANIZER')")
     @PostMapping(value = "/page/participated", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Page getPageOfTournamentsParticipatedByUser(@RequestBody GetPageObjectsDTO getPageObjectsDTO) {
-        return tournamentService.getPageOfTournamentsParticipatedByUser(getPageObjectsDTO.unwrapPageRequest(), getPageObjectsDTO.getSearchCriteria());
+        return tournamentService.getPageOfTournamentsParticipatedByUser(
+                getPageObjectsDTO.unwrapPageRequest(),
+                getPageObjectsDTO.getSearchCriteria());
     }
 }
