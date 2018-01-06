@@ -1,29 +1,33 @@
 package pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Tournament;
 
 import lombok.*;
+import pl.edu.pollub.battleCraft.dataLayer.domain.Tournament.enums.TournamentType;
+import pl.edu.pollub.battleCraft.webLayer.DTO.DTORequest.Address.AddressOwnerRequestDTO;
 
-import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = true)
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class TournamentRequestDTO{
-    public String name;
-    public String nameChange;
-    public int tablesCount;
-    public int playersOnTableCount;
-    public String game;
-    public Date dateOfStart;
-    public Date dateOfEnd;
-    public String province;
-    public String city;
-    public String street;
-    public String zipCode;
-    public String description;
-    public String[] organizers;
-    public String[] participants;
+public abstract class TournamentRequestDTO  extends AddressOwnerRequestDTO {
+    private String name;
+    private String nameChange;
+    private int turnsCount;
+    private int tablesCount;
+    private int playersOnTableCount;
+    private String game;
+    private Date dateOfStart;
+    private Date dateOfEnd;
+    private List<String> organizers;
+
+    public TournamentType getTournamentType(){
+        if(playersOnTableCount==2){
+            return TournamentType.DUEL;
+        }
+        return TournamentType.GROUP;
+    }
 }
